@@ -1,5 +1,5 @@
 declare var $: any;
-
+declare var bootstrap: any;
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
@@ -43,6 +43,8 @@ export class ConsultarAtendimento implements OnInit {
 
   mensagemErro: string[] = [];
   mensagemSucesso: string[] = [];
+
+  registroSelecionado: string = '';
 
   private atendimentoService = inject(AtendimentoService);
   private router = inject(Router);
@@ -141,4 +143,45 @@ export class ConsultarAtendimento implements OnInit {
       ?.map((e: any) => e.nome)
       .join(', ') || '';
   }
+  limitarRegistro(
+  registro?: string | null
+): string {
+
+  if (!registro) {
+    return '';
+  }
+
+  if (registro.length <= 30) {
+    return registro;
+  }
+
+  return registro.substring(0, 30) + '...';
+}
+
+
+abrirRegistroCompleto(
+  registro?: string | null
+): void {
+
+  this.registroSelecionado =
+    registro ?? '';
+
+  const modalElement =
+    document.getElementById(
+      'modalRegistroCompleto'
+    );
+
+  if (!modalElement) {
+    return;
+  }
+
+  const modal =
+    new (window as any).bootstrap.Modal(
+      modalElement
+    );
+
+  modal.show();
+}
+
+
 }

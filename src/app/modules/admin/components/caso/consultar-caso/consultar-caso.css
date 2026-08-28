@@ -1,0 +1,59 @@
+/* =====================================================
+   TABELA
+   ===================================================== */
+
+.tabela-casos {
+  overflow: visible !important;
+}
+
+.tabela-casos .table {
+  overflow: visible !important;
+}
+
+.tabela-casos tbody,
+.tabela-casos tr,
+.tabela-casos td {
+  overflow: visible !important;
+}
+
+
+/* =====================================================
+   DROPDOWNS
+   ===================================================== */
+
+.tabela-casos .dropdown {
+  position: relative;
+}
+
+.tabela-casos .dropdown-menu {
+  z-index: 99999 !important;
+
+  overflow: visible !important;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   CLIENTES / ENVOLVIDOS
+   ===================================================== */
+
+.clientes-dropdown,
+.envolvidos-dropdown {
+  min-width: 240px;
+
+  width: max-content;
+  max-width: 420px;
+
+  overflow: visible !important;
+}
+
+.clientes-dropdown .dropdown-item,
+.envolvidos-dropdown .dropdown-item {
+  white-space: nowrap;
+}.badge-subtle-primary {
+    background-color: rgba(var(--bs-primary-rgb), 0.12);
+    color: var(--bs-primary);
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.25);
+    font-weight: 500;
+}

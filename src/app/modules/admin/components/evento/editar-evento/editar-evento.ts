@@ -119,7 +119,7 @@ export class EditarEvento implements OnInit {
   }
 
   irParaLista() {
-    this.router.navigate(['/admin/gestao-atividades']);
+    this.router.navigate(['/admin/consultar-eventos']);
   }
 
   carregarDados() {
@@ -196,22 +196,29 @@ export class EditarEvento implements OnInit {
         // =========================
         // VÍNCULO VISUAL (🔥 AJUSTE IMPORTANTE)
         // =========================
-        this.vinculoSelecionado = res.processoId
-          ? {
-            id: res.processoId,
-            pasta: res.processoPasta
-          } as ProcessoAutoComplete
-          : res.casoId
-            ? {
-              id: res.casoId,
-              pasta: res.casoPasta
-            } as CasoAutoComplete
-            : res.atendimentoId
-              ? {
-                id: res.atendimentoId,
-                assunto: res.atendimentoAssunto
-              } as AtendimentoAutoComplete
-              : null;
+        this.vinculoSelecionado =
+  res.processoId
+    ? {
+        id: res.processoId,
+        pasta: res.processoPasta,
+        numeroProcesso: res.processoNumero,
+        titulo: res.titulo
+      } as ProcessoAutoComplete
+
+    : res.casoId
+      ? {
+          id: res.casoId,
+          pasta: res.casoPasta,
+          titulo: res.titulo
+        } as CasoAutoComplete
+
+      : res.atendimentoId
+        ? {
+            id: res.atendimentoId,
+            assunto: res.atendimentoAssunto
+          } as AtendimentoAutoComplete
+
+        : null;
 
 
         this.carregando = false;
@@ -244,120 +251,214 @@ export class EditarEvento implements OnInit {
     request$.subscribe(res => this.resultadosVinculo = res);
   }
 
-  selecionarVinculo(item: VinculoAutoComplete) {
+  selecionarVinculo(
+  item: VinculoAutoComplete
+): void {
 
-    const tipo = this.form.get('tipoVinculo')?.value;
+  const tipo =
+    this.form
+      .get('tipoVinculo')
+      ?.value;
 
-    // 🔥 limpa tudo antes
-    this.limparVinculos();
-
-    this.resultadosVinculo = [];
-
-    this.vinculoSelecionado = item;
-
-    const id = item.id ?? null;
-
-    if (tipo === 'processo') {
-
-      this.form.patchValue({
-        processoId: id
-      });
-    }
-    else if (tipo === 'caso') {
-
-      this.form.patchValue({
-        casoId: id
-      });
-    }
-    else if (tipo === 'atendimento') {
-
-      this.form.patchValue({
-        atendimentoId: id
-      });
-    }
+  if (!tipo) {
+    return;
   }
+
+  // Limpa Processo/Caso/Atendimento anterior
+  this.limparVinculos();
+
+  this.vinculoSelecionado =
+    item;
+
+  const id =
+    item.id ?? null;
+
+  if (tipo === 'processo') {
+
+    this.form.patchValue({
+      processoId: id
+    });
+
+  }
+  else if (tipo === 'caso') {
+
+    this.form.patchValue({
+      casoId: id
+    });
+
+  }
+  else if (tipo === 'atendimento') {
+
+    this.form.patchValue({
+      atendimentoId: id
+    });
+
+  }
+
+  this.resultadosVinculo = [];
+}
 
   buscarResponsaveis(termo: string) {
     this.responsaveisFiltrados = this.responsaveis
       .filter(r => r.nomeUsuario.toLowerCase().includes(termo.toLowerCase()));
   }
 
-  onSubmit() {
-    if (this.form.invalid) return;
+ onSubmit(): void {
 
-    this.carregando = true;
+  this.mensagemErro = [];
+  this.mensagemSucesso = [];
 
-    const f = this.form.value;
-    const quantidadeVinculos = [
-      f.processoId,
-      f.casoId,
-      f.atendimentoId
-    ].filter(Boolean).length;
+  if (this.form.invalid) {
 
-    if (quantidadeVinculos > 1) {
+    this.form.markAllAsTouched();
 
-      this.mensagemErro = [
-        'O evento não pode possuir mais de um vínculo.'
-      ];
+    return;
+  }
 
-      this.carregando = false;
+  const f =
+    this.form.value;
 
-      return;
-    }
-    const request = {
-      titulo: f.titulo ?? '',
-      endereco: f.endereco ?? '',
-      observacao: f.observacao ?? '',
+  const quantidadeVinculos = [
+    f.processoId,
+    f.casoId,
+    f.atendimentoId
+  ].filter(Boolean).length;
 
-      dataInicial: f.dataInicial || null,
-      dataFinal: f.dataFinal || null,
+  if (quantidadeVinculos > 1) {
 
-      horaInicial: f.horaInicial || null,
-      horaFinal: f.horaFinal || null,
+    this.mensagemErro = [
+      'O evento não pode possuir mais de um vínculo.'
+    ];
 
-      diaInteiro: f.diaInteiro ?? false,
+    return;
+  }
 
-      statusGeralKanban: f.statusGeralKanban,
-      modalidade: f.modalidade,
+  this.carregando = true;
 
-      intervaloRecorrencia: f.intervaloRecorrencia,
-      tipoRecorrencia: f.tipoRecorrencia,
-      dataFimRecorrencia: f.dataFimRecorrencia || null,
-      quantidadeOcorrencias: f.quantidadeOcorrencias,
+  const request = {
 
-      processoId: f.processoId ?? null,
-      casoId: f.casoId ?? null,
-      atendimentoId: f.atendimentoId ?? null,
-      grupoEventoEtiquetas: this.etiquetasSelecionadas.map(e => ({
-        etiquetaId: e.id!
-      })),
-      grupoEventoResponsavel: this.responsaveisSelecionados
+    titulo:
+      f.titulo ?? '',
+
+    endereco:
+      f.endereco ?? '',
+
+    observacao:
+      f.observacao ?? '',
+
+    dataInicial:
+      f.dataInicial || null,
+
+    dataFinal:
+      f.dataFinal || null,
+
+    horaInicial:
+      f.horaInicial || null,
+
+    horaFinal:
+      f.horaFinal || null,
+
+    diaInteiro:
+      f.diaInteiro ?? false,
+
+    statusGeralKanban:
+      f.statusGeralKanban,
+
+    modalidade:
+      f.modalidade,
+
+    intervaloRecorrencia:
+      f.intervaloRecorrencia,
+
+    tipoRecorrencia:
+      f.tipoRecorrencia,
+
+    dataFimRecorrencia:
+      f.dataFimRecorrencia || null,
+
+    quantidadeOcorrencias:
+      f.quantidadeOcorrencias,
+
+    // =========================
+    // VÍNCULO
+    // =========================
+
+    processoId:
+      f.processoId ?? null,
+
+    casoId:
+      f.casoId ?? null,
+
+    atendimentoId:
+      f.atendimentoId ?? null,
+
+
+    // =========================
+    // ETIQUETAS
+    // =========================
+
+    grupoEventoEtiquetas:
+      this.etiquetasSelecionadas
+        .map(e => ({
+          etiquetaId: e.id!
+        })),
+
+
+    // =========================
+    // RESPONSÁVEIS
+    // =========================
+
+    grupoEventoResponsavel:
+      this.responsaveisSelecionados
         .filter(r => r.id)
         .map(r => ({
           UsuarioId: r.id
         }))
-    };
+  };
 
-    this.eventoService.editarEvento(this.id, request)
-      .pipe(
-        finalize(() => {
-          this.carregando = false;
-          this.cdr.detectChanges();
-        })
-      )
-      .subscribe({
-        next: (res) => {
-          this.carregando = false;
-          this.mensagemSucesso = [res.message];
 
-          setTimeout(() => {
-            this.router.navigate(['/admin/gestao-atividades']);
-          }, 3000);
-        },
-        error: (err: HttpErrorResponse) => this.tratarErro(err)
-      });
+  this.eventoService
+    .editarEvento(
+      this.id,
+      request
+    )
+    .pipe(
+      finalize(() => {
 
-  }
+        this.carregando =
+          false;
+
+        this.cdr.detectChanges();
+
+      })
+    )
+    .subscribe({
+
+      next: (res) => {
+
+        this.mensagemSucesso = [
+          res.message
+        ];
+
+        setTimeout(() => {
+
+          this.router.navigate([
+            '/admin/consultar-evento'
+          ]);
+
+        }, 3000);
+      },
+
+      error: (
+        err: HttpErrorResponse
+      ) => {
+
+        this.tratarErro(err);
+
+      }
+
+    });
+}
 
   private tratarErro(err: HttpErrorResponse) {
     this.mensagemErro = [];
@@ -375,18 +476,20 @@ export class EditarEvento implements OnInit {
     }
 
     this.carregando = false;
-  } private limparVinculos(): void {
+  }private limparVinculos(): void {
 
-    this.form.patchValue({
-      processoId: null,
-      casoId: null,
-      atendimentoId: null
-    });
+  this.form.patchValue({
+    processoId: null,
+    casoId: null,
+    atendimentoId: null
+  });
 
-    this.vinculoSelecionado = null;
+  this.vinculoSelecionado =
+    null;
 
-    this.resultadosVinculo = [];
-  }
+  this.resultadosVinculo =
+    [];
+}
   abrirHistoricoProcesso(processoId: string) {
 
     this.carregandoHistorico = true;

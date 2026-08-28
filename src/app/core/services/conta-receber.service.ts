@@ -1,14 +1,14 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-import { environment } from "../../../environments/environment.development";
+import { environment } from '../../../environments/environment.development';
 
-import { ApiResponse } from "../models/respostas/api-response";
-import { ContaReceberRequest } from "../models/contas/conta-receber-request";
-import { ContaReceberResponse } from "../models/contas/conta-receber.response";
-import { ContaReceberBaixaRequest } from "../models/contas/conta-receber-baixa-request";
-
+import { ApiResponse } from '../models/respostas/api-response';
+import { ContaReceberRequest } from '../models/contas/conta-receber-request';
+import { ContaReceberResponse } from '../models/contas/conta-receber.response';
+import { ContaReceberBaixaRequest } from '../models/contas/conta-receber-baixa-request';
+import { ContaReceberUpdateRequest } from '../models/contas/conta-receber-update-request';
 
 @Injectable({
   providedIn: 'root'
@@ -18,122 +18,170 @@ export class ContaReceberService {
   private url = environment.apiDeslandes;
   private http = inject(HttpClient);
 
+
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CADASTRAR
+  // =====================================================
+
   cadastrarContaReceber(
     request: ContaReceberRequest
   ): Observable<ApiResponse<ContaReceberResponse>> {
-
-    const token = localStorage.getItem('token');
 
     return this.http.post<ApiResponse<ContaReceberResponse>>(
       `${this.url}/api/v1/conta-receber/cadastrar-conta-receber`,
       request,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
-  editarContaReceber(
-    id: string,
-    request: any
-  ): Observable<ApiResponse<ContaReceberResponse>> {
 
-    const token = localStorage.getItem('token');
+  // =====================================================
+  // EDITAR
+  // =====================================================
 
-    return this.http.put<ApiResponse<ContaReceberResponse>>(
-      `${this.url}/api/v1/conta-receber/atualizar-conta-receber/${id}`,
-      request,
-      {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
-      }
-    );
-  }
+editarContaReceber(
+  id: string,
+  request: ContaReceberUpdateRequest
+): Observable<ApiResponse<ContaReceberResponse>> {
+
+  return this.http.put<ApiResponse<ContaReceberResponse>>(
+    `${this.url}/api/v1/conta-receber/atualizar-conta-receber/${id}`,
+    request,
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
+
+  // =====================================================
+  // EXCLUIR
+  // =====================================================
 
   excluirContaReceber(
     id: string
   ): Observable<ApiResponse<ContaReceberResponse>> {
 
-    const token = localStorage.getItem('token');
-
     return this.http.delete<ApiResponse<ContaReceberResponse>>(
       `${this.url}/api/v1/conta-receber/excluir-conta-receber/${id}`,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
+
+  // =====================================================
+  // CONSULTAR TODAS
+  // =====================================================
+
   consultarContasReceber(): Observable<ContaReceberResponse[]> {
 
     return this.http.get<ContaReceberResponse[]>(
-      `${this.url}/api/v1/conta-receber/consultar-contas-receber`
+      `${this.url}/api/v1/conta-receber/consultar-contas-receber`,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
 
-consultarContasReceberPaginado(pageNumber: number, pageSize: number, searchTerm?: string){
- const params: any = { pageNumber: pageNumber.toString(), pageSize: pageSize.toString() };
-  if (searchTerm) params.searchTerm = searchTerm;
 
-  return this.http.get<any>(
-    `${this.url}/api/v1/conta-receber/consultar-conta-receber-paginacao`,
-    { params }
-  );
+  // =====================================================
+  // CONSULTAR PAGINADO
+  // =====================================================
 
+  consultarContasReceberPaginado(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm?: string
+  ): Observable<any> {
+
+    const params: any = {
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString()
+    };
+
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/conta-receber/consultar-conta-receber-paginacao`,
+      {
+        params,
+        headers: this.getHeaders()
+      }
+    );
   }
-  
- baixarContaReceber(
-  id: string,
-  request: ContaReceberBaixaRequest
-): Observable<any> {
-
-  const token = localStorage.getItem('token');
-
-  const url =
-    `${this.url}/api/v1/conta-receber/baixar-conta-receber/${id}`;
-
-  console.log('====================================');
-  console.log('BAIXAR CONTA RECEBER');
-  console.log('ID:', id);
-  console.log('URL:', url);
-  console.log('REQUEST:', request);
-  console.log('====================================');
-
-  return this.http.post(
-    url,
-    request,
-    {
-      headers: token
-        ? { Authorization: `Bearer ${token}` }
-        : {}
-    }
-  );
-}
-  consultarContasReceberAgrupado() {
-  return this.http.get<any[]>(
-    `${this.url}/api/v1/conta-receber/conta-receber-agrupado`
-  );
-}
-obterContaReceberPorId(
-  id: string
-): Observable<ContaReceberResponse> {
-
-  const token = localStorage.getItem('token');
-
-  return this.http.get<ContaReceberResponse>(
-    `${this.url}/api/v1/conta-receber/obter-conta-receber-por-id/${id}`,
-    {
-      headers: token
-        ? { Authorization: `Bearer ${token}` }
-        : {}
-    }
-  );
-}
 
 
+  // =====================================================
+  // BAIXAR CONTA
+  // =====================================================
+
+  baixarContaReceber(
+    id: string,
+    request: ContaReceberBaixaRequest
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.url}/api/v1/conta-receber/baixar-conta-receber/${id}`,
+      request,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR AGRUPADO
+  // =====================================================
+
+  consultarContasReceberAgrupado(): Observable<any[]> {
+
+    return this.http.get<any[]>(
+      `${this.url}/api/v1/conta-receber/conta-receber-agrupado`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // OBTER POR ID
+  // =====================================================
+
+  obterContaReceberPorId(
+    id: string
+  ): Observable<ContaReceberResponse> {
+
+    return this.http.get<ContaReceberResponse>(
+      `${this.url}/api/v1/conta-receber/obter-conta-receber-por-id/${id}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
 }

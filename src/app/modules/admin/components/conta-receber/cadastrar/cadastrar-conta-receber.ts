@@ -66,8 +66,10 @@ FormaRecebimentoEnum = FormaRecebimento;
   clienteSelecionado?: PessoaResumo;
 
   contratos: ContratoResponse[] = [];
+  contratoSelecionado?: ContratoResponse;
   categorias: CategoriaFinanceiraResponse[] = [];
   centrosCusto: CentroCustoResponse[] = [];
+
   tiposConta = [
     {
       value: TipoContaReceber.Mensalidade,
@@ -147,7 +149,14 @@ FormaRecebimentoEnum = FormaRecebimento;
     quantidadeParcelas: this.builder.control<number | null>(null)
 
   });
+selecionarContrato(id: string): void {
 
+  this.contratoSelecionado =
+    this.contratos.find(
+      x => x.id === id
+    );
+
+}
   ngOnInit(): void {
 
     this.carregarContratos();
@@ -213,39 +222,41 @@ FormaRecebimentoEnum = FormaRecebimento;
   // CONTRATOS
   // ===================================
 
-  carregarContratos() {
+carregarContratos(): void {
 
-    this.contratoService
-      .consultarContratos()
-      .pipe(
-        catchError(() => of([]))
-      )
-      .subscribe(res => {
+  this.contratoService
+    .consultarContratosDisponiveisContaReceber()
+    .pipe(
+      catchError(() => of([]))
+    )
+    .subscribe(res => {
 
-        this.contratos = res;
+      this.contratos = res;
 
-      });
-
-  }
-
+      this.cdr.detectChanges();
+    });
+}
   // ===================================
   // CATEGORIAS
   // ===================================
 
-  carregarCategorias() {
+carregarCategorias() {
 
-    this.categoriaFinanceiraService
-      .consultarCategoriaFinanceira()
-      .pipe(
-        catchError(() => of([]))
-      )
-      .subscribe(res => {
+  this.categoriaFinanceiraService
+    .consultarCategoriaFinanceira()
+    .pipe(
+      catchError(() => of([]))
+    )
+    .subscribe(res => {
 
-        this.categorias = res;
+      this.categorias =
+        res.filter(
+          x => x.tipo === 1
+        );
 
-      });
+    });
 
-  }
+}
 
   // ===================================
   // CENTROS DE CUSTO
@@ -320,6 +331,7 @@ FormaRecebimentoEnum = FormaRecebimento;
 
       centroCustoId:
         this.form.value.centroCustoId || undefined,
+
 
       tipoConta:
         Number(this.form.value.tipoConta),
@@ -463,7 +475,7 @@ FormaRecebimentoEnum = FormaRecebimento;
   // ===================================
   // RESET
   // ===================================
-  private resetar() {
+private resetar() {
 
     this.form.reset({
 
@@ -473,17 +485,20 @@ FormaRecebimentoEnum = FormaRecebimento;
 
       quantidadeParcelas: null,
 
-      tipoConta: 1,
+      tipoConta: TipoContaReceber.Mensalidade,
 
-      formaRecebimento: 2
+      formaRecebimento: FormaRecebimento.Pix
 
     });
 
+
     this.clienteSelecionado = undefined;
+
+    this.contratoSelecionado = undefined;
 
     this.clientesFiltrados = [];
 
-  }
+}
   get simulacaoParcelas() {
 
     const valor =

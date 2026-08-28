@@ -13,12 +13,22 @@
         <div class="card-body">
 
             <app-spinner *ngIf="carregando" [show]="true"></app-spinner>
+ <app-alerts
+        *ngIf="!carregando && mensagemSucesso.length"
+        titulo="Sucesso!"
+        [mensagens]="mensagemSucesso"
+        tipo="success"
+        icone="fas fa-check-circle">
+      </app-alerts>
 
-            <app-alerts *ngIf="mensagemSucesso.length" tipo="success" [mensagens]="mensagemSucesso">
-            </app-alerts>
+      <app-alerts
+        *ngIf="!carregando && mensagemErro.length"
+        titulo="Erro!"
+        [mensagens]="mensagemErro"
+        tipo="danger"
+        icone="fas fa-times-circle">
+      </app-alerts>
 
-            <app-alerts *ngIf="mensagemErro.length" tipo="danger" [mensagens]="mensagemErro">
-            </app-alerts>
 
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="d-flex justify-content-end mb-3">
@@ -107,43 +117,58 @@
                 <div class="row mb-3">
 
              <div class="col-md-4">
-  <label class="form-label">Tipo de Vínculo</label>
 
-  <select class="form-control"
-          formControlName="tipoVinculo">
+  <label class="form-label">
+    Tipo de Vínculo
+  </label>
 
-    <option [ngValue]="null">Selecione</option>
-    <option [ngValue]="tipoVinculoEnum.Processo">Processo</option>
-    <option [ngValue]="tipoVinculoEnum.Caso">Caso</option>
-    <option [ngValue]="tipoVinculoEnum.Atendimento">Atendimento</option>
+  <select
+    class="form-control"
+    formControlName="tipoVinculo">
+
+    <option [ngValue]="null">
+      Selecione
+    </option>
+
+    <option value="processo">
+      Processo
+    </option>
+
+    <option value="caso">
+      Caso
+    </option>
+
+    <option value="atendimento">
+      Atendimento
+    </option>
 
   </select>
 
-  <!-- 👇 AQUI -->
-  <div *ngIf="form.value.tipoVinculo" class="mt-1 text-muted small">
-    Tipo selecionado:
-    <strong>{{ tipoVinculoEnum[form.value.tipoVinculo] }}</strong>
-  </div>
+</div>
+
+
+<div class="col-md-8">
+
+  <label class="form-label">
+    Buscar vínculo
+  </label>
+
+  <app-vinculo
+    [resultados]="resultadosVinculo"
+    [vinculoSelecionado]="vinculoSelecionado"
+    [tipoVinculo]="form.get('tipoVinculo')?.value ?? null"
+    (buscar)="buscarVinculo($event)"
+    (selecionado)="selecionarVinculo($event)">
+  </app-vinculo>
 
 </div>
 
-                    <div class="col-md-8">
-                        <label class="form-label">Buscar vínculo</label>
-
-                      <app-vinculo
-  [resultados]="resultadosVinculo"
-  [vinculoSelecionado]="vinculoSelecionado"
-  [tipoVinculo]="form.get('tipoVinculo')?.value"
-  (buscar)="buscarVinculo($event)"
-  (selecionado)="selecionarVinculo($event)">
-</app-vinculo>
-
-                    </div>
+   
 
                 </div>
 
                 <!-- LISTA DE TAREFAS -->
-                <div class="row mb-3">
+                <!--<div class="row mb-3">
 
                     <div class="col-12 mb-2">
 
@@ -185,7 +210,7 @@
                 </div>
                      <button type="button" class="btn btn-secondary mt-3 me-2" (click)="irParaLista()">
           <i class="fas fa-arrow-left"></i> Voltar
-        </button>
+        </button>-->
                 <!-- BOTÃO -->
                 <button type="submit" class="btn btn-primary" [disabled]="carregando">
 

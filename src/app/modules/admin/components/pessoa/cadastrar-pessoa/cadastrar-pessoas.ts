@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -17,6 +17,10 @@ import { limparNull } from '../../../../../core/utils/limpar-null';
 import { AutenticarUsuarioResponse } from '../../../../../core/models/usuario/autenticar-usuario.response';
 import { ContaBancariaRequest } from '../../../../../core/models/conta-bancaria/conta-bancaria-request';
 import { TratamentoEnum } from '../../../../../core/models/enums/tratamento/tratamentoEnum';
+import { finalize } from 'rxjs';
+import { EstadoCivilEnum } from '../../../../../core/models/enums/estado-civil/EstadoCivilEnum';
+import { ESTADOS_BRASIL } from '../../../../../core/models/estados/estados-brasil';
+import { MunicipioService } from '../../../../../core/services/municipio.service';
 
 @Component({
   selector: 'app-cadastrar-pessoa',
@@ -34,6 +38,8 @@ export class CadastrarPessoas implements OnInit {
   private etiquetaService = inject(EtiquetaService);
   private cepService = inject(CepService);
 
+private cdr = inject(ChangeDetectorRef);
+private zone = inject(NgZone);
   // ================== Variáveis de Estado ==================
 
   mensagemErro: string[] = [];
@@ -46,9 +52,23 @@ export class CadastrarPessoas implements OnInit {
   tiposetiquetas: ConsultarEtiquetaResponse[] = [];
   etiquetasSelecionadas: ConsultarEtiquetaResponse[] = [];
   usuarioLogado?: AutenticarUsuarioResponse | null;
+  estadoCivilEnum = EstadoCivilEnum;
+  estadosBrasil = ESTADOS_BRASIL;
+  private municipioService =
+  inject(MunicipioService);
+
+municipios: any[] = [];
+
+
   // ================== Formulário ==================
   form = this.builder.group({
-    nome: ['', Validators.required],
+   nome: [
+  '',
+  [
+    Validators.required,
+    Validators.minLength(6)
+  ]
+],
     apelido: [''],
     telefone: [''],
     site: [''],
@@ -70,8 +90,9 @@ export class CadastrarPessoas implements OnInit {
     cnpj: [''],
     inscricaoEstadual: [''],
     inscricaoMunicipal: [''],
-    simplesNacional: [''],
-    atividadeEconomica: [''],
+simplesNacional: [
+  null as number | null
+],
     //  Conta Bancária (APENAS UMA VEZ)
     contaBancaria: this.builder.group({
       nomeBanco: [''],
@@ -91,24 +112,56 @@ export class CadastrarPessoas implements OnInit {
       cep: ['']
     }),
 
-    informacoesComplementares: this.builder.group({
-      dataNascimento: [''],
-      nomeEmpresa: [''],
-      profissao: [''],
-      atividadeEconomica: [''],
-      estadoCivil: [''],
-      tratamento: [null],
-      codigo: [''],
-      empresa: [''],
-      contato: [''],
-      cargo: [''],
+informacoesComplementares:
+  this.builder.group({
 
-      nomePai: [''],
-      nomeMae: [''],
-      naturalidade: [''],
-      nacionalidade: [''],
-      comentario: ['']
-    }),
+    dataNascimento: [''],
+
+    profissao: [''],
+
+    atividadeEconomica: [''],
+
+    estadoCivil: [
+      null as number | null
+    ],
+
+    tratamento: [null],
+
+    // =========================
+    // PESSOA JURÍDICA
+    // =========================
+
+    codigo: [''],
+
+    contato: [''],
+
+    cargo: [''],
+
+    empresa: [''],
+
+    // =========================
+    // PESSOA FÍSICA
+    // =========================
+
+    nomePai: [''],
+
+    nomeMae: [''],
+
+    naturalidade: [''],
+
+    ufNaturalidade: [''],
+
+    paisNaturalidade: ['Brasil'],
+
+    nacionalidade: ['Brasileira'],
+
+    // =========================
+    // COMUM
+    // =========================
+
+    comentario: ['']
+
+  }),
 
   })
   private obterContaBancaria(formValue: any): ContaBancariaRequest | undefined {
@@ -191,6 +244,16 @@ export class CadastrarPessoas implements OnInit {
 
       // estado inicial do tipo pessoa
       this.onTipoPessoaChange(this.tipoPessoaSelecionado);
+         // =========================
+    // VALORES PADRÃO PF
+    // =========================
+
+    this.form.patchValue({
+      informacoesComplementares: {
+        paisNaturalidade: 'Brasil',
+        nacionalidade: 'Brasileira'
+      }
+    });
 
       // se existir esse controle, evita erro silencioso
       const tipoCtrl = this.form.get('tipoPessoa');
@@ -501,14 +564,15 @@ export class CadastrarPessoas implements OnInit {
 
     this.carregando = true;
 
-    const formValue = this.form.value;
+const formValue =
+  this.form.getRawValue();
 
     //const preencherNadaConsta = (campo: any) =>
     //  campo ? campo : 'NADA CONSTA';
 
-    const informacoes = limparNull(
-      formValue.informacoesComplementares
-    ) as InformacoesComplementaresRequest;
+const informacoes = limparNull(
+  formValue.informacoesComplementares
+) as InformacoesComplementaresRequest;
 
     const endereco = limparNull<EnderecoRequest>(
       formValue.endereco ?? {}
@@ -553,58 +617,143 @@ export class CadastrarPessoas implements OnInit {
       };
       console.log("REQUEST:", request);
 
-      this.pessoaService.cadastrarPessoaFisica(request).subscribe({
-        next: (response) => {
-          this.mensagemSucesso = [response?.message];
-          this.carregando = false;
-          this.form.reset();
-          setTimeout(() => {
-            this.router.navigate(['/admin/cadastrar-pessoas']);
-          }, 2000);
-        },
-        error: (err: HttpErrorResponse) => this.tratarErro(err)
-      });
+this.pessoaService
+
+  .cadastrarPessoaFisica(request)
+  .subscribe({
+
+    next: (response) => {
+
+      this.mensagemErro = [];
+
+      this.mensagemSucesso = [
+        response?.message
+      ];
+
+      this.carregando = false;
+
+      this.form.reset();
+
+      this.cdr.detectChanges();
+
+      setTimeout(() => {
+
+        this.router.navigate([
+          '/admin/cadastrar-pessoas'
+        ]);
+
+      }, 2000);
+    },
+
+    error: (err: HttpErrorResponse) => {
+
+      this.tratarErro(err);
+
+      this.cdr.detectChanges();
+    }
+
+  });
     }
 
     // ================== PESSOA JURÍDICA ==================
     else {
       const info = formValue.informacoesComplementares;
 
-      const request: PessoaJuridicaRequest = {
+     const request: PessoaJuridicaRequest = {
 
-        idUsuario: this.usuarioLogado?.idUsuario ?? undefined,
-        nome: formValue.nome!,
-        apelido: formValue.apelido || undefined,
-        site: formValue.site || undefined,
-        telefone: formValue.telefone || undefined,
-        email: formValue.email || undefined,
-        cnpj: formValue.cnpj!,
+  idUsuario:
+    this.usuarioLogado?.idUsuario ??
+    undefined,
 
-        inscricaoEstadual: formValue.inscricaoEstadual || undefined,
-        inscricaoMunicipal: formValue.inscricaoMunicipal || undefined,
+  nome:
+    formValue.nome!,
 
-        atividadeEconomica: info?.atividadeEconomica || undefined,
+  apelido:
+    formValue.apelido ||
+    undefined,
 
-        endereco: endereco,
-        informacoesComplementares: informacoes,
-        grupoPessoasEtiquetas: this.etiquetasSelecionadas
-          .filter(e => e.id)
-          .map(e => ({ idEtiqueta: e.id! })),
-        contaBancaria: contaBancaria as ContaBancariaRequest | undefined
-      };
+  site:
+    formValue.site ||
+    undefined,
 
-      this.pessoaService.cadastrarPessoaJuridica(request).subscribe({
-        next: (response) => {
-         this.mensagemSucesso = [response?.message];
-this.carregando = false;
-this.form.reset();
+  telefone:
+    formValue.telefone ||
+    undefined,
 
-setTimeout(() => {
-  this.router.navigate(['/admin/cadastrar-pessoas']);
-}, 2000);
-        },
-        error: (err: HttpErrorResponse) => this.tratarErro(err)
-      });
+  email:
+    formValue.email ||
+    undefined,
+
+  cnpj:
+    formValue.cnpj!,
+
+  inscricaoEstadual:
+    formValue.inscricaoEstadual ||
+    undefined,
+
+  inscricaoMunicipal:
+    formValue.inscricaoMunicipal ||
+    undefined,
+
+  simplesNacional:
+    formValue.simplesNacional ??
+    undefined,
+
+  atividadeEconomica:
+    info?.atividadeEconomica ||
+    undefined,
+
+  endereco,
+
+  informacoesComplementares:
+    informacoes,
+
+  grupoPessoasEtiquetas:
+    this.etiquetasSelecionadas
+      .filter(e => e.id)
+      .map(e => ({
+        idEtiqueta: e.id!
+      })),
+
+  contaBancaria:
+    contaBancaria
+};
+
+ this.pessoaService
+  .cadastrarPessoaJuridica(request)
+  .subscribe({
+
+    next: (response) => {
+
+      this.mensagemErro = [];
+
+      this.mensagemSucesso = [
+        response?.message
+      ];
+
+      this.carregando = false;
+
+      this.form.reset();
+
+      this.cdr.detectChanges();
+
+      setTimeout(() => {
+
+        this.router.navigate([
+          '/admin/cadastrar-pessoas'
+        ]);
+
+      }, 2000);
+    },
+
+    error: (err: HttpErrorResponse) => {
+
+      this.tratarErro(err);
+
+      this.cdr.detectChanges();
+    }
+
+  });
     }
   }
   // validação para habilitar submit — exige PF e PJ pelo seu requisito original
@@ -612,22 +761,254 @@ get podeEnviar(): boolean {
   return this.form.valid && !this.carregando;
 }
 
+private tratarErro(
+  err: HttpErrorResponse
+): void {
 
-  // ================== Tratar Erros ==================
-  private tratarErro(err: HttpErrorResponse): void {
+  this.zone.run(() => {
+
     this.mensagemErro = [];
-    const errorResponse = err.error;
+    this.mensagemSucesso = [];
 
-    if (errorResponse?.errors) {
-      for (const key in errorResponse.errors) {
-        this.mensagemErro.push(...errorResponse.errors[key]);
+    const e = err?.error;
+
+    // =========================
+    // ERRORS
+    // =========================
+
+    if (e?.errors) {
+
+      for (const key in e.errors) {
+
+        const valor =
+          e.errors[key];
+
+        // array de mensagens
+        if (Array.isArray(valor)) {
+
+          valor.forEach(item => {
+
+            if (typeof item === 'string') {
+
+              this.mensagemErro.push(
+                item
+              );
+
+            } else if (
+              item?.errorMessage
+            ) {
+
+              this.mensagemErro.push(
+                item.errorMessage
+              );
+
+            } else if (
+              item?.message
+            ) {
+
+              this.mensagemErro.push(
+                item.message
+              );
+
+            } else {
+
+              this.mensagemErro.push(
+                JSON.stringify(item)
+              );
+            }
+
+          });
+
+        }
+
+        // mensagem simples
+        else if (
+          typeof valor === 'string'
+        ) {
+
+          this.mensagemErro.push(
+            valor
+          );
+
+        }
+
+        // objeto FluentValidation
+        else if (
+          valor?.errorMessage
+        ) {
+
+          this.mensagemErro.push(
+            valor.errorMessage
+          );
+
+        }
+
+        else if (
+          valor?.message
+        ) {
+
+          this.mensagemErro.push(
+            valor.message
+          );
+
+        }
+
       }
-    } else if (errorResponse?.mensagem) {
-      this.mensagemErro.push(errorResponse.mensagem);
-    } else {
-      this.mensagemErro.push('Erro inesperado.');
+
     }
 
+    // =========================
+    // MENSAGEM
+    // =========================
+
+    else if (e?.mensagem) {
+
+      this.mensagemErro.push(
+        e.mensagem
+      );
+
+    }
+
+    // =========================
+    // MESSAGE
+    // =========================
+
+    else if (e?.message) {
+
+      this.mensagemErro.push(
+        e.message
+      );
+
+    }
+
+    // =========================
+    // ERRO COMO STRING
+    // =========================
+
+    else if (
+      typeof e === 'string'
+    ) {
+
+      this.mensagemErro.push(
+        e
+      );
+
+    }
+
+    // =========================
+    // FALLBACK
+    // =========================
+
+    else {
+
+      this.mensagemErro.push(
+        'Erro inesperado.'
+      );
+
+    }
+
+    // =========================
+    // FINALIZA CARREGAMENTO
+    // =========================
+
     this.carregando = false;
+
+    console.log(
+      'ERRO COMPLETO:',
+      err
+    );
+
+    console.log(
+      'ERRO BACKEND:',
+      e
+    );
+
+    // =========================
+    // FORÇA ATUALIZAÇÃO DA TELA
+    // =========================
+
+    this.cdr.detectChanges();
+
+  });
+
+}
+estadosCivis = Object.keys(EstadoCivilEnum)
+  .filter(key => isNaN(Number(key)))
+  .map(key => ({
+    id: EstadoCivilEnum[
+      key as keyof typeof EstadoCivilEnum
+    ],
+    nome: this.formatarEstadoCivil(key)
+  }));
+private formatarEstadoCivil(
+  valor: string
+): string {
+  switch (valor) {
+    case 'Solteiro':
+      return 'Solteiro(a)';
+
+    case 'Casado':
+      return 'Casado(a)';
+
+    case 'Divorciado':
+      return 'Divorciado(a)';
+
+    case 'Viuvo':
+      return 'Viúvo(a)';
+
+    case 'Separado':
+      return 'Separado(a)';
+
+    case 'UniaoEstavel':
+      return 'União Estável';
+
+    default:
+      return valor;
   }
+}
+onUfNaturalidadeChange(): void {
+
+  const uf =
+    this.form.get(
+      'informacoesComplementares.ufNaturalidade'
+    )?.value;
+
+  this.form.get(
+    'informacoesComplementares.naturalidade'
+  )?.setValue('');
+
+  this.municipios = [];
+
+  if (!uf) {
+    return;
+  }
+
+  this.municipioService
+    .buscarPorUf(uf)
+    .subscribe({
+
+      next: municipios => {
+
+        this.municipios =
+          municipios.sort(
+            (a, b) =>
+              a.nome.localeCompare(b.nome)
+          );
+      },
+
+      error: () => {
+
+        this.mensagemErro = [
+          'Não foi possível carregar os municípios.'
+        ];
+      }
+
+    });
+}get naturalidadeBrasileira(): boolean {
+  return (
+    this.form
+      .get('informacoesComplementares.nacionalidade')
+      ?.value === 'Brasileira'
+  );
+}
 }

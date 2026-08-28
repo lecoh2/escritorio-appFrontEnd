@@ -12,6 +12,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { PainelPrincipal } from "./components/painel-principal/painel-principal";
 import { AdminLayout } from "./layouts/layouts/admin-layout/admin-layout";
 import { CadastrarPessoas } from "./components/pessoa/cadastrar-pessoa/cadastrar-pessoas";
+import { EditarPessoaFisica } from "./components/pessoa/editar-pessoa-fisica/editar-pessoa-fisica";
+
 import { CadastrarEtiquetas } from "./components/etiquetas/cadastrar-etiquetas/cadastrar-etiquetas";
 import { ConsultarPessoas } from "./components/pessoa/consultar-pessoas/consultar-pessoas";
 import { CadastrarProcesso } from "./components/processo/cadastrar-processo/cadastrar-processo";
@@ -62,12 +64,16 @@ import { ConfiguracaoFinanceira } from "./components/configuracao-financeira/con
 import { DetalhePublicacao } from "./components/webjur/detalhes/detalhe-publicacao";
 import { DetalheProcesso } from "./components/processo/detalhes/detalhe-processo";
 import { ConsultarWebjur } from "./components/webjur/consulta/consultar-webjur";
-
-
-
-
-
-
+import { EditarPessoaJuridica } from "./components/pessoa/editar-pessoa-juridica/editar-pessoa-juridica";
+import { CadastrarLicenca } from "./components/licenca/cadastrar-licenca/cadastrar-licenca";
+import { EditarLicenca } from "./components/licenca/editar-licenca/editar-licenca";
+import { ConsultarLicencas } from "./components/licenca/consultar-licencas/consultar-licencas";
+import { CadastrarEscritorio } from "./components/escritorio/cadastrar-escritorio/cadastrar-escritorio";
+import { ConsultarEscritorios } from "./components/escritorio/consultar-escritorio/consultar-escritorios";
+import { EditarEscritorio } from "./components/escritorio/editar-escritorio/editar-escritorio";
+import { CadastrarCategoriaFinanceira } from "./components/categoria-financeira/cadastrar/cadastrar-categoria-financeira";
+import { ConsultarCategoriaFinanceira } from "./components/categoria-financeira/consultar/consultar-categoria-financeira";
+import { EditarCategoriaFinanceira } from "./components/categoria-financeira/editar/editar-categoria-financeira";
 
 @NgModule({
     declarations: [//componente do módulo
@@ -77,6 +83,8 @@ import { ConsultarWebjur } from "./components/webjur/consulta/consultar-webjur";
         AdminLayout,
         PainelPrincipal,
         CadastrarPessoas,
+        EditarPessoaFisica,
+        EditarPessoaJuridica,
         CadastrarEtiquetas,
         ConsultarPessoas,
         CadastrarProcesso,
@@ -117,7 +125,15 @@ import { ConsultarWebjur } from "./components/webjur/consulta/consultar-webjur";
         ConfiguracaoFinanceira,
         ConsultarWebjur,
         DetalhePublicacao,
-      
+        CadastrarLicenca,
+        EditarLicenca,
+        ConsultarLicencas,
+        CadastrarEscritorio,
+        ConsultarEscritorios,
+        EditarEscritorio,
+      CadastrarCategoriaFinanceira,
+      ConsultarCategoriaFinanceira,
+      EditarCategoriaFinanceira,
 
 
         //autocomplete

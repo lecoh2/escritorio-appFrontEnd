@@ -1,109 +1,210 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams
+} from '@angular/common/http';
 
-import { environment } from "../../../environments/environment.development";
+import {
+  inject,
+  Injectable
+} from '@angular/core';
 
-import { ApiResponse } from "../models/respostas/api-response";
+import {
+  Observable
+} from 'rxjs';
 
+import {
+  environment
+} from '../../../environments/environment.development';
 
-import { CategoriaFinanceiraResponse } from "../models/categoria-financeira/categoria-financeira-response";
-import { CategoriaFinanceiraRequest } from "../models/categoria-financeira/categoria-financeira-request";
-import { ObterCategoriaFinanceiraResponse } from "../models/categoria-financeira/obter-categoria-financeira-response";
+import {
+  ApiResponse
+} from '../models/respostas/api-response';
+
+import {
+  CategoriaFinanceiraRequest
+} from '../models/categoria-financeira/categoria-financeira-request';
+
+import {
+  CategoriaFinanceiraUpdateRequest
+} from '../models/categoria-financeira/categoria-financeira-update-request';
+
+import {
+  CategoriaFinanceiraResponse
+} from '../models/categoria-financeira/categoria-financeira-response';
+
+import {
+  ObterCategoriaFinanceiraResponse
+} from '../models/categoria-financeira/obter-categoria-financeira-response';
+import { CategoriaFinanceiraPaginacaoResponse } from '../models/categoria-financeira/categoria-financeira-paginacao-response';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoriaFinanceiraService {
 
-  private url = environment.apiDeslandes;
-  private http = inject(HttpClient);
+  private readonly url =
+    environment.apiDeslandes;
+
+  private readonly http =
+    inject(HttpClient);
+
+
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CADASTRAR
+  // =====================================================
 
   cadastrarCategoriaFinanceira(
     request: CategoriaFinanceiraRequest
   ): Observable<ApiResponse<CategoriaFinanceiraResponse>> {
 
-    const token = localStorage.getItem('token');
-
-    return this.http.post<ApiResponse<CategoriaFinanceiraResponse>>(
+    return this.http.post<
+      ApiResponse<CategoriaFinanceiraResponse>
+    >(
       `${this.url}/api/v1/categoria-financeira/cadastrar-categoria-financeira`,
       request,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
-
   }
+
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
 
   editarCategoriaFinanceira(
     id: string,
-    request: any
-  ): Observable<any> {
+    request: CategoriaFinanceiraUpdateRequest
+  ): Observable<ApiResponse<CategoriaFinanceiraResponse>> {
 
-    const token = localStorage.getItem('token');
-
-    return this.http.put<any>(
+    return this.http.put<
+      ApiResponse<CategoriaFinanceiraResponse>
+    >(
       `${this.url}/api/v1/categoria-financeira/atualizar-categoria-financeira/${id}`,
       request,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
-
   }
+
+
+  // =====================================================
+  // EXCLUIR
+  // =====================================================
 
   excluirCategoriaFinanceira(
     id: string
-  ): Observable<any> {
+  ): Observable<ApiResponse<CategoriaFinanceiraResponse>> {
 
-    const token = localStorage.getItem('token');
-
-    return this.http.delete<any>(
+    return this.http.delete<
+      ApiResponse<CategoriaFinanceiraResponse>
+    >(
       `${this.url}/api/v1/categoria-financeira/remover-categoria-financeira/${id}`,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
-
   }
 
-  consultarCategoriaFinanceiraPaginado(
-    pageNumber: number,
-    pageSize: number
-  ) {
 
-    const params: any = {
-      pageNumber: pageNumber.toString(),
-      pageSize: pageSize.toString()
-    };
+  // =====================================================
+  // CONSULTAR PAGINADO
+  // =====================================================
 
-    return this.http.get<any>(
-      `${this.url}/api/v1/categoria-financeira/consultar-categoria-financeira-paginacao`,
-      { params }
-    );
+consultarCategoriaFinanceiraPaginado(
+  pageNumber: number,
+  pageSize: number,
+  searchTerm?: string
+): Observable<any> {
 
+  const params: any = {
+    pageNumber: pageNumber.toString(),
+    pageSize: pageSize.toString()
+  };
+
+  if (searchTerm) {
+    params.searchTerm = searchTerm;
   }
+
+  const endpoint =
+    `${this.url}/api/v1/categoria-financeira/consultar-categoria-financeira-paginacao`;
+
+  console.log(
+    'CHAMANDO ENDPOINT:',
+    endpoint
+  );
+
+  console.log(
+    'PARAMETROS:',
+    params
+  );
+
+  return this.http.get<any>(
+    endpoint,
+    {
+      params,
+      headers: this.getHeaders()
+    }
+  );
+}
+
+
+  // =====================================================
+  // OBTER POR ID
+  // =====================================================
 
   obterCategoriaFinanceiraPorId(
     id: string
   ): Observable<ObterCategoriaFinanceiraResponse> {
 
-    return this.http.get<ObterCategoriaFinanceiraResponse>(
-      `${this.url}/api/v1/categoria-financeira/obter-categoria-financeira-por-id/${id}`
+    return this.http.get<
+      ObterCategoriaFinanceiraResponse
+    >(
+      `${this.url}/api/v1/categoria-financeira/obter-categoria-financeira-por-id/${id}`,
+      {
+        headers: this.getHeaders()
+      }
     );
-
   }
-consultarCategoriaFinanceira(): Observable<CategoriaFinanceiraResponse[]> {
 
-  return this.http.get<CategoriaFinanceiraResponse[]>(
-    `${this.url}/api/v1/categoria-financeira/consultar-categoria-financeira`
-  );
 
-}
+  // =====================================================
+  // CONSULTAR TODOS
+  // =====================================================
+
+  consultarCategoriaFinanceira():
+    Observable<CategoriaFinanceiraResponse[]> {
+
+    return this.http.get<
+      CategoriaFinanceiraResponse[]
+    >(
+      `${this.url}/api/v1/categoria-financeira/consultar-categoria-financeira`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
 }

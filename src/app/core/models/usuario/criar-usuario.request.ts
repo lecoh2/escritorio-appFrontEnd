@@ -1,4 +1,3 @@
-
 import { GrupoNiveisRequest } from "../grupo-niveis/grupo-niveis-request";
 import { GrupoSetoresRequest } from "../grupo-setores/grupo-setores-request";
 
@@ -7,8 +6,12 @@ export interface CriarUsuarioRequest {
     login?: string;
     email?: string;
     senha?: string;
-    idPessoa?:string;
+
+    idPessoa?: string;
+    escritorioId?: string;
+
     grupoSetor?: GrupoSetoresRequest[];
     grupoNivel?: GrupoNiveisRequest[];
-    //pessoa?: ConsultarPessoaRequest[];
+
+    // pessoa?: ConsultarPessoaRequest[];
 }

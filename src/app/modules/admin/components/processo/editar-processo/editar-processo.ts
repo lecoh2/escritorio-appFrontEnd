@@ -90,21 +90,22 @@ export class EditarProcesso implements OnInit {
   instanciaEnum = InstanciaEnum;
   acessoEnum = AcessoEnum;
 
-
+  tentouEnviar = false;
   form = this.builder.group({
     acaoId: [null],
     foroId: [null],
     varaId: [null, Validators.required],
     usuarioResponsavelId: [null],
     juizo: [''],
-    pasta: [''],
-    titulo: [''],
-    numeroProcesso: [''],
+    pasta: ['', Validators.required],
+    titulo: ['', Validators.required],
+    numeroProcesso: ['', Validators.required],
     linkTribunal: [''],
     objeto: [''],
-    valorCausa: [null],
+    valorCausa: this.builder.control<number | null>(null),
+    valorCondenacao: this.builder.control<number | null>(null),
     distribuido: [null],
-    valorCondenacao: [null],
+
     observacao: [''],
     instancia: [null],
     acesso: [null],
@@ -204,134 +205,414 @@ export class EditarProcesso implements OnInit {
     return `${vara.nomeVara} - ${vara.nomeForo}`;
   }
   // ================= CARREGAR PROCESSO =================
-  private carregarProcesso() {
+  private carregarProcesso(): void {
+
     this.carregando = true;
 
-    this.processoService.ObterProcessoPorId(this.id).subscribe({
-      next: (res: any) => {
-        console.log('🔥 PROCESSO BACKEND:', res); // 👈 AQUI
+    this.processoService
+      .ObterProcessoPorId(this.id)
+      .subscribe({
 
-        // FORM
-        this.form.patchValue({
-          acaoId: res.acaoId,
-          varaId: res.varaId,
-          foroId: res.foroId,
-          usuarioResponsavelId: res.usuarioResponsavelId,
-          juizo: res.juizo,
-          pasta: res.pasta,
-          titulo: res.titulo,
-          numeroProcesso: res.numeroProcesso,
-          linkTribunal: res.linkTribunal,
-          objeto: res.objeto,
-          valorCausa: res.valorCausa,
-          distribuido: res.distribuido,
-          valorCondenacao: res.valorCondenacao,
-          observacao: res.observacao,
-          instancia: res.instancia,
-          acesso: res.acesso
-        }, { emitEvent: false });
+        next: (res: any) => {
 
-        // CLIENTES
-        this.pessoasSelecionadas = (res.grupoClienteProcesso ?? []).map((c: any) => ({
-          id: c.idPessoa,
-          nome: c.nome,
-          idQualificacao: c.qualificacaoId
-        }));
+          console.log(
+            '🔥 PROCESSO BACKEND:',
+            res
+          );
 
-        // ENVOLVIDOS
-        this.envolvidosSelecionados = (res.grupoEnvolvidosProcesso ?? []).map((e: any) => ({
-          id: e.idPessoa,
-          nome: e.nome,
-          idQualificacao: e.qualificacaoId
-        }));
+          // =========================
+          // FORM
+          // =========================
 
-        // ETIQUETAS
-        this.etiquetasSelecionadas = (res.grupoEtiquetasProcesso ?? []).map((e: any) => ({
-          id: e.idEtiqueta,
-          nome: e.nome,
-          cor: e.cor
-        }));
+          this.form.patchValue({
 
-        this.carregando = false;
-      },
-      error: () => {
-        this.mensagemErro = ['Erro ao carregar processo'];
-        this.carregando = false;
-      }
-    });
+            acaoId:
+              res.acaoId,
+
+            varaId:
+              res.varaId,
+
+            foroId:
+              res.foroId,
+
+            usuarioResponsavelId:
+              res.usuarioResponsavelId,
+
+            juizo:
+              res.juizo,
+
+            pasta:
+              res.pasta,
+
+            titulo:
+              res.titulo,
+
+            numeroProcesso:
+              res.numeroProcesso,
+
+            linkTribunal:
+              res.linkTribunal,
+
+            objeto:
+              res.objeto,
+
+            valorCausa:
+              res.valorCausa,
+
+            distribuido:
+              res.distribuido,
+
+            valorCondenacao:
+              res.valorCondenacao,
+
+            observacao:
+              res.observacao,
+
+            instancia:
+              res.instancia,
+
+            acesso:
+              res.acesso
+
+          }, {
+            emitEvent: false
+          });
+
+          // =========================
+          // FORMATAR VALORES NA TELA
+          // =========================
+
+          setTimeout(() => {
+
+            const valorCausaInput =
+              document.querySelector(
+                '[formControlName="valorCausa"]'
+              ) as HTMLInputElement | null;
+
+            const valorCondenacaoInput =
+              document.querySelector(
+                '[formControlName="valorCondenacao"]'
+              ) as HTMLInputElement | null;
+
+            if (valorCausaInput) {
+
+              valorCausaInput.value =
+                this.formatarMoedaInput(
+                  res.valorCausa
+                );
+
+            }
+
+            if (valorCondenacaoInput) {
+
+              valorCondenacaoInput.value =
+                this.formatarMoedaInput(
+                  res.valorCondenacao
+                );
+
+            }
+
+          });
+
+          // =========================
+          // CLIENTES
+          // =========================
+
+          this.pessoasSelecionadas =
+            (
+              res.grupoClienteProcesso ??
+              []
+            )
+              .map((c: any) => ({
+
+                id:
+                  c.idPessoa,
+
+                nome:
+                  c.nome,
+
+                idQualificacao:
+                  c.qualificacaoId
+
+              }));
+
+          // =========================
+          // ENVOLVIDOS
+          // =========================
+
+          this.envolvidosSelecionados =
+            (
+              res.grupoEnvolvidosProcesso ??
+              []
+            )
+              .map((e: any) => ({
+
+                id:
+                  e.idPessoa,
+
+                nome:
+                  e.nome,
+
+                idQualificacao:
+                  e.qualificacaoId
+
+              }));
+
+          // =========================
+          // ETIQUETAS
+          // =========================
+
+          this.etiquetasSelecionadas =
+            (
+              res.grupoEtiquetasProcesso ??
+              []
+            )
+              .map((e: any) => ({
+
+                id:
+                  e.idEtiqueta,
+
+                nome:
+                  e.nome,
+
+                cor:
+                  e.cor
+
+              }));
+
+          // =========================
+          // FINALIZA
+          // =========================
+
+          this.carregando = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: () => {
+
+          this.mensagemErro = [
+            'Erro ao carregar processo'
+          ];
+
+          this.carregando = false;
+
+          this.cdr.detectChanges();
+        }
+
+      });
   }
   onSubmit(): void {
+
     this.mensagemErro = [];
     this.mensagemSucesso = [];
+
+    this.tentouEnviar = true;
+
+    // =========================
+    // VALIDAR FORMULÁRIO
+    // =========================
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    if (this.pessoasSelecionadas.some(p => !p.idQualificacao)) {
-      this.mensagemErro = ['Selecione a qualificação para todos os clientes.'];
+    // =========================
+    // VALIDAR CLIENTE
+    // =========================
+
+    if (
+      !this.pessoasSelecionadas ||
+      this.pessoasSelecionadas.length === 0
+    ) {
+      this.mensagemErro = [
+        'É obrigatório selecionar pelo menos um cliente.'
+      ];
+
       return;
     }
 
-    if (this.envolvidosSelecionados.some(e => !e.idQualificacao)) {
-      this.mensagemErro = ['Selecione a qualificação para todos os envolvidos.'];
+    // =========================
+    // QUALIFICAÇÃO DOS CLIENTES
+    // =========================
+
+    if (
+      this.pessoasSelecionadas.some(
+        p => !p.idQualificacao
+      )
+    ) {
+      this.mensagemErro = [
+        'Selecione a qualificação para todos os clientes.'
+      ];
+
       return;
     }
+
+    // =========================
+    // QUALIFICAÇÃO DOS ENVOLVIDOS
+    // =========================
+
+    if (
+      this.envolvidosSelecionados.some(
+        e => !e.idQualificacao
+      )
+    ) {
+      this.mensagemErro = [
+        'Selecione a qualificação para todos os envolvidos.'
+      ];
+
+      return;
+    }
+
+    // =========================
+    // CARREGAMENTO
+    // =========================
 
     this.carregando = true;
 
-    const f = this.form.value;
-    const limpar = (v: any) => v ?? undefined;
+    // =========================
+    // DADOS DO FORM
+    // =========================
+
+    const f =
+      this.form.getRawValue();
+
+    const limpar =
+      (v: any) =>
+        v ?? undefined;
+
+    // =========================
+    // REQUEST
+    // =========================
 
     const request = {
-      acaoId: limpar(f.acaoId),
-      varaId: f.varaId!,
-      usuarioResponsavelId: limpar(f.usuarioResponsavelId),
-      juizo: limpar(f.juizo),
-      pasta: limpar(f.pasta),
-      titulo: limpar(f.titulo),
-      numeroProcesso: limpar(f.numeroProcesso),
-      linkTribunal: limpar(f.linkTribunal),
-      objeto: limpar(f.objeto),
-      valorCausa: limpar(f.valorCausa),
-      distribuido: limpar(f.distribuido),
-      valorCondenacao: limpar(f.valorCondenacao),
-      observacao: limpar(f.observacao),
-      instancia: limpar(f.instancia),
-      acesso: limpar(f.acesso),
 
-      grupoClienteProcesso: this.pessoasSelecionadas.map(p => ({
-        idPessoa: p.id,
-        idQualificacao: p.idQualificacao
-      })),
+      acaoId:
+        limpar(f.acaoId),
 
-      grupoEnvolvidosProcesso: this.envolvidosSelecionados.map(e => ({
-        idPessoa: e.id,
-        idQualificacao: e.idQualificacao
-      })),
+      varaId:
+        f.varaId!,
 
-      grupoEtiquetasProcesso: this.etiquetasSelecionadas.map(e => ({
-        etiquetaId: e.id
-      }))
+      usuarioResponsavelId:
+        limpar(
+          f.usuarioResponsavelId
+        ),
+
+      juizo:
+        limpar(f.juizo),
+
+      pasta:
+        limpar(f.pasta),
+
+      titulo:
+        limpar(f.titulo),
+
+      numeroProcesso:
+        limpar(f.numeroProcesso),
+
+      linkTribunal:
+        limpar(f.linkTribunal),
+
+      objeto:
+        limpar(f.objeto),
+
+      valorCausa:
+        limpar(f.valorCausa),
+
+      distribuido:
+        limpar(f.distribuido),
+
+      valorCondenacao:
+        limpar(f.valorCondenacao),
+
+      observacao:
+        limpar(f.observacao),
+
+      instancia:
+        limpar(f.instancia),
+
+      acesso:
+        limpar(f.acesso),
+
+      // =========================
+      // CLIENTES
+      // =========================
+
+      grupoClienteProcesso:
+        this.pessoasSelecionadas
+          .map(p => ({
+            idPessoa:
+              p.id,
+
+            idQualificacao:
+              p.idQualificacao
+          })),
+
+      // =========================
+      // ENVOLVIDOS
+      // =========================
+
+      grupoEnvolvidosProcesso:
+        this.envolvidosSelecionados
+          .map(e => ({
+            idPessoa:
+              e.id,
+
+            idQualificacao:
+              e.idQualificacao
+          })),
+
+      // =========================
+      // ETIQUETAS
+      // =========================
+
+      grupoEtiquetasProcesso:
+        this.etiquetasSelecionadas
+          .map(e => ({
+            etiquetaId:
+              e.id
+          }))
     };
 
-    this.processoService.editarProcesso(this.id, request).subscribe({
-      next: (res: any) => {
-        this.carregando = false;
+    // =========================
+    // ENVIAR
+    // =========================
 
-        this.mensagemSucesso = [
-          res.message ?? 'Processo atualizado com sucesso'
-        ];
+    this.processoService
+      .editarProcesso(
+        this.id,
+        request
+      )
+      .subscribe({
 
-        this.cdr.detectChanges(); // 👈 força render
+        next: (res: any) => {
 
-        setTimeout(() => {
-          this.router.navigate(['/admin/consultar-processo']);
-        }, 3000);
-      },
-      error: (err) => this.tratarErro(err)
-    });
+          this.carregando = false;
+
+          this.mensagemSucesso = [
+            res.message ??
+            'Processo atualizado com sucesso'
+          ];
+
+          this.cdr.detectChanges();
+
+          setTimeout(() => {
+
+            this.router.navigate([
+              '/admin/consultar-processo'
+            ]);
+
+          }, 3000);
+        },
+
+        error: (err) => {
+
+          this.tratarErro(err);
+
+        }
+
+      });
   }
   private tratarErro(err: HttpErrorResponse): void {
 
@@ -480,5 +761,78 @@ export class EditarProcesso implements OnInit {
     };
 
     return map[campo] || campo;
+  }
+  onMoneyInput(
+    event: any,
+    campo: 'valorCausa' | 'valorCondenacao'
+  ): void {
+
+    const value =
+      event.target.value.replace(
+        /\D/g,
+        ''
+      );
+
+    if (!value) {
+
+      this.form
+        .get(campo)
+        ?.setValue(
+          null,
+          {
+            emitEvent: false
+          }
+        );
+
+      event.target.value = '';
+
+      return;
+    }
+
+    const numericValue =
+      Number(value) / 100;
+
+    const formatted =
+      new Intl.NumberFormat(
+        'pt-BR',
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      )
+        .format(
+          numericValue
+        );
+
+    this.form
+      .get(campo)
+      ?.setValue(
+        numericValue,
+        {
+          emitEvent: false
+        }
+      );
+
+    event.target.value =
+      formatted;
+  }
+  formatarMoedaInput(
+    valor?: number | null
+  ): string {
+
+    if (
+      valor === null ||
+      valor === undefined
+    ) {
+      return '';
+    }
+
+    return new Intl.NumberFormat(
+      'pt-BR',
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    ).format(valor);
   }
 }

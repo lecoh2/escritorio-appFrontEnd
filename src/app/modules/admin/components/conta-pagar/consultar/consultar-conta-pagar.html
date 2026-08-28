@@ -1,307 +1,749 @@
 <div class="container-fluid p-0">
 
-  <h1 class="h3 mb-3">Consultar Contas a Receber</h1>
+    <!-- ================================================= -->
+    <!-- CABEÇALHO -->
+    <!-- ================================================= -->
 
-  <div class="row">
-    <div class="col-md-12">
+    <div class="d-flex justify-content-between align-items-center mb-3">
 
-      <div class="card">
+        <div>
 
-        <div class="card-header">
-          <h5 class="card-title">Pesquisa de Contas</h5>
+            <h1 class="h3 mb-1">
+                <i class="fas fa-file-invoice-dollar text-primary me-2"></i>
+                Consultar Contas a Pagar
+            </h1>
+
+            <p class="text-muted mb-0">
+                Consulte e gerencie as contas a pagar cadastradas.
+            </p>
+
         </div>
 
-        <div class="card-body">
+    </div>
 
-          <!-- FILTRO -->
-          <div class="d-flex justify-content-between align-items-center mb-3">
-<div class="input-group shadow-sm" style="max-width: 450px;">
 
-    <input
-        type="text"
-        class="form-control"
-        placeholder="Pesquisar cliente ou descrição..."
-        [(ngModel)]="filtro"
-        (keyup.enter)="aplicarFiltro()">
+    <div class="row">
 
-    <button
-        class="btn btn-primary"
-        (click)="aplicarFiltro()">
+        <div class="col-md-12">
 
-        <i class="fas fa-search me-2"></i>
-        Buscar
+            <div class="card shadow-sm border-0">
 
-    </button>
+                <!-- ================================================= -->
+                <!-- CARD HEADER -->
+                <!-- ================================================= -->
 
-</div>
+                <div class="card-header bg-transparent border-bottom py-3">
 
-            <div>
-              <select class="form-select form-select-sm"
-                      [(ngModel)]="tamanhoPagina"
-                      (change)="aplicarFiltro()">
+                    <div class="d-flex align-items-center">
 
-                <option *ngFor="let size of [5,10,20,50]" [value]="size">
-                  {{ size }} por página
-                </option>
+                        <div
+                            class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle me-2"
+                            style="width: 40px; height: 40px;">
 
-              </select>
+                            <i class="fas fa-magnifying-glass"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h5 class="card-title mb-0">
+                                Pesquisa de Contas a Pagar
+                            </h5>
+
+                            <small class="text-muted">
+                                Localize contas por fornecedor ou descrição.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <!-- ================================================= -->
+                    <!-- FILTROS -->
+                    <!-- ================================================= -->
+
+                    <div class="row align-items-end mb-4">
+
+                        <div class="col-md-8">
+
+                            <label class="form-label fw-semibold">
+                                Pesquisar
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text bg-transparent">
+
+                                    <i class="fas fa-search text-muted"></i>
+
+                                </span>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Pesquisar fornecedor ou descrição"
+                                    [(ngModel)]="filtro"
+                                    (keyup.enter)="aplicarFiltro()">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    (click)="aplicarFiltro()">
+
+                                    <i class="fas fa-search me-1"></i>
+
+                                    Buscar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-4">
+
+                            <label class="form-label fw-semibold">
+                                Registros por página
+                            </label>
+
+                            <select
+                                class="form-select"
+                                [(ngModel)]="tamanhoPagina"
+                                (change)="aplicarFiltro()">
+
+                                <option
+                                    *ngFor="let size of [5,10,20,50]"
+                                    [value]="size">
+
+                                    {{ size }} registros
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- LOADING -->
+                    <!-- ================================================= -->
+
+                    <app-spinner-consulta
+                        *ngIf="carregando"
+                        [carregando]="true"
+                        message="Consultando contas..."
+                        class="d-inline-block">
+                    </app-spinner-consulta>
+
+
+                    <!-- ================================================= -->
+                    <!-- ALERTAS -->
+                    <!-- ================================================= -->
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemSucesso.length > 0
+                        "
+                        class="w-100"
+                        titulo="Sucesso!"
+                        [mensagens]="mensagemSucesso"
+                        tipo="success">
+                    </app-alerts>
+
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemErro.length > 0
+                        "
+                        class="w-100"
+                        titulo="Erro!"
+                        [mensagens]="mensagemErro"
+                        tipo="danger">
+                    </app-alerts>
+
+
+                    <!-- ================================================= -->
+                    <!-- TABELA -->
+                    <!-- ================================================= -->
+
+                    <div
+                        *ngIf="!carregando"
+                        class="table-responsive">
+
+                        <table
+                            id="datatables-conta-pagar"
+                            class="table table-hover align-middle mb-0">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th class="py-3">
+
+                                        <i class="fas fa-user text-primary me-2"></i>
+
+                                        Fornecedor
+
+                                    </th>
+
+
+                                    <th class="py-3">
+
+                                        <i class="fas fa-align-left text-primary me-2"></i>
+
+                                        Descrição
+
+                                    </th>
+
+
+                                    <th class="py-3">
+
+                                        <i class="fas fa-dollar-sign text-primary me-2"></i>
+
+                                        Valor Total
+
+                                    </th>
+
+
+                                    <th class="py-3">
+
+                                        <i class="fas fa-layer-group text-primary me-2"></i>
+
+                                        Pagamento
+
+                                    </th>
+
+
+                                    <th class="py-3">
+
+                                        <i class="fas fa-credit-card text-primary me-2"></i>
+
+                                        Forma de Pagamento
+
+                                    </th>
+
+
+                                    <th class="py-3">
+
+                                        <i class="fas fa-flag text-primary me-2"></i>
+
+                                        Status
+
+                                    </th>
+
+
+                                    <th
+                                        class="py-3 text-end"
+                                        style="width: 110px;">
+
+                                        <i class="fas fa-gears text-primary me-2"></i>
+
+                                        Ações
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr
+                                    *ngFor="let item of consulta">
+
+                                    <!-- ================================================= -->
+                                    <!-- FORNECEDOR -->
+                                    <!-- ================================================= -->
+
+                                    <td style="max-width: 260px;">
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div
+                                                class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 me-3"
+                                                style="
+                                                    width: 38px;
+                                                    height: 38px;
+                                                    min-width: 38px;
+                                                ">
+
+                                                <i class="fas fa-user"></i>
+
+                                            </div>
+
+                                            <div class="overflow-hidden">
+
+                                                <span
+                                                    class="fw-semibold text-truncate d-block"
+                                                    [title]="item.fornecedor">
+
+                                                    {{ item.fornecedor }}
+
+                                                </span>
+
+                                                <small class="text-muted">
+                                                    Fornecedor
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- DESCRIÇÃO -->
+                                    <!-- ================================================= -->
+
+                                    <td style="max-width: 320px;">
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <span
+                                                class="text-truncate d-block"
+                                                [title]="item.descricao">
+
+                                                {{
+                                                    (item.descricao || '').length > 30
+                                                        ? (item.descricao | slice:0:30) + '...'
+                                                        : item.descricao
+                                                }}
+
+                                            </span>
+
+                                            <button
+                                                *ngIf="(item.descricao || '').length > 30"
+                                                type="button"
+                                                class="btn btn-sm p-0 text-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#descricaoModal"
+                                                (click)="descricaoSelecionada = item.descricao"
+                                                title="Visualizar descrição completa">
+
+                                                <i class="fas fa-eye"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- VALOR -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <span class="fw-semibold">
+
+                                            {{ item.valorTotal | currency:'BRL' }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- PARCELAMENTO -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+ <span
+    *ngIf="item.parcelado"
+    class="badge badge-subtle-warning px-3 py-2">
+
+    <i class="fas fa-layer-group me-1"></i>
+
+    {{ item.totalParcelas }}x
+
+</span>
+
+<span
+    *ngIf="!item.parcelado"
+    class="badge badge-subtle-success px-3 py-2">
+
+    <i class="fas fa-circle-check me-1"></i>
+
+    À Vista
+
+</span>
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- FORMA PAGAMENTO -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <i
+                                                [class]="getFormaRecebimentoIcon(item.formaRecebimento)"
+                                                class="me-2 text-primary">
+                                            </i>
+
+                                            <span>
+                                                {{ getFormaRecebimento(item.formaRecebimento) }}
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- STATUS -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+ <span
+    class="badge px-3 py-2"
+    [ngClass]="{
+        'badge-subtle-success':
+            (item.statusDescricao || '') === 'Paga',
+
+        'badge-subtle-warning':
+            (item.statusDescricao || '') === 'Parcialmente Paga',
+
+        'badge-subtle-danger':
+            (item.statusDescricao || '') === 'Cancelada',
+
+        'badge-subtle-primary':
+            (item.statusDescricao || '') === 'Pendente'
+    }">
+
+    <i
+        class="fas me-1"
+        [ngClass]="{
+            'fa-circle-check':
+                (item.statusDescricao || '') === 'Paga',
+
+            'fa-spinner':
+                (item.statusDescricao || '') === 'Parcialmente Paga',
+
+            'fa-ban':
+                (item.statusDescricao || '') === 'Cancelada',
+
+            'fa-clock':
+                (item.statusDescricao || '') === 'Pendente'
+        }">
+    </i>
+
+    {{ item.statusDescricao }}
+
+</span>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- AÇÕES -->
+                                    <!-- ================================================= -->
+
+                                    <td class="text-end">
+
+                                        <a
+                                            [routerLink]="[
+                                                '/admin/editar-conta-pagar',
+                                                item.id
+                                            ]"
+                                            title="Editar conta a pagar"
+                                            class="text-primary me-3">
+
+                                            <i class="fas fa-pencil-alt fa-lg"></i>
+
+                                        </a>
+
+
+                                        <a
+                                            [routerLink]="[
+                                                '/admin/visualizar-conta-pagar',
+                                                item.id
+                                            ]"
+                                            title="Visualizar conta a pagar"
+                                            class="text-info">
+
+                                            <i class="fas fa-eye fa-lg"></i>
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- ================================================= -->
+                                <!-- SEM REGISTROS -->
+                                <!-- ================================================= -->
+
+                                <tr
+                                    *ngIf="
+                                        !carregando &&
+                                        consulta.length === 0
+                                    ">
+
+                                    <td
+                                        colspan="7"
+                                        class="text-center py-5">
+
+                                        <div class="text-muted">
+
+                                            <i class="fas fa-file-invoice-dollar fa-3x mb-3 opacity-50"></i>
+
+                                            <div class="fw-semibold">
+                                                Nenhuma conta a pagar encontrada
+                                            </div>
+
+                                            <small>
+                                                Altere os filtros e tente novamente.
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- RODAPÉ / PAGINAÇÃO -->
+                    <!-- ================================================= -->
+
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
+
+                        <div class="text-muted small">
+
+                            <i class="fas fa-circle-info me-1"></i>
+
+                            Página
+
+                            <strong>
+                                {{ paginaAtual }}
+                            </strong>
+
+                            de
+
+                            <strong>
+                                {{ totalPaginas }}
+                            </strong>
+
+                            <span class="mx-1">
+                                •
+                            </span>
+
+                            Total:
+
+                            <strong>
+                                {{ totalRegistros }}
+                            </strong>
+
+                            conta(s)
+
+                        </div>
+
+
+                        <nav
+                            *ngIf="totalPaginas > 1">
+
+                            <ul class="pagination pagination-sm mb-0">
+
+                                <!-- PRIMEIRA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="paginaAtual === 1">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(1)">
+
+                                        <i class="fas fa-angles-left"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ANTERIOR -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="paginaAtual === 1">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(paginaAtual - 1)">
+
+                                        <i class="fas fa-angle-left"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PÁGINAS -->
+
+                                <li
+                                    class="page-item"
+                                    *ngFor="let p of paginasVisiveis"
+                                    [class.active]="p === paginaAtual">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(p)">
+
+                                        {{ p }}
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PRÓXIMA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="paginaAtual === totalPaginas">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(paginaAtual + 1)">
+
+                                        <i class="fas fa-angle-right"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ÚLTIMA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="paginaAtual === totalPaginas">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(totalPaginas)">
+
+                                        <i class="fas fa-angles-right"></i>
+
+                                    </button>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
+
+                </div>
+
             </div>
 
-          </div>
+        </div>
 
-          <!-- LOADING -->
-          <app-spinner-consulta
-            *ngIf="carregando"
-            [carregando]="true"
-            message="Consultando contas..."
-            class="d-inline-block">
-          </app-spinner-consulta>
+    </div>
 
-          <!-- ALERTAS -->
-          <app-alerts *ngIf="!carregando && mensagemSucesso.length > 0"
-                      titulo="Sucesso!"
-                      [mensagens]="mensagemSucesso"
-                      tipo="success">
-          </app-alerts>
 
-          <app-alerts *ngIf="!carregando && mensagemErro.length > 0"
-                      titulo="Erro!"
-                      [mensagens]="mensagemErro"
-                      tipo="danger">
-          </app-alerts>
+    <!-- ================================================= -->
+    <!-- MODAL DESCRIÇÃO -->
+    <!-- ================================================= -->
 
-          <!-- TABELA -->
-          <table class="table table-striped w-100">
+    <div
+        class="modal fade"
+        id="descricaoModal"
+        tabindex="-1"
+        aria-hidden="true">
 
-            <thead>
-              <tr>
-               
+        <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                <th>
-                  <i class="fas fa-user me-1"></i>
-                  Forcenedor
-                </th>
+            <div class="modal-content">
 
-                <th>
-                  <i class="fas fa-align-left me-1"></i>
-                  Descrição
-                </th>
+                <div class="modal-header">
 
-                <th>
-                  <i class="fas fa-dollar-sign me-1"></i>
-                  Valor Total
-                </th>
+                    <h5 class="modal-title">
 
-                <th>
-                  <i class="fas fa-credit-card me-1"></i>
-                  Pagamento
-                </th>
+                        <i class="fas fa-align-left text-primary me-2"></i>
 
-                <th>
-                  <i class="fas fa-money-check-alt me-1"></i>
-                  Forma Recebimento
-                </th>
+                        Descrição da Conta
 
-                <th>
-                  <i class="fas fa-flag me-1"></i>
-                  Status
-                </th>
+                    </h5>
 
-                <th>
-                  <i class="fas fa-cogs me-1"></i>
-                  Ações
-                </th>
-              </tr>
-            </thead>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Fechar">
+                    </button>
 
-            <tbody>
+                </div>
 
-              <tr *ngFor="let item of consulta">
 
-             
+                <div class="modal-body">
 
-                <!-- CLIENTE -->
-                <td>
-                  <i class="fas fa-user-circle text-primary me-1"></i>
-                  <strong>{{ item.fornecedor }}</strong>
-                </td>
+                    <div
+                        class="p-3 rounded border"
+                        style="
+                            white-space: pre-wrap;
+                            word-break: break-word;
+                        ">
 
-                <!-- DESCRIÇÃO -->
-                <td>
-                  <span [title]="item.descricao">
+                        {{ descricaoSelecionada }}
 
-                    {{
-                      (item.descricao || '').length > 9
-                        ? (item.descricao | slice:0:9) + ''
-                        : item.descricao
-                    }}
+                    </div>
 
-                  </span>
+                </div>
 
-              <button
-  *ngIf="(item.descricao || '').length > 9"
-  class="btn btn-sm text-primary p-0 ms-2"
-  data-bs-toggle="modal"
-  data-bs-target="#descricaoModal"
-  (click)="descricaoSelecionada = item.descricao"
-  title="Ver descrição completa">
 
-  <i class="fas fa-eye"></i>
-</button>
+                <div class="modal-footer">
 
-                </td>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
 
-                <!-- VALOR -->
-                <td>
-                  <span class="fw-bold text-success">
-                    <i class="fas fa-money-bill-wave me-1"></i>
-                    {{ item.valorTotal | currency:'BRL' }}
-                  </span>
-                </td>
+                        <i class="fas fa-times me-1"></i>
 
-                <!-- PAGAMENTO -->
-                <td>
+                        Fechar
 
-                  <span *ngIf="item.parcelado" class="badge bg-warning text-dark">
-                    <i class="fas fa-layer-group me-1"></i>
-                    {{ item.totalParcelas }}x
-                  </span>
+                    </button>
 
-                  <span *ngIf="!item.parcelado" class="badge bg-success">
-                    <i class="fas fa-check-circle me-1"></i>
-                    À Vista
-                  </span>
+                </div>
 
-                </td>
-
-                <!-- FORMA RECEBIMENTO -->
-                <td>
-                  <i [class]="getFormaRecebimentoIcon(item.formaRecebimento)"
-                     class="me-2"></i>
-
-                  {{ getFormaRecebimento(item.formaRecebimento) }}
-                </td>
-
-                <!-- STATUS -->
-                <td>
-                  <span class="badge"
-                        [ngClass]="{
-                          'bg-success': (item.statusDescricao || '') === 'Paga',
-                          'bg-warning': (item.statusDescricao || '') === 'Parcialmente Paga',
-                          'bg-danger': (item.statusDescricao || '') === 'Cancelada',
-                          'bg-secondary': (item.statusDescricao || '') === 'Pendente'
-                        }">
-
-                    {{ item.statusDescricao }}
-                  </span>
-                </td>
-
-                <!-- AÇÕES -->
-                <td class="text-end align-middle">
-
-                  <a [routerLink]="['/admin/editar-conta-pagar', item.id]"
-                     title="Editar"
-                     class="text-primary me-2">
-
-                    <i class="fas fa-pencil-alt fa-lg"></i>
-
-                  </a>
-
-                  <a [routerLink]="['/admin/visualizar-conta-pagar', item.id]"
-                     class="text-info">
-
-                    <i class="fas fa-eye fa-lg"></i>
-
-                  </a>
-
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
-          <!-- PAGINAÇÃO -->
-          <nav *ngIf="totalPaginas > 1">
-
-            <ul class="pagination justify-content-center mt-3">
-
-              <li class="page-item" [class.disabled]="paginaAtual === 1">
-                <a class="page-link" (click)="irParaPagina(1)">Primeira</a>
-              </li>
-
-              <li class="page-item" [class.disabled]="paginaAtual === 1">
-                <a class="page-link" (click)="irParaPagina(paginaAtual - 1)">Anterior</a>
-              </li>
-
-              <li class="page-item"
-                  *ngFor="let p of paginasVisiveis"
-                  [class.active]="p === paginaAtual">
-
-                <a class="page-link" (click)="irParaPagina(p)">
-                  {{ p }}
-                </a>
-
-              </li>
-
-              <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
-                <a class="page-link" (click)="irParaPagina(paginaAtual + 1)">Próxima</a>
-              </li>
-
-              <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
-                <a class="page-link" (click)="irParaPagina(totalPaginas)">Última</a>
-              </li>
-
-            </ul>
-
-          </nav>
-
-          <p class="text-end text-muted">
-            Página {{ paginaAtual }} de {{ totalPaginas }} |
-            Total: {{ totalRegistros }}
-          </p>
+            </div>
 
         </div>
 
-      </div>
-
     </div>
-  </div>
-
-  <!-- MODAL DESCRIÇÃO -->
-<div class="modal fade" id="descricaoModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- HEADER -->
-      <div class="modal-header">
-        <h5 class="modal-title">Descrição</h5>
-
-        <!-- BOTÃO X -->
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Fechar">
-        </button>
-      </div>
-
-      <!-- BODY -->
-      <div class="modal-body">
-        {{ descricaoSelecionada }}
-      </div>
-
-      <!-- FOOTER (opcional, mas profissional) -->
-      <div class="modal-footer">
-        <button type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal">
-          Fechar
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 </div>

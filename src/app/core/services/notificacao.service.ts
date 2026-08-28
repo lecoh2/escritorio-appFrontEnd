@@ -1,26 +1,71 @@
-import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment.development";
-import { HttpClient } from "@angular/common/http";
-import { Notificacao } from "../models/notficacao/notificacao";
+import { inject, Injectable } from '@angular/core';
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment.development';
+import { Notificacao } from '../models/notficacao/notificacao';
 
 @Injectable({
-    providedIn: 'root' // Isso registra o serviço automaticamente no app
+  providedIn: 'root'
 })
 export class NotificacoService {
-    private url = environment.apiDeslandes;
-    private http = inject(HttpClient);
 
-getNotificacoes(usuarioId: string) {
-  console.log('📡 Buscando notificações do usuário:', usuarioId);
+  private url = environment.apiDeslandes;
+  private http = inject(HttpClient);
 
-  return this.http.get<Notificacao[]>(
-    `${environment.apiDeslandes}/api/v1/notificacoes/${usuarioId}`
-  );
-}
-marcarComoLida(id: string) {
-  return this.http.put(
-    `${environment.apiDeslandes}/api/v1/notificacoes/marcar-lida/${id}`,
-    {}
-  );
-}
+
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token = localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR NOTIFICAÇÕES
+  // =====================================================
+
+  getNotificacoes(
+    usuarioId: string
+  ): Observable<Notificacao[]> {
+
+    return this.http.get<Notificacao[]>(
+      `${this.url}/api/v1/notificacoes/${usuarioId}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // MARCAR COMO LIDA
+  // =====================================================
+
+  marcarComoLida(
+    id: string
+  ): Observable<any> {
+
+    return this.http.put<any>(
+      `${this.url}/api/v1/notificacoes/marcar-lida/${id}`,
+      {},
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
 }

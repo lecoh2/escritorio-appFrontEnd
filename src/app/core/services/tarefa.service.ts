@@ -1,74 +1,201 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment.development";
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 
-import { CadastrarProcessoRequest } from "../models/processo/cadastrar-processo-request";
-import { CadastrarProcessoResponse } from "../models/processo/cadastar-processo-response";
-import { Observable } from "rxjs";
-import { ApiResponse } from "../models/respostas/api-response";
-import { ProcessoAutoComplete } from "../models/processo/processo-auto-complete";
-import { CadastrarTarefaRequest } from "../models/tarefa/cadastrar-tarefa.resquest";
-import { ListaTarefasResponse } from "../models/tarefa/lista-tarefas-response";
-import { CadastrarTareResponse } from "../models/tarefa/cadastrar-tarefa-response";
-import { ObterTarefaResponse } from "../models/tarefa/obter-tarefa-response";
+import {
+  inject,
+  Injectable
+} from '@angular/core';
+
+import {
+  Observable
+} from 'rxjs';
+
+import {
+  environment
+} from '../../../environments/environment.development';
+
+import {
+  ApiResponse
+} from '../models/respostas/api-response';
+
+import {
+  CadastrarTarefaRequest
+} from '../models/tarefa/cadastrar-tarefa.resquest';
+
+import {
+  CadastrarTareResponse
+} from '../models/tarefa/cadastrar-tarefa-response';
+
+import {
+  ListaTarefasResponse
+} from '../models/tarefa/lista-tarefas-response';
+
+import {
+  ObterTarefaResponse
+} from '../models/tarefa/obter-tarefa-response';
 
 
 @Injectable({
-  providedIn: 'root' // Isso registra o serviço automaticamente no app
+  providedIn: 'root'
 })
 export class TarefaService {
-  //atributos
-  private url = environment.apiDeslandes;
-  private http = inject(HttpClient);
 
-  cadastrarTarefa(request: CadastrarTarefaRequest): Observable<ApiResponse<CadastrarTareResponse>> {
-    const token = localStorage.getItem('token');
+  private url =
+    environment.apiDeslandes;
 
-    return this.http.post<ApiResponse<CadastrarTareResponse>>(
+  private http =
+    inject(HttpClient);
+
+
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    let headers =
+      new HttpHeaders();
+
+    if (token) {
+
+      headers =
+        headers.set(
+          'Authorization',
+          `Bearer ${token}`
+        );
+    }
+
+    return headers;
+  }
+
+
+  // =====================================================
+  // CADASTRAR
+  // =====================================================
+
+  cadastrarTarefa(
+    request: CadastrarTarefaRequest
+  ): Observable<ApiResponse<CadastrarTareResponse>> {
+
+    return this.http.post<
+      ApiResponse<CadastrarTareResponse>
+    >(
       `${this.url}/api/v1/tarefa/cadastrar-tarefa`,
       request,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers:
+          this.getHeaders()
       }
     );
   }
-  consultarListaTarefaAutoComplete(termo?: string) {
+
+
+  // =====================================================
+  // AUTOCOMPLETE LISTA DE TAREFAS
+  // =====================================================
+
+  consultarListaTarefaAutoComplete(
+    termo?: string
+  ): Observable<ListaTarefasResponse[]> {
+
     const params: any = {};
 
     if (termo) {
-      params.termo = termo;
+
+      params.termo =
+        termo;
     }
 
-    return this.http.get<ListaTarefasResponse[]>(
+    return this.http.get<
+      ListaTarefasResponse[]
+    >(
       `${this.url}/api/v1/tarefa/consultar-lista-tarefa-autocomplete`,
-      { params }
+      {
+        params,
+        headers:
+          this.getHeaders()
+      }
     );
   }
-ObterTarefaPorId(id: string): Observable<ObterTarefaResponse> {
-  return this.http.get<ObterTarefaResponse>(
-    `${this.url}/api/v1/tarefa/obter-tarefa-por-id/${id}`
 
-    
-  );
-}
-editarTarefa(id: string, request: any): Observable<any> {
-  const token = localStorage.getItem('token');
 
-  return this.http.put<any>(
-    `${this.url}/api/v1/tarefa/atualizar-tarefa/${id}`,
-    request,
-    {
-      headers: token
-        ? { Authorization: `Bearer ${token}` }
-        : {}
+  // =====================================================
+  // OBTER POR ID
+  // =====================================================
+
+  ObterTarefaPorId(
+    id: string
+  ): Observable<ObterTarefaResponse> {
+
+    return this.http.get<
+      ObterTarefaResponse
+    >(
+      `${this.url}/api/v1/tarefa/obter-tarefa-por-id/${id}`,
+      {
+        headers:
+          this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
+
+  editarTarefa(
+    id: string,
+    request: any
+  ): Observable<any> {
+
+    return this.http.put<any>(
+      `${this.url}/api/v1/tarefa/atualizar-tarefa/${id}`,
+      request,
+      {
+        headers:
+          this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // PAGINAÇÃO
+  // =====================================================
+
+  consultarTarefaPaginado(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm?: string
+  ): Observable<any> {
+
+    const params: any = {
+
+      pageNumber:
+        pageNumber.toString(),
+
+      pageSize:
+        pageSize.toString()
+    };
+
+    if (searchTerm) {
+
+      params.searchTerm =
+        searchTerm;
     }
-  );
-}
-       consultarTarefaPaginado(pageNumber: number, pageSize: number, searchTerm?: string) {
-  const params: any = { pageNumber: pageNumber.toString(), pageSize: pageSize.toString() };
-  if (searchTerm) params.searchTerm = searchTerm;
-  return this.http.get<any>(`${this.url}/api/v1/tarefa/consultar-tarefa-paginacao`, { params });
-}
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/tarefa/consultar-tarefa-paginacao`,
+      {
+        params,
+        headers:
+          this.getHeaders()
+      }
+    );
+  }
 }

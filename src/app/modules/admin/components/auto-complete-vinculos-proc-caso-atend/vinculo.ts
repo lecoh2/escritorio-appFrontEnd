@@ -1,165 +1,397 @@
-/*import { Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { debounceTime, distinctUntilChanged } from "rxjs";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output
+} from '@angular/core';
 
-@Component({
-  selector: 'app-vinculo',
-  standalone:false,
-  templateUrl: './vinculo.html'
-})
-export class Vinculo implements OnChanges {
+import {
+  FormControl
+} from '@angular/forms';
 
-  control = new FormControl('');
-  mostrarSugestoes = false;
-@Input() vinculoSelecionado: any;
-  @Input() resultados: any[] = [];
-
-  @Output() buscar = new EventEmitter<string>();
-  @Output() selecionado = new EventEmitter<any>();
-
-  constructor() {
-    // 🔥 fluxo real de autocomplete
-    this.control.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(valor => {
-      const v = (valor ?? '').toString().trim();
-
-      if (v.length >= 2) {
-        this.mostrarSugestoes = true;   // 🔥 abre dropdown
-        this.buscar.emit(v);
-      } else {
-        this.mostrarSugestoes = false;
-        this.buscar.emit('');
-      }
-    });
-  }
-ngOnChanges() {
-  if (this.vinculoSelecionado) {
-    this.control.setValue(this.getLabel(this.vinculoSelecionado), {
-      emitEvent: false
-    });
-  }
-}
-  selecionar(item: any) {
-    this.control.setValue(this.getLabel(item), { emitEvent: false });
-    this.mostrarSugestoes = false;
-    this.selecionado.emit(item);
-  }
-
-  getLabel(item: any): string {
-    if (item.numeroProcesso) return item.numeroProcesso + ' - ' + (item.titulo ?? '');
-    if (item.titulo) return item.titulo;
-    if (item.assunto) return item.assunto;
-    return '';
-  }
-
-  abrir() {
-    if (this.control.value && this.control.value.toString().length >= 2) {
-      this.mostrarSugestoes = true;
-    }
-  }
-
-  fechar() {
-    setTimeout(() => this.mostrarSugestoes = false, 200);
-  }
-}*/
-
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { debounceTime, distinctUntilChanged } from "rxjs";
+import {
+  debounceTime,
+  distinctUntilChanged
+} from 'rxjs';
 
 @Component({
   selector: 'app-vinculo',
   standalone: false,
-  templateUrl: './vinculo.html'
+  templateUrl: './vinculo.html',
+    styleUrl: './vinculo.css'
 })
 export class Vinculo {
 
-  control = new FormControl<string>('');
+  control =
+    new FormControl<string>(
+      '',
+      {
+        nonNullable: true
+      }
+    );
+
   mostrarSugestoes = false;
-  @Input() tipoVinculo: string | null = null;
-  @Input() resultados: any[] = [];
+
+  @Input()
+  tipoVinculo: string | null = null;
+
+  @Input()
+  resultados: any[] = [];
 
   private _vinculoSelecionado: any;
 
   @Input()
-  set vinculoSelecionado(value: any) {
-     console.log('CHEGOU NO COMPONENTE:', value);
-    this._vinculoSelecionado = value;
+  set vinculoSelecionado(
+    value: any
+  ) {
+
+    console.log(
+      'CHEGOU NO COMPONENTE:',
+      value
+    );
+
+    this._vinculoSelecionado =
+      value;
 
     if (value) {
-      const label = this.getLabel(value);
 
-      // 🔥 delay leve pra garantir render do input
+      const label =
+        this.getLabel(
+          value
+        );
+
       setTimeout(() => {
-        this.control.setValue(label, { emitEvent: false });
+
+        this.control.setValue(
+          label,
+          {
+            emitEvent: false
+          }
+        );
+
       });
-    } else {
-      this.control.setValue('', { emitEvent: false });
+
+      return;
     }
+
+    this.control.setValue(
+      '',
+      {
+        emitEvent: false
+      }
+    );
   }
 
-  get vinculoSelecionado() {
+  get vinculoSelecionado(): any {
+
     return this._vinculoSelecionado;
   }
 
-  @Output() buscar = new EventEmitter<string>();
-  @Output() selecionado = new EventEmitter<any>();
+  @Output()
+  buscar =
+    new EventEmitter<string>();
+
+  @Output()
+  selecionado =
+    new EventEmitter<any>();
 
   constructor() {
-    this.control.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(valor => {
 
-      const v = (valor ?? '').toString().trim();
+    this.control
+      .valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(valor => {
 
-      if (v.length >= 2) {
-        this.mostrarSugestoes = true;
-        this.buscar.emit(v);
-      } else {
-        this.mostrarSugestoes = false;
-        this.buscar.emit('');
+        const termo =
+          valor
+            .toString()
+            .trim();
+
+        if (
+          termo.length >= 2
+        ) {
+
+          this.mostrarSugestoes =
+            true;
+
+          this.buscar.emit(
+            termo
+          );
+
+          return;
+        }
+
+        this.mostrarSugestoes =
+          false;
+
+        this.buscar.emit(
+          ''
+        );
+      });
+  }
+
+  selecionar(
+    item: any
+  ): void {
+
+    this.control.setValue(
+      this.getLabel(item),
+      {
+        emitEvent: false
       }
-    });
+    );
+
+    this.mostrarSugestoes =
+      false;
+
+    this.selecionado.emit(
+      item
+    );
   }
 
-  selecionar(item: any) {
-    this.control.setValue(this.getLabel(item), { emitEvent: false });
-    this.mostrarSugestoes = false;
-    this.selecionado.emit(item);
+  // ===================================================
+  // LABEL DO VÍNCULO
+  // ===================================================
+
+  getLabel(
+    item: any
+  ): string {
+
+    if (!item) {
+      return '';
+    }
+
+    // ===================================================
+    // PROCESSO
+    // ===================================================
+
+    if (
+      this.tipoVinculo === 'processo' ||
+      item.numeroProcesso
+    ) {
+
+      const numeroProcesso =
+        this.formatarProcesso(
+          item.numeroProcesso
+        );
+
+      const partes: string[] = [];
+
+      if (numeroProcesso) {
+        partes.push(
+          numeroProcesso
+        );
+      }
+
+      if (item.pasta) {
+        partes.push(
+          item.pasta
+        );
+      }
+
+      if (item.titulo) {
+        partes.push(
+          item.titulo
+        );
+      }
+
+      return partes.join(
+        ' - '
+      );
+    }
+
+    // ===================================================
+    // ATENDIMENTO
+    // ===================================================
+
+    if (
+      this.tipoVinculo === 'atendimento' ||
+      item.numeroControle ||
+      item.codigoControle !== undefined
+    ) {
+
+      if (
+        item.numeroControle
+      ) {
+
+        return item.assunto
+          ? `${item.numeroControle} - ${item.assunto}`
+          : item.numeroControle;
+      }
+
+      if (
+        item.codigoControle !== null &&
+        item.codigoControle !== undefined &&
+        item.anoBaseControle
+      ) {
+
+        const numeroControle =
+          this.formatarNumeroControle(
+            item.codigoControle,
+            item.anoBaseControle
+          );
+
+        return item.assunto
+          ? `${numeroControle} - ${item.assunto}`
+          : numeroControle;
+      }
+
+      if (
+        item.assunto
+      ) {
+        return item.assunto;
+      }
+    }
+
+    // ===================================================
+    // CASO
+    // ===================================================
+
+    if (
+      this.tipoVinculo === 'caso'
+    ) {
+
+      const partes: string[] = [];
+
+      if (item.pasta) {
+        partes.push(
+          item.pasta
+        );
+      }
+
+      if (item.titulo) {
+        partes.push(
+          item.titulo
+        );
+      }
+
+      return partes.join(
+        ' - '
+      );
+    }
+
+    // ===================================================
+    // FALLBACK
+    // ===================================================
+
+    if (item.titulo) {
+      return item.titulo;
+    }
+
+    if (item.assunto) {
+      return item.assunto;
+    }
+
+    if (item.pasta) {
+      return item.pasta;
+    }
+
+    return '';
   }
 
-getLabel(item: any): string {
+  // ===================================================
+  // ABRIR
+  // ===================================================
 
-  if (!item) return '';
+  abrir(): void {
 
-  const partes: string[] = [];
+    const termo =
+      this.control
+        .value
+        .toString()
+        .trim();
 
-  if (item.numeroProcesso)
-    partes.push(item.numeroProcesso);
-
-  if (item.pasta)
-    partes.push(item.pasta);
-
-  if (item.titulo)
-    partes.push(item.titulo);
-
-  if (item.assunto)
-    partes.push(item.assunto);
-
-  return partes.join(' - ');
-}
-  abrir() {
-    const v = (this.control.value ?? '').toString();
-
-    if (v.length >= 2) {
-      this.mostrarSugestoes = true;
+    if (
+      termo.length >= 2
+    ) {
+      this.mostrarSugestoes =
+        true;
     }
   }
 
-  fechar() {
-    setTimeout(() => this.mostrarSugestoes = false, 200);
+  // ===================================================
+  // FECHAR
+  // ===================================================
+
+  fechar(): void {
+
+    setTimeout(
+      () => {
+
+        this.mostrarSugestoes =
+          false;
+
+      },
+      200
+    );
+  }
+
+  // ===================================================
+  // FORMATAÇÃO ATENDIMENTO
+  // ===================================================
+
+  formatarNumeroControle(
+    codigo: number,
+    anoBase: string
+  ): string {
+
+    return (
+      `${codigo
+        .toString()
+        .padStart(
+          6,
+          '0'
+        )}/${anoBase}`
+    );
+  }
+
+  // ===================================================
+  // FORMATAÇÃO PROCESSO
+  // ===================================================
+
+  formatarProcesso(
+    numero?: string
+  ): string {
+
+    if (!numero) {
+      return '';
+    }
+
+    const numeros =
+      numero.replace(
+        /\D/g,
+        ''
+      );
+
+    // Processo antigo
+    if (
+      numeros.length === 13
+    ) {
+
+      return numeros.replace(
+        /(\d{3})(\d{6})(\d{4})/,
+        '$1/$2/$3'
+      );
+    }
+
+    // CNJ
+    if (
+      numeros.length === 20
+    ) {
+
+      return (
+        `${numeros.slice(0, 7)}-` +
+        `${numeros.slice(7, 9)}.` +
+        `${numeros.slice(9, 13)}.` +
+        `${numeros.slice(13, 14)}.` +
+        `${numeros.slice(14, 16)}.` +
+        `${numeros.slice(16, 20)}`
+      );
+    }
+
+    return numero;
   }
 }

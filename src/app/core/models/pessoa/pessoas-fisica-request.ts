@@ -18,7 +18,7 @@ export interface PessoaFisicaRequest extends PessoaBase {
 
   endereco?: EnderecoRequest;
   informacoesComplementares?: InformacoesComplementaresRequest;
-    // ✅ ADICIONE ISSO
+  // ✅ ADICIONE ISSO
   grupoPessoasEtiquetas?: GrupoPessoasEtiquetasRequest[];
-   contaBancaria?: ContaBancariaRequest;
+  contaBancaria?: ContaBancariaRequest;
 }

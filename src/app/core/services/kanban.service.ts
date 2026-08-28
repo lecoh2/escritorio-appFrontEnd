@@ -14,19 +14,59 @@ export class KanbanService {
     private url = environment.apiDeslandes;
     private http = inject(HttpClient);
 
-    consultar(): Observable<KanbanColuna[]> {
-        return this.http.get<KanbanColuna[]>
-            (`${this.url}/api/v1/kanban/consultar-kanban`);
+ consultar(): Observable<KanbanColuna[]> {
+
+  const token =
+    localStorage.getItem('token');
+
+  return this.http.get<KanbanColuna[]>(
+    `${this.url}/api/v1/kanban/consultar-kanban`,
+    {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
     }
-    obterDetalhes(id: string, tipo: string) {
-        return this.http.get<any>(
-            `${this.url}/api/v1/atividade/${id}/detalhes/${tipo}`
-        );
+  );
+}
+    obterDetalhes(
+  id: string,
+  tipo: string
+): Observable<any> {
+
+  const token =
+    localStorage.getItem('token');
+
+  return this.http.get<any>(
+    `${this.url}/api/v1/atividade/${id}/detalhes/${tipo}`,
+    {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
     }
-    atualizarStatus(id: string, status: number) {
-        return this.http.put(
-            `${this.url}/api/v1/kanban/kanban/${id}/status`,
-            status
-        );
+  );
+}
+atualizarStatus(
+  id: string,
+  status: number
+): Observable<void> {
+
+  const token =
+    localStorage.getItem('token');
+
+  return this.http.put<void>(
+    `${this.url}/api/v1/kanban/kanban/${id}/status`,
+    status,
+    {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
     }
+  );
+}
 }

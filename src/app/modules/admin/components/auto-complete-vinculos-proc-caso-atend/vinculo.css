@@ -1,0 +1,464 @@
+/* =====================================================
+   WRAPPER
+   ===================================================== */
+
+.vinculo-wrapper {
+  position: relative;
+  z-index: 10000;
+
+  overflow: visible !important;
+}
+
+
+/* =====================================================
+   CAMPO DE BUSCA
+   ===================================================== */
+
+.vinculo-input {
+  position: relative;
+  z-index: 10001;
+}
+
+.vinculo-input .input-group-text {
+  width: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-right: 0;
+
+  background:
+    var(--bs-secondary-bg);
+
+  color:
+    var(--bs-body-color);
+
+  font-size: 18px;
+}
+
+.vinculo-input .input-group-text i {
+  width: 22px;
+
+  text-align: center;
+}
+
+.vinculo-input .form-control {
+  border-left: 0;
+
+  padding-left: 16px !important;
+
+  background:
+    var(--bs-secondary-bg);
+
+  color:
+    var(--bs-body-color);
+}
+
+.vinculo-input .form-control::placeholder {
+  color:
+    var(--bs-secondary-color);
+}
+
+.vinculo-input .form-control:focus {
+  box-shadow: none;
+
+  background:
+    var(--bs-secondary-bg);
+
+  color:
+    var(--bs-body-color);
+}
+
+
+/* =====================================================
+   RESULTADOS DO VÍNCULO
+   ===================================================== */
+
+.vinculo-resultados {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  left: 0;
+
+  width: 100%;
+
+  min-width: 520px;
+  max-width: 720px;
+
+  z-index: 999999 !important;
+
+  max-height: 380px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background:
+    var(--bs-secondary-bg);
+
+  border:
+    1px solid
+    var(--bs-border-color);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 14px 35px
+    rgba(0, 0, 0, 0.18);
+
+  padding: 8px;
+}
+
+
+/* =====================================================
+   SCROLLBAR
+   ===================================================== */
+
+.vinculo-resultados::-webkit-scrollbar {
+  width: 7px;
+}
+
+.vinculo-resultados::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+.vinculo-resultados::-webkit-scrollbar-thumb {
+  background:
+    var(--bs-border-color);
+
+  border-radius: 10px;
+}
+
+.vinculo-resultados::-webkit-scrollbar-thumb:hover {
+  background:
+    var(--bs-secondary-color);
+}
+
+
+/* =====================================================
+   ITEM
+   ===================================================== */
+
+.vinculo-item {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  text-align: left;
+
+  border: 0;
+
+  background:
+    transparent;
+
+  color:
+    var(--bs-body-color);
+
+  padding: 12px 14px;
+
+  border-radius: 10px;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+
+/* =====================================================
+   HOVER
+   USA O PADRÃO GLOBAL DO SISTEMA
+   ===================================================== */
+
+.vinculo-item:hover,
+.vinculo-item:focus {
+  background:
+    var(--bs-tertiary-bg);
+
+  color:
+    var(--bs-body-color);
+
+  outline: none;
+}
+
+
+/* =====================================================
+   ÍCONE PRINCIPAL
+   ===================================================== */
+
+.vinculo-icone {
+  width: 48px;
+  height: 48px;
+
+  min-width: 48px;
+
+  margin-right: 22px;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 19px;
+
+  background:
+    transparent;
+}
+
+
+/* =====================================================
+   PROCESSO
+   ===================================================== */
+
+.vinculo-icone.processo {
+  color:
+    var(--bs-primary);
+}
+
+
+/* =====================================================
+   CASO
+   ===================================================== */
+
+.vinculo-icone.caso {
+  color:
+    var(--bs-warning);
+}
+
+
+/* =====================================================
+   ATENDIMENTO
+   ===================================================== */
+
+.vinculo-icone.atendimento {
+  color:
+    var(--bs-success);
+}
+
+
+/* =====================================================
+   CONTEÚDO
+   ===================================================== */
+
+.vinculo-conteudo {
+  flex: 1;
+
+  min-width: 0;
+
+  overflow: hidden;
+}
+
+
+/* =====================================================
+   TÍTULO
+   ===================================================== */
+
+.vinculo-titulo {
+  font-weight: 600;
+
+  font-size: 0.95rem;
+
+  color:
+    var(--bs-emphasis-color);
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =====================================================
+   DETALHES
+   ===================================================== */
+
+.vinculo-detalhe {
+  margin-top: 4px;
+
+  font-size: 0.8rem;
+
+  color:
+    var(--bs-secondary-color);
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =====================================================
+   ÍCONES DOS DETALHES
+   ===================================================== */
+
+.vinculo-detalhe i {
+  width: 16px;
+
+  text-align: center;
+
+  margin-right: 4px;
+}
+
+
+/* =====================================================
+   PROCESSO - NÚMERO / PASTA
+   ===================================================== */
+
+.vinculo-detalhe .fa-gavel,
+.vinculo-detalhe .fa-folder {
+  color:
+    var(--bs-primary);
+}
+
+
+/* =====================================================
+   ATENDIMENTO
+   ===================================================== */
+
+.vinculo-detalhe .fa-ticket {
+  color:
+    var(--bs-success);
+}
+
+
+/* =====================================================
+   SETA
+   ===================================================== */
+
+.vinculo-seta {
+  margin-left: 14px;
+
+  color:
+    var(--bs-secondary-color);
+
+  opacity: 0.65;
+
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.vinculo-item:hover .vinculo-seta {
+  transform:
+    translateX(3px);
+
+  opacity: 1;
+}
+
+
+/* =====================================================
+   SEM RESULTADOS
+   ===================================================== */
+
+.vinculo-vazio {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  left: 0;
+
+  width: 100%;
+
+  min-width: 520px;
+  max-width: 720px;
+
+  z-index: 999999 !important;
+
+  padding: 16px;
+
+  text-align: center;
+
+  color:
+    var(--bs-secondary-color);
+
+  background:
+    var(--bs-secondary-bg);
+
+  border:
+    1px solid
+    var(--bs-border-color);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 12px 28px
+    rgba(0, 0, 0, 0.14);
+}
+
+
+/* =====================================================
+   RESPONSIVO
+   ===================================================== */
+
+@media (max-width: 767.98px) {
+
+  .vinculo-resultados,
+  .vinculo-vazio {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .vinculo-icone {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    margin-right: 14px;
+
+    font-size: 17px;
+  }
+
+  .vinculo-titulo {
+    font-size: 0.9rem;
+  }
+
+  .vinculo-detalhe {
+    font-size: 0.76rem;
+  }
+
+}
+
+
+/* =====================================================
+   TEMA DARK
+   APENAS AJUSTES ESPECÍFICOS
+   ===================================================== */
+
+[data-bs-theme="dark"] .vinculo-resultados,
+[data-bs-theme="dark"] .vinculo-vazio,
+[data-bs-theme="dark"] .vinculo-input .input-group-text,
+[data-bs-theme="dark"] .vinculo-input .form-control {
+  background:
+    var(--bs-secondary-bg);
+}
+
+
+/* PROCESSO NO DARK */
+
+[data-bs-theme="dark"] .vinculo-icone.processo,
+[data-bs-theme="dark"] .vinculo-detalhe .fa-gavel,
+[data-bs-theme="dark"] .vinculo-detalhe .fa-folder {
+  color:
+    var(--bs-primary-text-emphasis);
+}
+
+
+/* CASO NO DARK */
+
+[data-bs-theme="dark"] .vinculo-icone.caso {
+  color:
+    var(--bs-warning-text-emphasis);
+}
+
+
+/* ATENDIMENTO NO DARK */
+
+[data-bs-theme="dark"] .vinculo-icone.atendimento,
+[data-bs-theme="dark"] .vinculo-detalhe .fa-ticket {
+  color:
+    var(--bs-success-text-emphasis);
+}

@@ -9,6 +9,7 @@ import { NivelGuard } from "../../core/guards/nivel.guard";
 import { AdminLayout } from "./layouts/layouts/admin-layout/admin-layout";
 import { CadastrarPessoas } from "./components/pessoa/cadastrar-pessoa/cadastrar-pessoas";
 import { ConsultarPessoas } from "./components/pessoa/consultar-pessoas/consultar-pessoas";
+
 import { CadastrarProcesso } from "./components/processo/cadastrar-processo/cadastrar-processo";
 import { CadastrarAtendimento } from "./components/atendimento/cadastrar-atendimento/cadastrar-atendimento";
 import { CadastrarCaso } from "./components/caso/cadastrar-caso/cadastrar-caso";
@@ -49,8 +50,17 @@ import { ConfiguracaoFinanceira } from "./components/configuracao-financeira/con
 import { ConsultarWebjur } from "./components/webjur/consulta/consultar-webjur";
 import { DetalhePublicacao } from "./components/webjur/detalhes/detalhe-publicacao";
 import { DetalheProcesso } from "./components/processo/detalhes/detalhe-processo";
-
-//import { CriarUsuario } from "./components/usuario/criar-usuario/criar-usuario";
+import { EditarPessoaFisica } from "./components/pessoa/editar-pessoa-fisica/editar-pessoa-fisica";
+import { EditarPessoaJuridica } from "./components/pessoa/editar-pessoa-juridica/editar-pessoa-juridica";
+import { EditarLicenca } from "./components/licenca/editar-licenca/editar-licenca";
+import { ConsultarLicencas } from "./components/licenca/consultar-licencas/consultar-licencas";
+import { CadastrarLicenca } from "./components/licenca/cadastrar-licenca/cadastrar-licenca";
+import { EditarEscritorio } from "./components/escritorio/editar-escritorio/editar-escritorio";
+import { ConsultarEscritorios } from "./components/escritorio/consultar-escritorio/consultar-escritorios";
+import { CadastrarEscritorio } from "./components/escritorio/cadastrar-escritorio/cadastrar-escritorio";
+import { CadastrarCategoriaFinanceira } from "./components/categoria-financeira/cadastrar/cadastrar-categoria-financeira";
+import { ConsultarCategoriaFinanceira } from "./components/categoria-financeira/consultar/consultar-categoria-financeira";
+import { EditarCategoriaFinanceira } from "./components/categoria-financeira/editar/editar-categoria-financeira";
 
 
 export const routes: Routes = [
@@ -77,7 +87,20 @@ export const routes: Routes = [
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
 
+            }, {
+                path: 'editar-pessoa-fisica/:id',
+                component: EditarPessoaFisica,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
+
+            }, {
+                path: 'editar-pessoa-juridica/:id',
+                component: EditarPessoaJuridica,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
+
             },
+
             //processo
             {
                 path: 'cadastrar-processo',
@@ -98,13 +121,13 @@ export const routes: Routes = [
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
 
-            }   
+            }
             , {
                 path: 'detalhe-processo/:id',
                 component: DetalheProcesso,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
-            },        
+            },
             //atendmento
             {
                 path: 'cadastrar-atendimento',
@@ -223,7 +246,7 @@ export const routes: Routes = [
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
             },
 
-        
+
             {
                 path: 'cadastrar-contrato',
                 component: CadastrarContrato,
@@ -240,7 +263,7 @@ export const routes: Routes = [
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
             },
-             {
+            {
                 path: 'editar-centro-custo/:id',
                 component: EditarCentroCusto,
                 canActivate: [AuthGuard, NivelGuard],
@@ -258,20 +281,20 @@ export const routes: Routes = [
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
             }
             ,
-             {
+            {
                 path: 'editar-conta-receber/:id',
                 component: EditarContaReceber,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
-             },
-             {
+            },
+            {
                 path: 'visualizar-conta-receber/:id',
                 component: VisualizarContaReceber,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
-             },
-             //conta pagar
-             
+            },
+            //conta pagar
+
             {
                 path: 'cadastrar-conta-pagar',
                 component: CadastrarContaPagar,
@@ -284,24 +307,24 @@ export const routes: Routes = [
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
             },
-              {
+            {
                 path: 'visualizar-conta-pagar/:id',
                 component: VisualizarContaPagar,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
-             }
-             ,
-              {
+            }
+            ,
+            {
                 path: 'dashboard-financeiro',
                 component: DashboardFinanceiro,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
-             },  {
+            }, {
                 path: 'configuracao-financeira',
                 component: ConfiguracaoFinanceira,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
-             },
+            },
             {
                 path: 'perfil',
                 component: Perfil,
@@ -309,8 +332,8 @@ export const routes: Routes = [
                 data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
                 // quem pode acessar
             },
-//centro de custo
-{
+            //centro de custo
+            {
                 path: 'cadastrar-centro-custo',
                 component: CadastrarCentroCusto,
                 canActivate: [AuthGuard, NivelGuard],
@@ -321,9 +344,28 @@ export const routes: Routes = [
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
             },
+              //categoria financeira
+            {
+                path: 'cadastrar-categoria-financeira',
+                component: CadastrarCategoriaFinanceira,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
+            },
+             {
+                path: 'consultar-categoria-financeira',
+                component: ConsultarCategoriaFinanceira,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
+            },
+             {
+                path: 'editar-categoria-financeira/:id',
+                component: EditarCategoriaFinanceira,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
+            },
             //webJur
 
-            
+
             {
                 path: 'consultar-webjur',
                 component: ConsultarWebjur,
@@ -334,8 +376,76 @@ export const routes: Routes = [
                 component: DetalhePublicacao,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
+            },// =========================
+            // ESCRITÓRIOS
+            // =========================
+
+            {
+                path: 'cadastrar-escritorio',
+                component: CadastrarEscritorio,
+                canActivate: [AuthGuard, NivelGuard],
+                data: {
+                    niveis: [
+                        'Super Administrador'
+                    ]
+                }
             },
-            
+            {
+                path: 'consultar-escritorios',
+                component: ConsultarEscritorios,
+                canActivate: [AuthGuard, NivelGuard],
+                data: {
+                    niveis: [
+                        'Super Administrador'
+                    ]
+                }
+            },
+            {
+                path: 'editar-escritorio/:id',
+                component: EditarEscritorio,
+                canActivate: [AuthGuard, NivelGuard],
+                data: {
+                    niveis: [
+                        'Super Administrador'
+                    ]
+                }
+            },
+
+            // =========================
+            // LICENÇAS
+            // =========================
+
+            {
+                path: 'cadastrar-licenca',
+                component: CadastrarLicenca,
+                canActivate: [AuthGuard, NivelGuard],
+                data: {
+                    niveis: [
+                        'Super Administrador'
+                    ]
+                }
+            },
+            {
+                path: 'consultar-licencas',
+                component: ConsultarLicencas,
+                canActivate: [AuthGuard, NivelGuard],
+                data: {
+                    niveis: [
+                        'Super Administrador'
+                    ]
+                }
+            },
+            {
+                path: 'editar-licenca/:id',
+                component: EditarLicenca,
+                canActivate: [AuthGuard, NivelGuard],
+                data: {
+                    niveis: [
+                        'Super Administrador'
+                    ]
+                }
+            },
+
             { path: '', redirectTo: 'painel-principal', pathMatch: 'full' }
         ]
     }

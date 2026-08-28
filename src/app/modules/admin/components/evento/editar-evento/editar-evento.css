@@ -40,3 +40,12 @@
   background-color: #e9f2ff;
   color: #0d6efd;
 }
+.vinculo-row {
+  position: relative;
+  z-index: 1500;
+}
+
+.vinculo-col {
+  position: relative;
+  z-index: 1500;
+}

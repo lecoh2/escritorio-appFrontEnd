@@ -1,16 +1,26 @@
 import {
   ChangeDetectorRef,
   Component,
-  OnInit,
-  inject
+  inject,
+  NgZone,
+  OnInit
 } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
-import { FormaRecebimento } from '../../../../../core/models/enums/conta/forma-recebimentoEnum';
-import { ContaPagarService } from '../../../../../core/services/conta-paga.service';
-import { ContaPagarBaixaRequest } from '../../../../../core/models/contas/conta-pagar-baixa-request';
-import { BaixaFinanceiraRequest } from '../../../../../core/models/baixa/baixa-financeira-request';
+import {
+  ActivatedRoute
+} from '@angular/router';
 
+import {
+  FormaRecebimento
+} from '../../../../../core/models/enums/conta/forma-recebimentoEnum';
+
+import {
+  ContaPagarService
+} from '../../../../../core/services/conta-paga.service';
+
+import {
+  ContaPagarBaixaRequest
+} from '../../../../../core/models/contas/conta-pagar-baixa-request';
 
 
 @Component({
@@ -19,28 +29,73 @@ import { BaixaFinanceiraRequest } from '../../../../../core/models/baixa/baixa-f
   templateUrl: './visualizar-conta-pagar.html',
   styleUrl: './visualizar-conta-pagar.css'
 })
-export class VisualizarContaPagar implements OnInit {
+export class VisualizarContaPagar
+  implements OnInit {
 
   conta: any = null;
-  contaSelecionadaId: string = '';
+
+  contaSelecionadaId = '';
 
   carregando = false;
+
   salvandoBaixa = false;
 
   mensagemErro: string[] = [];
+
   mensagemSucesso: string[] = [];
 
   mostrarModalBaixa = false;
 
-  formaRecebimentoEnum = FormaRecebimento;
+  formaRecebimentoEnum =
+    FormaRecebimento;
+pagamentoSelecionado: any = null;
 
-  private route = inject(ActivatedRoute);
-  private contaService = inject(ContaPagarService);
-  private cdr = inject(ChangeDetectorRef);
+mostrarModalPagamento = false;
+
+  private route =
+    inject(ActivatedRoute);
+
+  private contaService =
+    inject(ContaPagarService);
+
+  private cdr =
+    inject(ChangeDetectorRef);
+
+  private zone =
+    inject(NgZone);
+
+
+  // =====================================================
+  // BAIXA
+  // =====================================================
+
+  baixa: ContaPagarBaixaRequest = {
+
+    valorPago: 0,
+
+    dataBaixa:
+      new Date(),
+
+    formaRecebimento:
+      FormaRecebimento.Pix,
+
+    contaBancariaEmpresaId:
+      undefined,
+
+    observacao:
+      ''
+
+  };
+
+
+  // =====================================================
+  // INIT
+  // =====================================================
 
   ngOnInit(): void {
 
-    const id = this.route.snapshot.paramMap.get('id');
+    const id =
+      this.route.snapshot.paramMap.get('id');
 
     if (!id) {
 
@@ -54,148 +109,252 @@ export class VisualizarContaPagar implements OnInit {
     this.carregarConta(id);
   }
 
+
+  // =====================================================
+  // SALDO
+  // =====================================================
+
   get saldo(): number {
 
-    return (this.conta?.valor ?? 0)
-      - (this.conta?.valorPago ?? 0);
+    return (
+      (this.conta?.valor ?? 0) -
+      (this.conta?.valorPago ?? 0)
+    );
   }
 
-  formatarContrato(numero?: string): string {
+
+  // =====================================================
+  // CONTRATO
+  // =====================================================
+
+  formatarContrato(
+    numero?: string
+  ): string {
 
     if (!numero) {
       return '';
     }
 
     if (numero.length === 9) {
-      return `CTR: ${numero.substring(0, 5)}-${numero.substring(5)}`;
+
+      return `CTR: ${numero.substring(
+        0,
+        5
+      )}-${numero.substring(5)}`;
     }
 
     return `CTR: ${numero}`;
   }
 
-  carregarConta(id: string): void {
 
-    this.carregando = true;
+  // =====================================================
+  // CARREGAR CONTA
+  // =====================================================
+
+  carregarConta(
+    id: string
+  ): void {
+
+    this.carregando =
+      true;
+
+    this.mensagemErro =
+      [];
 
     this.contaService
       .obterContaPagarPorId(id)
       .subscribe({
 
-        next: (response) => {
+        next: (
+          response
+        ) => {
 
-          this.conta = response;
+          this.zone.run(() => {
 
-          this.carregando = false;
+            this.conta =
+              response;
 
-          this.cdr.detectChanges();
+            this.carregando =
+              false;
+
+            this.cdr.detectChanges();
+
+          });
+
         },
 
-        error: (error) => {
+        error: (
+          error
+        ) => {
 
-          console.error(error);
+          console.error(
+            error
+          );
 
-          this.mensagemErro = [
-            'Não foi possível carregar a conta a pagar.'
-          ];
+          this.zone.run(() => {
 
-          this.carregando = false;
+            this.mensagemErro = [
+              'Não foi possível carregar a conta a pagar.'
+            ];
 
-          this.cdr.detectChanges();
+            this.carregando =
+              false;
+
+            this.cdr.detectChanges();
+
+          });
+
         }
+
       });
   }
 
-  getFormaRecebimento(
-    forma: number
-  ): string {
 
-    switch (forma) {
+  // =====================================================
+  // FORMA DE PAGAMENTO
+  // =====================================================
+getFormaRecebimento(
+  forma: FormaRecebimento
+): string {
 
-      case FormaRecebimento.Dinheiro:
-        return 'Dinheiro';
+  switch (forma) {
 
-      case FormaRecebimento.Pix:
-        return 'PIX';
+    case FormaRecebimento.Dinheiro:
+      return 'Dinheiro';
 
-      case FormaRecebimento.CartaoCredito:
-        return 'Cartão de Crédito';
+    case FormaRecebimento.Pix:
+      return 'PIX';
 
-      case FormaRecebimento.CartaoDebito:
-        return 'Cartão de Débito';
+    case FormaRecebimento.CartaoCredito:
+      return 'Cartão de Crédito';
 
-      case FormaRecebimento.Transferencia:
-        return 'Transferência';
+    case FormaRecebimento.CartaoDebito:
+      return 'Cartão de Débito';
 
-      case FormaRecebimento.Boleto:
-        return 'Boleto';
+    case FormaRecebimento.Boleto:
+      return 'Boleto';
 
-      default:
-        return 'Não informado';
-    }
+    case FormaRecebimento.Transferencia:
+      return 'Transferência';
+
+    default:
+      return 'Não informado';
   }
+}
+
 
   getFormaRecebimentoIcon(
-    tipo: FormaRecebimento
-  ): string {
+  tipo: FormaRecebimento
+): string {
 
-    switch (tipo) {
+  switch (tipo) {
 
-      case FormaRecebimento.Pix:
-        return 'fas fa-qrcode text-primary';
+    case FormaRecebimento.Dinheiro:
+      return 'fas fa-money-bill-wave text-success';
 
-      case FormaRecebimento.CartaoCredito:
-        return 'fas fa-credit-card text-success';
+    case FormaRecebimento.Pix:
+      return 'fas fa-qrcode text-primary';
 
-      case FormaRecebimento.CartaoDebito:
-        return 'fas fa-credit-card text-info';
+    case FormaRecebimento.CartaoCredito:
+      return 'fas fa-credit-card text-success';
 
-      case FormaRecebimento.Dinheiro:
-        return 'fas fa-money-bill-wave text-success';
+    case FormaRecebimento.CartaoDebito:
+      return 'fas fa-credit-card text-info';
 
-      case FormaRecebimento.Boleto:
-        return 'fas fa-barcode text-warning';
+    case FormaRecebimento.Boleto:
+      return 'fas fa-barcode text-warning';
 
-      case FormaRecebimento.Transferencia:
-        return 'fas fa-exchange-alt text-secondary';
+    case FormaRecebimento.Transferencia:
+      return 'fas fa-exchange-alt text-secondary';
 
-      default:
-        return 'fas fa-wallet';
-    }
+    default:
+      return 'fas fa-wallet';
   }
+}
 
-baixa: BaixaFinanceiraRequest = {
-  valorPago: 0,
-  dataBaixa: new Date(),
-  formaPagamentoId: '',
-  formaPagamento: FormaRecebimento.Pix,
-  observacao: ''
-};
+
+  // =====================================================
+  // ABRIR MODAL BAIXA
+  // =====================================================
 
   abrirModalBaixa(
-  contaId: string,
-  valor: number
-): void {
+    contaId: string,
+    valor: number
+  ): void {
 
-  this.mensagemErro = [];
-  this.mensagemSucesso = [];
+    this.mensagemErro =
+      [];
 
-  this.contaSelecionadaId = contaId;
+    this.mensagemSucesso =
+      [];
 
-  this.baixa = {
-    contaReceberId: '',
-    valorPago: valor, // <-- usa o valor recebido
-    dataBaixa: new Date(),
-    formaPagamentoId: '',
-    formaPagamento: FormaRecebimento.Pix,
-    observacao: ''
-  };
+    this.contaSelecionadaId =
+      contaId;
 
-  this.mostrarModalBaixa = true;
-}
+    this.baixa = {
+
+      valorPago:
+        valor,
+
+      dataBaixa:
+        new Date(),
+
+      formaRecebimento:
+        FormaRecebimento.Pix,
+
+      contaBancariaEmpresaId:
+        undefined,
+
+      observacao:
+        ''
+
+    };
+
+    this.mostrarModalBaixa =
+      true;
+
+    this.cdr.detectChanges();
+  }
+
+
+  // =====================================================
+  // CONFIRMAR BAIXA
+  // =====================================================
 
   confirmarBaixa(): void {
 
-    this.salvandoBaixa = true;
+    this.mensagemErro =
+      [];
+
+    this.mensagemSucesso =
+      [];
+
+    if (
+      !this.contaSelecionadaId
+    ) {
+
+      this.mensagemErro = [
+        'Conta não identificada.'
+      ];
+
+      return;
+    }
+
+    if (
+      this.baixa.valorPago <= 0
+    ) {
+
+      this.mensagemErro = [
+        'O valor do pagamento deve ser maior que zero.'
+      ];
+
+      return;
+    }
+
+    this.salvandoBaixa =
+      true;
+
+    this.cdr.detectChanges();
 
     this.contaService
       .baixarContaPagar(
@@ -204,82 +363,218 @@ baixa: BaixaFinanceiraRequest = {
       )
       .subscribe({
 
-        next: (response: any) => {
+        next: (
+          response: any
+        ) => {
 
-          this.mensagemSucesso = [
-            response?.message ??
-            'Baixa realizada com sucesso.'
-          ];
+          this.zone.run(() => {
 
-          this.fecharModalBaixa();
+            this.mensagemSucesso = [
 
-          this.salvandoBaixa = false;
+              response?.message ??
+              'Baixa realizada com sucesso.'
 
-          this.carregarConta(this.conta.id);
+            ];
+
+            this.fecharModalBaixa();
+
+            this.salvandoBaixa =
+              false;
+
+            if (
+              this.conta?.id
+            ) {
+
+              this.carregarConta(
+                this.conta.id
+              );
+            }
+
+            this.cdr.detectChanges();
+
+          });
+
         },
 
-        error: (err) => {
+        error: (
+          err
+        ) => {
 
-          this.salvandoBaixa = false;
+          this.salvandoBaixa =
+            false;
 
-          this.tratarErro(err);
+          this.tratarErro(
+            err
+          );
+
         }
+
       });
   }
 
+
+  // =====================================================
+  // FECHAR MODAL
+  // =====================================================
+
   fecharModalBaixa(): void {
 
-    this.mostrarModalBaixa = false;
+    this.mostrarModalBaixa =
+      false;
 
-  this.baixa = {
-  contaReceberId: '',
-  valorPago: 0,
-  dataBaixa: new Date(),
-  formaPagamentoId: '',
-  formaPagamento: FormaRecebimento.Pix,
-  observacao: ''
-};
+    this.baixa = {
 
-    this.contaSelecionadaId = '';
+      valorPago:
+        0,
+
+      dataBaixa:
+        new Date(),
+
+      formaRecebimento:
+        FormaRecebimento.Pix,
+
+      contaBancariaEmpresaId:
+        undefined,
+
+      observacao:
+        ''
+
+    };
+
+    this.contaSelecionadaId =
+      '';
 
     this.cdr.detectChanges();
   }
 
-  testarParcela(parcela: any): void {
-    console.log('PARCELA', parcela);
+
+  // =====================================================
+  // TESTE PARCELA
+  // =====================================================
+
+  testarParcela(
+    parcela: any
+  ): void {
+
+    console.log(
+      'PARCELA',
+      parcela
+    );
   }
 
-  private tratarErro(err: any): void {
+
+  // =====================================================
+  // ERRO
+  // =====================================================
+
+  private tratarErro(
+    err: any
+  ): void {
+
+    this.zone.run(() => {
+
+      this.mensagemErro =
+        [];
+
+      const e =
+        err?.error;
+
+      if (e?.errors) {
+
+        for (
+          const key in e.errors
+        ) {
+
+          this.mensagemErro.push(
+            ...e.errors[key]
+          );
+        }
+
+      } else if (e?.mensagem) {
+
+        this.mensagemErro.push(
+          e.mensagem
+        );
+
+      } else if (e?.message) {
+
+        this.mensagemErro.push(
+          e.message
+        );
+
+      } else {
+
+        this.mensagemErro.push(
+          'Erro inesperado ao realizar a baixa.'
+        );
+
+      }
+
+      this.carregando =
+        false;
+
+      this.salvandoBaixa =
+        false;
+
+      console.error(
+        'ERRO BACKEND:',
+        e
+      );
+
+      this.cdr.detectChanges();
+
+    });
+  }
+abrirDetalhesPagamento(item:any): void {
 
     this.mensagemErro = [];
 
-    const e = err?.error;
+    if (!item) {
 
-    if (e?.errors) {
+        this.mensagemErro = [
+            'Pagamento não encontrado.'
+        ];
 
-      for (const key in e.errors) {
-        this.mensagemErro.push(...e.errors[key]);
-      }
-    }
-    else if (e?.mensagem) {
-
-      this.mensagemErro.push(e.mensagem);
-    }
-    else if (e?.message) {
-
-      this.mensagemErro.push(e.message);
-    }
-    else {
-
-      this.mensagemErro.push(
-        'Erro inesperado ao realizar a baixa.'
-      );
+        return;
     }
 
-    this.carregando = false;
 
-    console.error('ERRO BACKEND:', e);
+    // parcela
+    if(item.baixas)
+    {
+        if(item.baixas.length === 0)
+        {
+            this.mensagemErro = [
+                'Não existem pagamentos registrados.'
+            ];
+            return;
+        }
+
+        this.pagamentoSelecionado =
+            item.baixas[0];
+    }
+    else
+    {
+        // conta à vista
+        this.pagamentoSelecionado =
+            item;
+    }
+
+
+    this.mostrarModalPagamento = true;
 
     this.cdr.detectChanges();
-  }
+}
+
+
+fecharDetalhesPagamento(): void {
+
+    this.mostrarModalPagamento =
+        false;
+
+    this.pagamentoSelecionado =
+        null;
+
+    this.cdr.detectChanges();
+}
 }

@@ -1,0 +1,335 @@
+<div class="container-fluid p-0">
+
+    <h1 class="h3 mb-3">
+
+        <i class="align-middle me-2 fas fa-fw fa-key"></i>
+
+        Editar Licença:
+
+        <span
+            *ngIf="chaveLicenca"
+            class="badge badge-subtle-success">
+
+            {{ chaveLicenca }}
+        </span>
+
+    </h1>
+
+    <app-spinner-consulta
+        *ngIf="carregandoConsulta"
+        [carregando]="true"
+        message="Consultando..."
+        class="d-inline-block">
+    </app-spinner-consulta>
+
+    <div
+        class="row"
+        *ngIf="!carregandoConsulta">
+
+        <div class="col-md-12">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <app-spinner
+                        *ngIf="carregando"
+                        [show]="true"
+                        message="Atualizando..."
+                        class="d-inline-block">
+                    </app-spinner>
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemSucesso.length > 0
+                        "
+                        class="w-100"
+                        titulo="Sucesso!"
+                        [mensagens]="mensagemSucesso"
+                        tipo="success"
+                        icone="fas fa-check-circle fa-lg">
+                    </app-alerts>
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemErro.length > 0
+                        "
+                        class="w-100"
+                        titulo="Erro!"
+                        [mensagens]="mensagemErro"
+                        tipo="danger"
+                        icone="fas fa-times-circle fa-lg">
+                    </app-alerts>
+
+                    <form
+                        [formGroup]="form"
+                        (ngSubmit)="onSubmit()"
+                        class="user">
+
+                        <div class="row">
+
+                            <input
+                                type="hidden"
+                                formControlName="id" />
+
+                            <!-- CHAVE -->
+
+                            <div class="mb-4 col-md-6">
+
+                                <label class="form-label">
+                                    Chave da Licença
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    [value]="chaveLicenca"
+                                    readonly />
+
+                            </div>
+
+                            <!-- ESCRITÓRIO -->
+
+                            <div class="mb-4 col-md-6">
+
+                                <label
+                                    for="escritorioId"
+                                    class="form-label">
+
+                                    Escritório*
+                                </label>
+
+                                <select
+                                    id="escritorioId"
+                                    class="form-select"
+                                    formControlName="escritorioId">
+
+                                    <option value="">
+                                        Selecione o escritório
+                                    </option>
+
+                                    <option
+                                        *ngFor="let escritorio of escritorios"
+                                        [value]="escritorio.id">
+
+                                        {{ escritorio.nome }}
+                                    </option>
+
+                                </select>
+
+                                <small class="text-muted">
+                                    A licença não pode ser transferida para outro escritório.
+                                </small>
+
+                            </div>
+
+                            <!-- PLANO -->
+
+                            <div class="mb-4 col-md-4">
+
+                                <label
+                                    for="tipoPlano"
+                                    class="form-label">
+
+                                    Tipo de Plano*
+                                </label>
+
+                                <select
+                                    id="tipoPlano"
+                                    class="form-select"
+                                    formControlName="tipoPlano">
+
+                                    <option [ngValue]="null">
+                                        Selecione o plano
+                                    </option>
+
+                                    <option
+                                        *ngFor="let plano of tiposPlano"
+                                        [ngValue]="plano.id">
+
+                                        {{ plano.nome }}
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- STATUS -->
+
+                            <div class="mb-4 col-md-4">
+
+                                <label
+                                    for="status"
+                                    class="form-label">
+
+                                    Status*
+                                </label>
+
+                                <select
+                                    id="status"
+                                    class="form-select"
+                                    formControlName="status">
+
+                                    <option [ngValue]="null">
+                                        Selecione o status
+                                    </option>
+
+                                    <option
+                                        *ngFor="let status of statusLicencas"
+                                        [ngValue]="status.id">
+
+                                        {{ status.nome }}
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- LIMITE -->
+
+                            <div class="mb-4 col-md-4">
+
+                                <label
+                                    for="limiteUsuarios"
+                                    class="form-label">
+
+                                    Limite de Usuários*
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="limiteUsuarios"
+                                    class="form-control"
+                                    formControlName="limiteUsuarios"
+                                    min="1" />
+
+                                <div
+                                    *ngIf="
+                                        form.get('limiteUsuarios')?.touched &&
+                                        form.get('limiteUsuarios')?.invalid
+                                    "
+                                    class="text-danger">
+
+                                    <span
+                                        *ngIf="
+                                            form.get('limiteUsuarios')
+                                            ?.hasError('required')
+                                        ">
+
+                                        O limite é obrigatório.
+                                    </span>
+
+                                    <span
+                                        *ngIf="
+                                            form.get('limiteUsuarios')
+                                            ?.hasError('min')
+                                        ">
+
+                                        O limite deve ser maior que zero.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <!-- DATA INÍCIO -->
+
+                            <div class="mb-4 col-md-6">
+
+                                <label
+                                    for="dataInicio"
+                                    class="form-label">
+
+                                    Data de Início*
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="dataInicio"
+                                    class="form-control"
+                                    formControlName="dataInicio"
+                                    (change)="validarDatas()" />
+
+                            </div>
+
+                            <!-- DATA VENCIMENTO -->
+
+                            <div class="mb-4 col-md-6">
+
+                                <label
+                                    for="dataVencimento"
+                                    class="form-label">
+
+                                    Data de Vencimento*
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="dataVencimento"
+                                    class="form-control"
+                                    formControlName="dataVencimento"
+                                    (change)="validarDatas()" />
+
+                                <div
+                                    *ngIf="
+                                        form.get('dataVencimento')?.touched &&
+                                        form.get('dataVencimento')?.invalid
+                                    "
+                                    class="text-danger">
+
+                                    <span
+                                        *ngIf="
+                                            form.get('dataVencimento')
+                                            ?.hasError('dataInvalida')
+                                        ">
+
+                                        A data de vencimento deve ser posterior à data de início.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <!-- BOTÕES -->
+
+                            <div class="col-12 mt-4">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    [disabled]="
+                                        !podeEnviar ||
+                                        carregando
+                                    ">
+
+                                    <i class="align-middle me-2 fas fa-save fa-lg"></i>
+
+                                    Salvar Alterações
+                                </button>
+
+                                <a
+                                    routerLink="/admin/consultar-licencas"
+                                    class="btn btn-secondary ms-2">
+
+                                    <i class="align-middle me-2 fas fa-arrow-left"></i>
+
+                                    Voltar
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -31,12 +31,23 @@
 </div>
             <app-spinner *ngIf="carregando" [show]="true"></app-spinner>
 
-            <app-alerts *ngIf="!carregando && mensagemSucesso.length" titulo="Sucesso!" [mensagens]="mensagemSucesso"
-                tipo="success" icone="fas fa-check-circle">
-            </app-alerts>
-            <app-alerts *ngIf="!carregando && mensagemErro.length" titulo="Erro!" [mensagens]="mensagemErro"
-                tipo="danger" icone="fas fa-times-circle">
-            </app-alerts>
+         <app-alerts
+        *ngIf="!carregando && mensagemSucesso.length"
+        titulo="Sucesso!"
+        [mensagens]="mensagemSucesso"
+        tipo="success"
+        icone="fas fa-check-circle">
+      </app-alerts>
+
+      <app-alerts
+        *ngIf="!carregando && mensagemErro.length"
+        titulo="Erro!"
+        [mensagens]="mensagemErro"
+        tipo="danger"
+        icone="fas fa-times-circle">
+      </app-alerts>
+
+
 
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
                 <!-- ETIQUETAS -->
@@ -129,15 +140,19 @@
 
                     <div class="col-md-8">
                         <label class="form-label">Buscar vínculo</label>
-                        <app-vinculo [resultados]="resultadosVinculo" (buscar)="buscarVinculo($event)"
-                            (selecionado)="selecionarVinculo($event)">
-                        </app-vinculo>
+                     <app-vinculo
+  [resultados]="resultadosVinculo"
+  [vinculoSelecionado]="vinculoSelecionado"
+  [tipoVinculo]="form.get('tipoVinculo')?.value ?? null"
+  (buscar)="buscarVinculo($event)"
+  (selecionado)="selecionarVinculo($event)">
+</app-vinculo>
 
                     </div>
                 </div>
-                <div class="row mb-3">
+                <!--<div class="row mb-3">
 
-                    <!-- HEADER INLINE (lado a lado de verdade) -->
+                  
                     <div class="col-12 mb-2">
 
                         <div class="d-inline-flex align-items-center gap-3">
@@ -157,7 +172,7 @@
 
                     </div>
 
-                    <!-- ITENS -->
+              
                     <div class="d-flex flex-column gap-2">
 
                         <div *ngFor="let item of listasTarefa; let i = index" class="d-flex align-items-center gap-2">
@@ -181,7 +196,7 @@
                             [(selecionadas)]="listasTarefa" (buscar)="buscarListaTarefas($event)">
                         </app-autocomplete-lista-tarefas>
                     </div>
-                </div> <!-- BOTÃO -->
+                </div>--> <!-- BOTÃO -->
                 <button type="submit" class="btn btn-primary" [disabled]="!podeEnviar || carregando">
                     <i class="align-middle me-2 fas fa-save fa-lg"></i> Salvar
                 </button>

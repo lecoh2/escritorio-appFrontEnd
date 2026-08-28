@@ -1,0 +1,57 @@
+.nivel-super-admin {
+    color: #dc3545 !important;
+}
+
+.nivel-admin {
+    color: #fd7e14 !important;
+}
+
+.nivel-advogado {
+    color: #198754 !important;
+}
+
+.nivel-estagiario {
+    color: #6f42c1 !important;
+}
+
+.nivel-outro {
+    color: #6c757d !important;
+}/* Tecnologia da Informação */
+.setor-ti {
+    color: #0d6efd !important;
+}
+
+/* Financeiro */
+.setor-financeiro {
+    color: #198754 !important;
+}
+
+/* Administrativo */
+.setor-administrativo {
+    color: #fd7e14 !important;
+}
+
+/* Jurídico */
+.setor-juridico {
+    color: #6f42c1 !important;
+}
+
+/* Recursos Humanos */
+.setor-rh {
+    color: #d63384 !important;
+}
+
+/* Comercial */
+.setor-comercial {
+    color: #0dcaf0 !important;
+}
+
+/* Atendimento */
+.setor-atendimento {
+    color: #20c997 !important;
+}
+
+/* Qualquer outro setor */
+.setor-outro {
+    color: #6c757d !important;
+}

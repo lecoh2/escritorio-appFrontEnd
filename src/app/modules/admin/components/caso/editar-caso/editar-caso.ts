@@ -39,14 +39,14 @@ export class EditarCaso implements OnInit {
   acessoEnum = AcessoEnum;
 
   // ================= FORM =================
-  form = this.fb.group({
-    pasta: [''],
-    titulo: ['', Validators.required],
-    descricao: [''],
-    observacao: [''],
-    acesso: this.fb.control<AcessoEnum | null>(null),
-    responsavelId: this.fb.control<string | null>(null),
-  });
+form = this.fb.group({
+  pasta: ['', Validators.required],
+  titulo: ['', Validators.required],
+  descricao: ['', Validators.required],
+  observacao: [''],
+  acesso: this.fb.control<AcessoEnum | null>(null),
+  responsavelId: this.fb.control<string | null>(null, Validators.required),
+});
 
   // ================= LISTAS =================
   clientesSelecionados: any[] = [];
@@ -150,48 +150,64 @@ console.log('✅ ENVOLVIDOS MAPEADOS:', this.envolvidosSelecionados);
   }
 
   // ================= SUBMIT =================
-  onSubmit() {
-    if (this.form.invalid) return;
+onSubmit() {
+  this.mensagemErro = [];
+  this.mensagemSucesso = [];
 
-    const formValue = this.form.value;
-
-    const request = {
-      ...formValue,
-
-      grupoCasoCliente: this.clientesSelecionados.map(c => ({
-        idPessoa: c.id
-      })),
-
-      grupoCasoEnvolvidos: this.envolvidosSelecionados.map(e => ({
-        idPessoa: e.id,
-        idQualificacao: e.idQualificacao
-      })),
-
-      grupoEtiquetaCaso: this.etiquetasSelecionadas.map(e => ({
-        etiquetaId: e.id
-      }))
-    };
-
-    this.casoService.atualizarCaso(this.id, request)
-      .pipe(
-        finalize(() => {
-          this.carregando = false;
-          this.cdr.detectChanges();
-        })
-      )
-      .subscribe({
-        next: (res) => {
-          this.carregando = false;
-          this.mensagemSucesso = [res.message];
-  
-          setTimeout(() => {
-            this.router.navigate(['/admin/gestao-atividades']);
-          }, 3000);
-        },
-        error: (err: HttpErrorResponse) => this.tratarErro(err)
-      });
-     
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  if (this.clientesSelecionados.length === 0) {
+    this.mensagemErro = ['Selecione pelo menos um cliente'];
+    return;
+  }
+
+  if (this.envolvidosSelecionados.some(e => !e.idQualificacao)) {
+    this.mensagemErro = ['Selecione a qualificação para todos os envolvidos'];
+    return;
+  }
+
+  this.carregando = true;
+
+  const formValue = this.form.value;
+
+  const request = {
+    ...formValue,
+
+    grupoCasoCliente: this.clientesSelecionados.map(c => ({
+      idPessoa: c.id
+    })),
+
+    grupoCasoEnvolvidos: this.envolvidosSelecionados.map(e => ({
+      idPessoa: e.id,
+      idQualificacao: e.idQualificacao
+    })),
+
+    grupoEtiquetaCaso: this.etiquetasSelecionadas.map(e => ({
+      etiquetaId: e.id
+    }))
+  };
+
+  this.casoService.atualizarCaso(this.id, request)
+    .pipe(
+      finalize(() => {
+        this.carregando = false;
+        this.cdr.detectChanges();
+      })
+    )
+    .subscribe({
+      next: (res) => {
+        this.mensagemSucesso = [res.message];
+
+        setTimeout(() => {
+          this.router.navigate(['/admin/consultar-caso']);
+        }, 3000);
+      },
+      error: (err: HttpErrorResponse) => this.tratarErro(err)
+    });
+}
   
    private tratarErro(err: HttpErrorResponse) {
     this.mensagemErro = [];

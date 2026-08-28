@@ -56,15 +56,15 @@ responsaveis: ConsultarUsuarioResponse[] = [];
   etiquetasSelecionadas: ConsultarEtiquetaResponse[] = [];
 
   // ================= FORM =================
-  form = this.fb.group({
-    pasta: [''],
-    titulo: ['', Validators.required],
-    descricao: [''],
-    observacao: [''],
-    acesso: [null],
-    responsavelId: [''],
-    usuarioCadastroId:[''],
-  });
+form = this.fb.group({
+  pasta: ['', Validators.required],
+  titulo: ['', Validators.required],
+  descricao: ['', Validators.required],
+  observacao: [''],
+  acesso: [null],
+  responsavelId: [null, Validators.required],
+  usuarioCadastroId: [''],
+});
 
   ngOnInit(): void {
     this.usuarioLogado = this.authHelper.get();
@@ -111,24 +111,27 @@ responsaveis: ConsultarUsuarioResponse[] = [];
   }
 
   // ================= SUBMIT =================
-  onSubmit(): void {
-    this.mensagemErro = [];
-    this.mensagemSucesso = [];
+ onSubmit(): void {
+  this.mensagemErro = [];
+  this.mensagemSucesso = [];
 
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    this.mensagemErro = ['Preencha todos os campos obrigatórios'];
+    return;
+  }
 
-    if (this.clientesSelecionados.length === 0) {
-      this.mensagemErro = ['Selecione pelo menos um cliente'];
-      return;
-    }
-    // 🔥 👉 COLOCA AQUI
-    if (this.envolvidosSelecionados.some(e => !e.idQualificacao)) {
-      this.mensagemErro = ['Selecione a qualificação para todos os envolvidos'];
-      return;
-    }
+  if (this.clientesSelecionados.length === 0) {
+    this.mensagemErro = ['Selecione pelo menos um cliente'];
+    return;
+  }
+
+  if (this.envolvidosSelecionados.some(e => !e.idQualificacao)) {
+    this.mensagemErro = [
+      'Selecione a qualificação para todos os envolvidos'
+    ];
+    return;
+  }
     this.carregando = true;
 
     const formValue = this.form.value;
@@ -163,7 +166,7 @@ responsaveis: ConsultarUsuarioResponse[] = [];
         this.resetar();
         this.carregando = false;
         this.mensagemSucesso = [res.message];
-        this.router.navigate(['/admin/cadastrar-caso']);
+        this.router.navigate(['/admin/consultar-caso']);
       },
       error: (err: HttpErrorResponse) => this.tratarErro(err)
     });

@@ -70,7 +70,7 @@ export class CadastrarProcesso implements OnInit {
 
   instanciaEnum = InstanciaEnum;
   acessoEnum = AcessoEnum;
-
+tentouEnviar = false;
   // ================== FORM ==================
   form = this.builder.group({
     idUsuario: [''],
@@ -91,9 +91,13 @@ export class CadastrarProcesso implements OnInit {
     instancia: [null],
     acesso: [null],
   });
-  get podeEnviar(): boolean {
-    return this.form.valid;
-  }
+/*get podeEnviar(): boolean {
+  return (
+    this.form.valid &&
+    this.pessoasSelecionadas.length > 0 &&
+    !this.carregando
+  );
+}*/
 
   // ================== INIT ==================
   ngOnInit(): void {
@@ -231,75 +235,204 @@ onMoneyInput(event: any, campo: 'valorCausa' | 'valorCondenacao') {
 
   // ================== SUBMIT ==================
   onSubmit(): void {
+this.tentouEnviar = true;
+  this.mensagemErro = [];
+  this.mensagemSucesso = [];
 
-    this.mensagemErro = [];
-    this.mensagemSucesso = [];
+  // =========================
+  // VALIDAR FORMULÁRIO
+  // =========================
 
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
 
-    // if (this.pessoasSelecionadas.some(p => !p.idQualificacao)) {
-    //   this.mensagemErro = ['Selecione a qualificação para todos os clientes.'];
-    //    return;
-    //  }
+  // =========================
+  // VALIDAR CLIENTE
+  // =========================
 
-    // if (this.envolvidosSelecionados.some(e => !e.idQualificacao)) {
-    //  this.mensagemErro = ['Selecione a qualificação para todos os envolvidos.'];
-    //   return;
-    //  }
+  if (
+    !this.pessoasSelecionadas ||
+    this.pessoasSelecionadas.length === 0
+  ) {
+    this.mensagemErro = [
+      'É obrigatório selecionar pelo menos um cliente.'
+    ];
 
-    this.carregando = true;
+    return;
+  }
 
-    const formValue = this.form.value;
-    const limpar = (v: any) => v ?? undefined;
+  // =========================
+  // CARREGAMENTO
+  // =========================
 
-    const request = {
-      acaoId: limpar(formValue.acaoId),
-      varaId: formValue.varaId!,
-      usuarioResponsavelId: limpar(formValue.usuarioResponsavelId),
-      juizo: limpar(formValue.juizo),
-      pasta: limpar(formValue.pasta),
-      titulo: limpar(formValue.titulo),
-      numeroProcesso: limpar(formValue.numeroProcesso),
-      linkTribunal: limpar(formValue.linkTribunal),
-      objeto: limpar(formValue.objeto),
-      valorCausa: limpar(formValue.valorCausa),
-      distribuido: limpar(formValue.distribuido),
-      valorCondenacao: limpar(formValue.valorCondenacao),
-      observacao: limpar(formValue.observacao),
-      instancia: limpar(formValue.instancia),
-      acesso: limpar(formValue.acesso),
+  this.carregando = true;
 
-      grupoClienteProcesso: this.pessoasSelecionadas.map(p => ({
-        idPessoa: p.id,
-        idQualificacao: p.idQualificacao ?? undefined
-      })),
+  // =========================
+  // DADOS DO FORM
+  // =========================
 
-      grupoEnvolvidosProcesso: this.envolvidosSelecionados.map(e => ({
-        idPessoa: e.id,
-        idQualificacao: e.idQualificacao ?? undefined
-      })),
+  const formValue =
+    this.form.getRawValue();
 
-      grupoEtiquetasProcesso: this.etiquetasSelecionadas.map(e => ({
-        etiquetaId: e.id!
-      }))
-    };
+  const limpar =
+    (valor: any) =>
+      valor ?? undefined;
 
-    this.processoService.cadastrarProcesso(request).subscribe({
+  // =========================
+  // REQUEST
+  // =========================
+
+  const request = {
+
+    acaoId:
+      limpar(
+        formValue.acaoId
+      ),
+
+    varaId:
+      formValue.varaId!,
+
+    usuarioResponsavelId:
+      limpar(
+        formValue.usuarioResponsavelId
+      ),
+
+    juizo:
+      limpar(
+        formValue.juizo
+      ),
+
+    pasta:
+      limpar(
+        formValue.pasta
+      ),
+
+    titulo:
+      limpar(
+        formValue.titulo
+      ),
+
+    numeroProcesso:
+      limpar(
+        formValue.numeroProcesso
+      ),
+
+    linkTribunal:
+      limpar(
+        formValue.linkTribunal
+      ),
+
+    objeto:
+      limpar(
+        formValue.objeto
+      ),
+
+    valorCausa:
+      limpar(
+        formValue.valorCausa
+      ),
+
+    distribuido:
+      limpar(
+        formValue.distribuido
+      ),
+
+    valorCondenacao:
+      limpar(
+        formValue.valorCondenacao
+      ),
+
+    observacao:
+      limpar(
+        formValue.observacao
+      ),
+
+    instancia:
+      limpar(
+        formValue.instancia
+      ),
+
+    acesso:
+      limpar(
+        formValue.acesso
+      ),
+
+    // =========================
+    // CLIENTES
+    // =========================
+
+    grupoClienteProcesso:
+      this.pessoasSelecionadas
+        .map(p => ({
+          idPessoa:
+            p.id,
+
+          idQualificacao:
+            p.idQualificacao ??
+            undefined
+        })),
+
+    // =========================
+    // ENVOLVIDOS
+    // =========================
+
+    grupoEnvolvidosProcesso:
+      this.envolvidosSelecionados
+        .map(e => ({
+          idPessoa:
+            e.id,
+
+          idQualificacao:
+            e.idQualificacao ??
+            undefined
+        })),
+
+    // =========================
+    // ETIQUETAS
+    // =========================
+
+    grupoEtiquetasProcesso:
+      this.etiquetasSelecionadas
+        .map(e => ({
+          etiquetaId:
+            e.id!
+        }))
+  };
+
+  // =========================
+  // ENVIAR
+  // =========================
+
+  this.processoService
+    .cadastrarProcesso(
+      request
+    )
+    .subscribe({
+
       next: (response) => {
+
         this.resetarFormulario();
+
         this.carregando = false;
-        this.mensagemSucesso = [response?.message];
+
+        this.mensagemSucesso = [
+          response?.message
+        ];
+
         this.cdr.detectChanges();
       },
+
       error: (err) => {
+
         this.tratarErro(err);
+
         this.cdr.detectChanges();
       }
+
     });
-  }
+}
 
   // ================== ETIQUETAS ==================
   selecionarEtiqueta(etiqueta: ConsultarEtiquetaResponse) {
@@ -317,17 +450,25 @@ onMoneyInput(event: any, campo: 'valorCausa' | 'valorCondenacao') {
   }
 
   // ================== RESET ==================
-  private resetarFormulario() {
-    this.form.reset();
-    this.pessoasSelecionadas = [];
-    this.envolvidosSelecionados = [];
-    this.etiquetasSelecionadas = [];
+private resetarFormulario(): void {
 
-    if (this.usuarioLogado) {
-      this.form.get('idUsuario')?.setValue(this.usuarioLogado.idUsuario ?? null);
-    }
+  this.form.reset();
+
+  this.pessoasSelecionadas = [];
+  this.envolvidosSelecionados = [];
+  this.etiquetasSelecionadas = [];
+
+  // limpa estado das validações
+  this.tentouEnviar = false;
+
+  if (this.usuarioLogado) {
+    this.form
+      .get('idUsuario')
+      ?.setValue(
+        this.usuarioLogado.idUsuario ?? null
+      );
   }
-
+}
   // ================== ERROS ==================
   private tratarErro(err: HttpErrorResponse): void {
 

@@ -133,26 +133,62 @@
 
 
         <!-- TIPO VÍNCULO -->
-        <div class="row mb-3">
-          <!-- ITEM DINÂMICO -->
-          <div class="col-md-4">
-            <label class="form-label">Tipo de Vínculo</label>
-            <select class="form-control" formControlName="tipoVinculo">
-              <option [ngValue]="null">Selecione</option>
-              <option value="processo">Processo</option>
-              <option value="caso">Caso</option>
-              <option value="atendimento">Atendimento</option>
-            </select>
-          </div>
+    <!-- ========================= -->
+<!-- VÍNCULO -->
+<!-- ========================= -->
 
-          <div class="col-md-8">
-            <label class="form-label">Buscar vínculo</label>
-            <app-vinculo [resultados]="resultadosVinculo" [vinculoSelecionado]="vinculoSelecionado"
-              (buscar)="buscarVinculo($event)" (selecionado)="selecionarVinculo($event)">
-            </app-vinculo>
+<div class="row mb-3 vinculo-row">
 
-          </div>
-        </div>
+    <!-- TIPO DE VÍNCULO -->
+    <div class="col-md-4">
+
+        <label class="form-label">
+            Tipo de Vínculo
+        </label>
+
+        <select
+            class="form-select"
+            formControlName="tipoVinculo">
+
+            <option [ngValue]="null">
+                Selecione
+            </option>
+
+            <option value="processo">
+                Processo
+            </option>
+
+            <option value="caso">
+                Caso
+            </option>
+
+            <option value="atendimento">
+                Atendimento
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- BUSCAR VÍNCULO -->
+    <div class="col-md-8 vinculo-col">
+
+        <label class="form-label">
+            Buscar vínculo
+        </label>
+
+        <app-vinculo
+            [resultados]="resultadosVinculo"
+            [vinculoSelecionado]="vinculoSelecionado"
+            [tipoVinculo]="form.get('tipoVinculo')?.value ?? null"
+            (buscar)="buscarVinculo($event)"
+            (selecionado)="selecionarVinculo($event)">
+        </app-vinculo>
+
+    </div>
+
+</div>
         <!-- RECORRÊNCIA -->
         <div class="row mb-3">
           <div class="col-md-4">
@@ -180,14 +216,27 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Status</label>
-            <select class="form-select" formControlName="statusGeralKanban" style="pointer-events: none;">
+       <select
+  class="form-select"
+  formControlName="statusGeralKanban">
 
-              <option [ngValue]="statusEnum.A_Fazer">A Fazer</option>
-              <option [ngValue]="statusEnum.Em_Andamento">Em Andamento</option>
-              <option [ngValue]="statusEnum.Concluido">Concluído</option>
-              <option [ngValue]="statusEnum.Cancelado">Cancelado</option>
+  <option [ngValue]="statusEnum.A_Fazer">
+    A Fazer
+  </option>
 
-            </select>
+  <option [ngValue]="statusEnum.Em_Andamento">
+    Em Andamento
+  </option>
+
+  <option [ngValue]="statusEnum.Concluido">
+    Concluído
+  </option>
+
+  <option [ngValue]="statusEnum.Cancelado">
+    Cancelado
+  </option>
+
+</select>
           </div>
           <div class="col-md-6">
             <label class="form-label">Responsável</label>

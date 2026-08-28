@@ -46,15 +46,21 @@ implements OnInit {
 
   form = this.builder.group({
 
-    metaMensal: [
-      0,
-      Validators.required
-    ],
+metaMensal: [
+  0,
+  [
+    Validators.required,
+    Validators.min(0)
+  ]
+],
 
-    metaAnual: [
-      0,
-      Validators.required
-    ]
+metaAnual: [
+  0,
+  [
+    Validators.required,
+    Validators.min(0)
+  ]
+]
 
   });
 
@@ -233,5 +239,104 @@ implements OnInit {
 
   event.target.value =
     formatted;
+}
+usarMetaAutomatica(): void {
+
+  this.mensagemErro = [];
+  this.mensagemSucesso = [];
+
+  this.zone.run(() => {
+
+    this.carregando = true;
+
+    this.cdr.detectChanges();
+
+  });
+
+
+  this.service
+    .usarAutomatica()
+    .subscribe({
+
+      next: (response: any) => {
+
+        this.zone.run(() => {
+
+          // =========================
+          // ATUALIZA FORMULÁRIO
+          // =========================
+
+          this.form.patchValue({
+            metaMensal: 0
+          });
+
+
+          // =========================
+          // MENSAGEM
+          // =========================
+
+          this.mensagemSucesso = [
+            response?.message ??
+            'Meta automática ativada com sucesso.'
+          ];
+
+
+          // =========================
+          // LIBERA SPINNER
+          // =========================
+
+          this.carregando = false;
+
+          this.cdr.detectChanges();
+
+        });
+
+      },
+
+
+      error: (err: any) => {
+
+        console.error(
+          'Erro ao ativar meta automática:',
+          err
+        );
+
+
+        this.zone.run(() => {
+
+          this.mensagemErro = [
+            err?.error?.message ??
+            err?.error?.mensagem ??
+            'Erro ao ativar a meta automática.'
+          ];
+
+
+          // =========================
+          // LIBERA SPINNER
+          // =========================
+
+          this.carregando = false;
+
+          this.cdr.detectChanges();
+
+        });
+
+      },
+
+
+      complete: () => {
+
+        this.zone.run(() => {
+
+          this.carregando = false;
+
+          this.cdr.detectChanges();
+
+        });
+
+      }
+
+    });
+
 }
 }

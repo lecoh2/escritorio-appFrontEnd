@@ -47,119 +47,391 @@
   </div>
 
   <!-- CARDS -->
-  <div class="row">
+<!-- ===================================================== -->
+<!-- CARDS PRINCIPAIS -->
+<!-- ===================================================== -->
 
-    <div class="col-xl-3 col-sm-6 col-12 d-flex">
-      <div class="card flex-fill">
-        <div class="card-body">
+<div class="row g-3">
 
-  <div class="row">
+  <!-- RECEBIDO NO MÊS -->
+  <div class="col-xl-3 col-md-6 col-12 d-flex">
 
-    <div class="col mt-0">
+    <div class="card flex-fill">
 
-      <h5 class="card-title">
-        Receita
-      </h5>
+      <div class="card-body">
 
-    </div>
+        <div class="row">
 
-    <div class="col-auto">
+          <div class="col mt-0">
 
-      <div class="stat text-success">
-        <i class="fas fa-dollar-sign"></i>
+            <h5 class="card-title">
+              Recebido no Mês
+            </h5>
+
+          </div>
+
+          <div class="col-auto">
+
+            <div class="stat text-success">
+
+              <i class="fas fa-dollar-sign"></i>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <h1 class="mt-1 mb-2">
+
+          R$ {{
+            formatarMoeda(
+              dashboard?.totalRecebidoMes
+            )
+          }}
+
+        </h1>
+
+
+        <small class="text-muted">
+
+          {{ percentualRealizadoReceita }}%
+          do previsto
+
+        </small>
+
       </div>
 
     </div>
 
   </div>
 
-  <h1 class="mt-1 mb-3">
-    R$ {{ formatarMoeda(dashboard?.totalRecebidoMes) }}
-  </h1>
+
+  <!-- PAGO NO MÊS -->
+  <div class="col-xl-3 col-md-6 col-12 d-flex">
+
+    <div class="card flex-fill">
+
+      <div class="card-body">
+
+        <div class="row">
+
+          <div class="col mt-0">
+
+            <h5 class="card-title">
+              Pago no Mês
+            </h5>
+
+          </div>
+
+          <div class="col-auto">
+
+            <div class="stat text-danger">
+
+              <i class="fas fa-file-invoice-dollar"></i>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <h1 class="mt-1 mb-2">
+
+          R$ {{
+            formatarMoeda(
+              dashboard?.totalPagoMes
+            )
+          }}
+
+        </h1>
+
+
+        <small class="text-muted">
+
+          {{ percentualRealizadoDespesa }}%
+          do previsto
+
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SALDO REALIZADO -->
+  <div class="col-xl-3 col-md-6 col-12 d-flex">
+
+    <div class="card flex-fill">
+
+      <div class="card-body">
+
+        <div class="row">
+
+          <div class="col mt-0">
+
+            <h5 class="card-title">
+              Saldo Realizado
+            </h5>
+
+          </div>
+
+          <div class="col-auto">
+
+            <div
+              class="stat"
+              [ngClass]="
+                (dashboard?.saldoMes ?? 0) >= 0
+                  ? 'text-primary'
+                  : 'text-danger'
+              ">
+
+              <i class="fas fa-wallet"></i>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <h1
+          class="mt-1 mb-2"
+          [ngClass]="
+            (dashboard?.saldoMes ?? 0) >= 0
+              ? 'text-success'
+              : 'text-danger'
+          ">
+
+          R$ {{
+            formatarMoeda(
+              dashboard?.saldoMes
+            )
+          }}
+
+        </h1>
+
+
+        <small class="text-muted">
+
+          Recebido menos pago
+
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- VALOR EM ATRASO -->
+  <div class="col-xl-3 col-md-6 col-12 d-flex">
+
+    <div class="card flex-fill">
+
+      <div class="card-body">
+
+        <div class="row">
+
+          <div class="col mt-0">
+
+            <h5 class="card-title">
+              Valor em Atraso
+            </h5>
+
+          </div>
+
+          <div class="col-auto">
+
+            <div class="stat text-warning">
+
+              <i class="fas fa-exclamation-triangle"></i>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <h1 class="mt-1 mb-2 text-warning">
+
+          R$ {{
+            formatarMoeda(
+              dashboard?.inadimplencia
+            )
+          }}
+
+        </h1>
+
+
+        <small class="text-muted">
+
+          Contas vencidas não recebidas
+
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
+
+
+<!-- ===================================================== -->
+<!-- CARDS PREVISTOS -->
+<!-- ===================================================== -->
+
+<div class="row g-3 mt-1">
+
+  <!-- A RECEBER -->
+  <div class="col-xl-4 col-md-6 col-12 d-flex">
+
+    <div class="card flex-fill">
+
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+          <div>
+
+            <small class="text-muted d-block mb-1">
+              A Receber no Mês
+            </small>
+
+            <h3 class="mb-0 text-success">
+
+              R$ {{
+                formatarMoeda(
+                  dashboard?.totalReceberMes
+                )
+              }}
+
+            </h3>
+
+          </div>
+
+
+          <div class="stat text-success">
+
+            <i class="fas fa-hand-holding-usd"></i>
+
+          </div>
+
+        </div>
+
       </div>
-    </div>
 
-    <div class="col-xl-3 col-sm-6 col-12 d-flex">
-      <div class="card flex-fill">
-   <div class="card-body">
-
-  <div class="row">
-
-    <div class="col mt-0">
-      <h5 class="card-title">Despesa</h5>
-    </div>
-
-    <div class="col-auto">
-      <div class="stat text-danger">
-        <i class="fas fa-file-invoice-dollar"></i>
-      </div>
     </div>
 
   </div>
 
-  <h1 class="mt-1 mb-3">
-    R$ {{ formatarMoeda(dashboard?.totalPagoMes) }}
-  </h1>
+
+  <!-- A PAGAR -->
+  <div class="col-xl-4 col-md-6 col-12 d-flex">
+
+    <div class="card flex-fill">
+
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+          <div>
+
+            <small class="text-muted d-block mb-1">
+              A Pagar no Mês
+            </small>
+
+            <h3 class="mb-0 text-danger">
+
+              R$ {{
+                formatarMoeda(
+                  dashboard?.totalPagarMes
+                )
+              }}
+
+            </h3>
+
+          </div>
+
+
+          <div class="stat text-danger">
+
+            <i class="fas fa-file-invoice"></i>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SALDO PREVISTO -->
+  <div class="col-xl-4 col-md-12 col-12 d-flex">
+
+    <div class="card flex-fill">
+
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+          <div>
+
+            <small class="text-muted d-block mb-1">
+              Saldo Previsto do Mês
+            </small>
+
+            <h3
+              class="mb-0"
+              [ngClass]="
+                saldoPrevistoMes >= 0
+                  ? 'text-primary'
+                  : 'text-danger'
+              ">
+
+              R$ {{
+                formatarMoeda(
+                  saldoPrevistoMes
+                )
+              }}
+
+            </h3>
+
+          </div>
+
+
+          <div
+            class="stat"
+            [ngClass]="
+              saldoPrevistoMes >= 0
+                ? 'text-primary'
+                : 'text-danger'
+            ">
+
+            <i class="fas fa-chart-line"></i>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
-      </div>
-    </div>
-
-    <div class="col-xl-3 col-sm-6 col-12 d-flex">
-      <div class="card flex-fill">
-    <div class="card-body">
-
-  <div class="row">
-
-    <div class="col mt-0">
-      <h5 class="card-title">Saldo</h5>
-    </div>
-
-    <div class="col-auto">
-      <div class="stat text-primary">
-        <i class="fas fa-wallet"></i>
-      </div>
-    </div>
-
-  </div>
-
-  <h1 class="mt-1 mb-3">
-    R$ {{ formatarMoeda(dashboard?.saldoMes) }}
-  </h1>
-
-</div>
-      </div>
-    </div>
-
-    <div class="col-xl-3 col-sm-6 col-12 d-flex">
-      <div class="card flex-fill">
-     <div class="card-body">
-
-  <div class="row">
-
-    <div class="col mt-0">
-      <h5 class="card-title">Inadimplência</h5>
-    </div>
-
-    <div class="col-auto">
-      <div class="stat text-warning">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
-    </div>
-
-  </div>
-
-  <h1 class="mt-1 mb-3">
-    {{ dashboard?.inadimplencia ?? 0 }}%
-  </h1>
-
-</div>
-      </div>
-    </div>
-
-  </div>
 
   <!-- META -->
 <div class="card mt-4">
@@ -258,7 +530,10 @@
     <div class="col-lg-8 d-flex">
       <div class="card flex-fill">
         <div class="card-header">
-          <h5>Receitas x Despesas</h5>
+        <h5 class="mb-0">
+  <i class="fas fa-chart-bar me-2"></i>
+  Receitas x Despesas Realizadas
+</h5>
         </div>
 
         <div class="card-body">

@@ -21,11 +21,20 @@
             <option [ngValue]="3">Concluído</option>
           </select>
         </div>
-        <!--<div class="col-md-3"> <label class="form-label small text-muted">
-  Tipo</label> <select class="form-select" [(ngModel)]="filtro.tipo">
-     <option [ngValue]="null">Todos</option>
-      <option [ngValue]="'Tarefa'">Tarefa</option>
-       <option [ngValue]="'Evento'">Evento</option> </select> </div>-->
+    <app-alerts
+  *ngIf="!carregando && mensagemSucesso.length"
+  titulo="Sucesso!"
+  [mensagens]="mensagemSucesso"
+  tipo="success"
+  icone="fas fa-check-circle">
+</app-alerts>
+         <app-alerts
+  *ngIf="!carregando && mensagemErro.length"
+  titulo="Erro!"
+  [mensagens]="mensagemErro"
+  tipo="danger"
+  icone="fas fa-times-circle">
+</app-alerts>
         <!-- BOTÕES -->
         <div class="col-md-4 d-flex gap-2">
 
@@ -75,8 +84,8 @@
 
               <!-- 🔹 TIPO -->
               <div class="d-flex align-items-center gap-1 text-muted small mb-2">
-                <i class="fas fa-tasks text-success" *ngIf="card.tipo === 'Tarefa'"></i>
-                <i class="fas fa-calendar-alt text-info" *ngIf="card.tipo === 'Evento'"></i>
+                <i class="fas fa-tasks text-success" *ngIf="card.tipo === 'tarefa'"></i>
+                <i class="fas fa-calendar-alt text-info" *ngIf="card.tipo === 'evento'"></i>
 
                 <h5 class="mb-2">
                   {{ card.tipo }}: {{ card.descricao || card.titulo || '---' }}
@@ -87,7 +96,7 @@
 
 
               <!-- 🔹 EVENTO -->
-              <ng-container *ngIf="card.tipo === 'Evento'">
+              <ng-container *ngIf="card.tipo === 'evento'">
 
                 <small class="text-muted d-flex align-items-center gap-1">
                   <i class="bi bi-calendar-event"></i>
@@ -104,7 +113,7 @@
               </ng-container>
 
               <!-- 🔹 TAREFA -->
-              <ng-container *ngIf="card.tipo === 'Tarefa'">
+              <ng-container *ngIf="card.tipo === 'tarefa'">
 
                 <small class="text-muted d-flex align-items-center gap-1">
                   <i class="bi bi-calendar"></i>
@@ -123,7 +132,7 @@
                 </div>
 
                 <!-- PRIORIDADE (EMBAIXO) -->
-                <ng-container *ngIf="card.tipo === 'Tarefa'">
+                <ng-container *ngIf="card.tipo === 'tarefa'">
 
                   <div class="mt-1 d-flex align-items-center gap-1">
 
@@ -298,7 +307,7 @@
 
                 </div>
 
-                <p *ngIf="cardSelecionado?.tipo === 'Evento'">
+                <p *ngIf="cardSelecionado?.tipo === 'evento'">
                   <strong>Endereço:</strong><br>
                   {{ cardSelecionado.endereco || '---' }}
                 </p>
@@ -315,7 +324,7 @@
                 </div>
                 <hr>
                 <!-- PRIORIDADE -->
-                <div *ngIf="cardSelecionado?.tipo === 'Tarefa'">
+                <div *ngIf="cardSelecionado?.tipo === 'tarefa'">
 
                   <p><strong>Prioridade:</strong></p>
 
@@ -350,27 +359,50 @@
               <div class="tab-pane fade" id="comentarios">
 
 
-                <div *ngIf="mensagemSucessoAtual"
-                  class="alert alert-success alert-dismissible d-flex align-items-center" role="alert">
+           <div
+  *ngIf="mensagemSucessoAtual"
+  class="alert alert-success alert-dismissible d-flex align-items-center"
+  role="alert">
 
-                  <!-- ÍCONE -->
-                  <div class="alert-icon me-2">
-                    <i class="bi bi-check-circle-fill"></i>
-                  </div>
+  <div class="alert-icon me-2">
+<i class="fas fa-check-circle"></i>
+  </div>
 
-                  <!-- MENSAGEM -->
-                  <div class="alert-message flex-grow-1">
-                    <strong>Sucesso!</strong> {{ mensagemSucessoAtual }}
-                  </div>
+  <div class="alert-message flex-grow-1">
+    <strong>Sucesso!</strong>
+    {{ mensagemSucessoAtual }}
+  </div>
 
-                  <!-- FECHAR -->
-                  <button type="button" class="btn-close" aria-label="Close" (click)="mensagemSucessoAtual = null">
-                  </button>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="mensagemSucessoAtual = null">
+  </button>
 
-                </div>
-                <div *ngIf="mensagemErro?.length" class="alert alert-danger py-2">
-                  {{ mensagemErro[0] }}
-                </div>
+</div>
+          <div
+  *ngIf="mensagemErroAtual"
+  class="alert alert-danger alert-dismissible d-flex align-items-center"
+  role="alert">
+
+  <div class="alert-icon me-2">
+    <i class="fas fa-times-circle"></i>
+  </div>
+
+  <div class="alert-message flex-grow-1">
+    <strong>Erro!</strong>
+    {{ mensagemErroAtual }}
+  </div>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="mensagemErroAtual = null">
+  </button>
+
+</div>
                 <!-- INPUT -->
                 <div class="mb-3">
                   <label class="form-label">Novo comentário</label>

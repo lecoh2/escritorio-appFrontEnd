@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -51,6 +51,11 @@ export class CadastrarTarefa implements OnInit {
   private processoService = inject(ProcessoService);
   private casoService = inject(CasoService);
   private atendimentoService = inject(AtendimentoService);
+  private cdr =
+  inject(ChangeDetectorRef);
+
+private zone =
+  inject(NgZone);
 
   usuarioLogado?: AutenticarUsuarioResponse | null;
 
@@ -283,14 +288,48 @@ export class CadastrarTarefa implements OnInit {
         }))
     };
 
-    this.tarefaService.cadastrarTarefa(request).subscribe({
-      next: res => {
+ this.tarefaService
+  .cadastrarTarefa(request)
+  .subscribe({
+
+    next: res => {
+
+      this.zone.run(() => {
+
         this.resetar();
-        this.mensagemSucesso = [res.message];
-        this.carregando = false;
-      },
-      error: err => this.tratarErro(err)
-    });
+
+        this.mensagemErro = [];
+
+        this.mensagemSucesso = [
+          res.message
+        ];
+
+        this.carregando =
+          false;
+
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+
+          this.zone.run(() => {
+
+            this.cdr.detectChanges();
+
+          });
+
+        }, 0);
+
+      });
+
+    },
+
+    error: err => {
+
+      this.tratarErro(err);
+
+    }
+
+  });
   }
   buscarListaTarefas(termo: string) {
     this.tarefaService.consultarListaTarefaAutoComplete(termo)
@@ -310,24 +349,122 @@ export class CadastrarTarefa implements OnInit {
 
     this.vinculoSelecionado = null;
   }
+tratarErro(
+  err: HttpErrorResponse
+): void {
 
-  tratarErro(err: HttpErrorResponse) {
-    const e = err.error;
+  this.zone.run(() => {
 
     this.mensagemErro = [];
 
-    if (e?.errors) {
-      for (const key in e.errors) {
-        this.mensagemErro.push(...e.errors[key]);
-      }
-    } else if (e?.mensagem) {
-      this.mensagemErro.push(e.mensagem);
-    } else {
-      this.mensagemErro.push('Erro inesperado.');
+    const e =
+      err.error;
+
+    // =========================
+    // FLUENT VALIDATION
+    // =========================
+
+    if (Array.isArray(e?.errors)) {
+
+      this.mensagemErro =
+        e.errors
+          .map(
+            (x: any) =>
+              x.erro ??
+              x.errorMessage ??
+              x.message
+          )
+          .filter(
+            (x: any) => !!x
+          );
     }
 
-    this.carregando = false;
-  }
+    // =========================
+    // ERROS POR CAMPO
+    // =========================
+
+    else if (
+      e?.errors &&
+      typeof e.errors === 'object'
+    ) {
+
+      for (const key in e.errors) {
+
+        const erros =
+          e.errors[key];
+
+        if (Array.isArray(erros)) {
+
+          this.mensagemErro.push(
+            ...erros
+          );
+
+        }
+        else if (erros) {
+
+          this.mensagemErro.push(
+            erros
+          );
+        }
+      }
+    }
+
+    // =========================
+    // BUSINESS EXCEPTION
+    // =========================
+
+    else if (e?.message) {
+
+      this.mensagemErro = [
+        e.message
+      ];
+
+    }
+
+    else if (e?.mensagem) {
+
+      this.mensagemErro = [
+        e.mensagem
+      ];
+
+    }
+
+    // =========================
+    // FALLBACK
+    // =========================
+
+    else {
+
+      this.mensagemErro = [
+        'Erro inesperado.'
+      ];
+    }
+
+    // =========================
+    // FINALIZA LOADING
+    // =========================
+
+    this.carregando =
+      false;
+
+    // =========================
+    // FORÇA ATUALIZAÇÃO DA TELA
+    // =========================
+
+    this.cdr.markForCheck();
+
+    setTimeout(() => {
+
+      this.zone.run(() => {
+
+        this.cdr.detectChanges();
+
+      });
+
+    }, 0);
+
+  });
+}
   private limparVinculos(): void {
 
     this.form.patchValue({

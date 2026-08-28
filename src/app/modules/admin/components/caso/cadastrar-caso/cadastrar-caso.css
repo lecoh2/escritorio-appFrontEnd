@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 1000;
+}
+
+.autocomplete-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+
+  z-index: 9999;
+
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+
+  max-height: 250px;
+  overflow-y: auto;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

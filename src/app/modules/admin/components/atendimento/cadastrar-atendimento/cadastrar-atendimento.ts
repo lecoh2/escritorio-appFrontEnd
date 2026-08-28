@@ -1,12 +1,15 @@
 import {
+  ChangeDetectorRef,
   Component,
   inject,
+  NgZone,
   OnInit
 } from '@angular/core';
 
 import {
   FormBuilder,
-  FormControl
+  FormControl,
+  Validators
 } from '@angular/forms';
 
 import { Router } from '@angular/router';
@@ -75,7 +78,10 @@ export class CadastrarAtendimento implements OnInit {
   private processoService = inject(ProcessoService);
 
   private casoService = inject(CasoService);
+  private cdr = inject(ChangeDetectorRef);
 
+private zone = inject(NgZone);
+tentouEnviar = false;
   // =========================
   // USUÁRIO
   // =========================
@@ -120,25 +126,46 @@ export class CadastrarAtendimento implements OnInit {
   // =========================
   form = this.builder.group({
 
-    registro: [''],
+  registro: [
+    '',
+    Validators.required
+  ],
 
-    assunto: this.builder.control<string | null>(null),
+  assunto:
+    this.builder.control<string | null>(
+      null,
+      Validators.required
+    ),
 
-    tipoVinculo: this.builder.control<
+  tipoVinculo:
+    this.builder.control<
       'processo'
       | 'caso'
       | 'atendimento'
       | null
     >(null),
 
-    processoId: this.builder.control<string | null>(null),
+  processoId:
+    this.builder.control<string | null>(
+      null
+    ),
 
-    casoId: this.builder.control<string | null>(null),
+  casoId:
+    this.builder.control<string | null>(
+      null
+    ),
 
-    atendimentoId: this.builder.control<string | null>(null),
+  atendimentoId:
+    this.builder.control<string | null>(
+      null
+    ),
 
-    responsavelId: this.builder.control<string | null>(null)
-  });
+  responsavelId:
+    this.builder.control<string | null>(
+      null
+    )
+
+});
 
   // =========================
   // INIT
@@ -319,7 +346,7 @@ export class CadastrarAtendimento implements OnInit {
     this.mensagemErro = [];
 
     this.mensagemSucesso = [];
-
+  this.tentouEnviar = true;
     if (this.form.invalid) {
 
       this.form.markAllAsTouched();
@@ -370,27 +397,59 @@ export class CadastrarAtendimento implements OnInit {
     console.log('📦 REQUEST:', request);
 
     this.atendimentoService
-      .cadastrarAtendimento(request)
-      .subscribe({
+  .cadastrarAtendimento(request)
+  .subscribe({
 
-        next: (res) => {
+    // =========================
+    // SUCESSO
+    // =========================
 
-          this.resetar();
+    next: (res) => {
 
-          this.carregando = false;
+      this.zone.run(() => {
 
-          this.mensagemSucesso = [res.message];
+        this.carregando = false;
+
+        this.mensagemErro = [];
+
+        this.mensagemSucesso = [
+          res.message ?? 'Atendimento cadastrado com sucesso.'
+        ];
+
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+
+          this.cdr.detectChanges();
+
+        }, 0);
+
+
+        // Aguarda 2 segundos para o usuário
+        // visualizar a mensagem de sucesso
+        setTimeout(() => {
 
           this.router.navigate([
-            '/admin/cadastrar-atendimento'
+            '/admin/consultar-atendimento'
           ]);
-        },
 
-        error: (err: HttpErrorResponse) => {
-          this.tratarErro(err);
-        }
+        }, 2000);
+
       });
-  }
+
+    },
+
+    // =========================
+    // ERRO
+    // =========================
+
+    error: (err: HttpErrorResponse) => {
+
+      this.tratarErro(err);
+
+    }
+
+  });}
 
   // =========================
   // RESET
@@ -454,30 +513,91 @@ export class CadastrarAtendimento implements OnInit {
   // =========================
   // TRATAR ERRO
   // =========================
-  private tratarErro(err: HttpErrorResponse) {
+private tratarErro(
+  err: HttpErrorResponse
+): void {
 
-    this.mensagemErro = [];
+  this.zone.run(() => {
+
+    this.carregando = false;
+
+    this.mensagemSucesso = [];
 
     const e = err.error;
 
-    if (e?.errors) {
+    // =========================
+    // FLUENT VALIDATION
+    // =========================
 
-      for (const key in e.errors) {
+    if (Array.isArray(e?.errors)) {
 
-        this.mensagemErro.push(...e.errors[key]);
-      }
+      this.mensagemErro =
+        e.errors
+          .map((x: any) =>
+            x.erro ??
+            x.errorMessage ??
+            x.message
+          )
+          .filter((x: any) => !!x);
+
     }
+
+    // =========================
+    // BUSINESS EXCEPTION
+    // =========================
+
+    else if (e?.message) {
+
+      this.mensagemErro = [
+        e.message
+      ];
+
+    }
+
+    // =========================
+    // FALLBACK ANTIGO
+    // =========================
+
     else if (e?.mensagem) {
 
-      this.mensagemErro.push(e.mensagem);
+      this.mensagemErro = [
+        e.mensagem
+      ];
+
     }
+
+    // =========================
+    // ERRO GENÉRICO
+    // =========================
+
     else {
 
-      this.mensagemErro.push('Erro inesperado.');
+      this.mensagemErro = [
+        'Erro inesperado.'
+      ];
+
     }
 
-    this.carregando = false;
-  }
+
+    // =========================
+    // FORÇA ATUALIZAÇÃO VISUAL
+    // NO PRÓXIMO CICLO
+    // =========================
+
+    this.cdr.markForCheck();
+
+    setTimeout(() => {
+
+      this.zone.run(() => {
+
+        this.cdr.detectChanges();
+
+      });
+
+    }, 0);
+
+  });
+}
 private limparVinculos(): void {
 
   this.form.patchValue({

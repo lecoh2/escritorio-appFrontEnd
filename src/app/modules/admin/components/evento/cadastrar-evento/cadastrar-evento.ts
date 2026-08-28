@@ -248,17 +248,9 @@ selecionarVinculo(item: VinculoAutoComplete) {
       })),
 
       // 🔥 VÍNCULO (ANTES NÃO IA)
-     processoId: this.vinculoSelecionado && 'numeroProcesso' in this.vinculoSelecionado
-  ? this.vinculoSelecionado.id
-  : null,
-
-casoId: this.vinculoSelecionado && 'pasta' in this.vinculoSelecionado && !('assunto' in this.vinculoSelecionado)
-  ? this.vinculoSelecionado.id
-  : null,
-
-atendimentoId: this.vinculoSelecionado && 'assunto' in this.vinculoSelecionado
-  ? this.vinculoSelecionado.id
-  : null,
+processoId: f.processoId ?? null,
+casoId: f.casoId ?? null,
+atendimentoId: f.atendimentoId ?? null,
     };
 
     console.log("REQUEST CORRIGIDO:", request);

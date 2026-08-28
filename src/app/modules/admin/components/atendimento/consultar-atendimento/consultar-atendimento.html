@@ -1,259 +1,722 @@
 <div class="container-fluid p-0">
 
-    <h1 class="h3 mb-3">Consultar Atendimentos</h1>
+    <!-- ================================================= -->
+    <!-- CABEÇALHO -->
+    <!-- ================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+
+            <h1 class="h3 mb-1">
+                <i class="fas fa-headset text-primary me-2"></i>
+                Consultar Atendimentos
+            </h1>
+
+            <p class="text-muted mb-0">
+                Consulte e gerencie os atendimentos cadastrados.
+            </p>
+
+        </div>
+
+    </div>
+
 
     <div class="row">
+
         <div class="col-md-12">
 
-            <div class="card">
+            <div class="card shadow-sm border-0">
 
-                <div class="card-header">
-                    <h5 class="card-title">Pesquisa de Atendimentos</h5>
-                </div>
+                <!-- ================================================= -->
+                <!-- CARD HEADER -->
+                <!-- ================================================= -->
 
-                <div class="card-body">
+                <div class="card-header bg-transparent border-bottom py-3">
 
-                    <!-- 🔎 FILTRO -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
 
-                        <input type="text"
-                               class="form-control form-control-sm w-50"
-                               placeholder="Pesquisar assunto, registro, cliente ou etiqueta"
-                               [(ngModel)]="filtro"
-                               (keyup.enter)="aplicarFiltro()">
+                        <div class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle me-2"
+                            style="width: 40px; height: 40px;">
+
+                            <i class="fas fa-magnifying-glass"></i>
+
+                        </div>
 
                         <div>
-                            <select class="form-select form-select-sm"
-                                    [(ngModel)]="tamanhoPagina"
-                                    (change)="aplicarFiltro()">
 
-                                <option *ngFor="let size of [5,10,20,50]" [value]="size">
-                                    {{ size }} por página
-                                </option>
+                            <h5 class="card-title mb-0">
+                                Pesquisa de Atendimentos
+                            </h5>
 
-                            </select>
+                            <small class="text-muted">
+                                Localize atendimentos por assunto, registro, cliente ou etiqueta.
+                            </small>
+
                         </div>
 
                     </div>
 
-                    <!-- 🔥 LOADING -->
-                    <app-spinner-consulta
-                        *ngIf="carregando"
-                        [carregando]="true"
-                        message="Consultando..."
+                </div>
+
+
+                <div class="card-body">
+
+                    <!-- ================================================= -->
+                    <!-- FILTROS -->
+                    <!-- ================================================= -->
+
+                    <div class="row align-items-end mb-4">
+
+                        <div class="col-md-8">
+
+                            <label class="form-label fw-semibold">
+                                Pesquisar
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text bg-transparent">
+
+                                    <i class="fas fa-search text-muted"></i>
+
+                                </span>
+
+                                <input type="text" class="form-control"
+                                    placeholder="Pesquisar assunto, registro, cliente ou etiqueta" [(ngModel)]="filtro"
+                                    (keyup.enter)="aplicarFiltro()">
+
+                                <button type="button" class="btn btn-primary" (click)="aplicarFiltro()">
+
+                                    <i class="fas fa-search me-1"></i>
+                                    Buscar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-4">
+
+                            <label class="form-label fw-semibold">
+                                Registros por página
+                            </label>
+
+                            <select class="form-select" [(ngModel)]="tamanhoPagina" (change)="aplicarFiltro()">
+
+                                <option *ngFor="let size of [5,10,20,50]" [value]="size">
+
+                                    {{ size }} registros
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- LOADING -->
+                    <!-- ================================================= -->
+
+                    <app-spinner-consulta *ngIf="carregando" [carregando]="true" message="Consultando..."
                         class="d-inline-block">
                     </app-spinner-consulta>
 
+
+                    <!-- ================================================= -->
                     <!-- ALERTAS -->
-                    <app-alerts
-                        *ngIf="!carregando && mensagemSucesso.length > 0"
-                        class="w-100"
-                        titulo="Sucesso!"
-                        [mensagens]="mensagemSucesso"
-                        tipo="success">
+                    <!-- ================================================= -->
+
+                    <app-alerts *ngIf="
+                            !carregando &&
+                            mensagemSucesso.length > 0
+                        " class="w-100" titulo="Sucesso!" [mensagens]="mensagemSucesso" tipo="success">
                     </app-alerts>
 
-                    <app-alerts
-                        *ngIf="!carregando && mensagemErro.length > 0"
-                        class="w-100"
-                        titulo="Erro!"
-                        [mensagens]="mensagemErro"
-                        tipo="danger">
+
+                    <app-alerts *ngIf="
+                            !carregando &&
+                            mensagemErro.length > 0
+                        " class="w-100" titulo="Erro!" [mensagens]="mensagemErro" tipo="danger">
                     </app-alerts>
 
-                    <!-- ========================= -->
+
+                    <!-- ================================================= -->
                     <!-- TABELA -->
-                    <!-- ========================= -->
-                    <table id="datatables-atendimento"
-                           class="table table-striped w-100">
+                    <!-- ================================================= -->
 
-                        <thead>
-                            <tr>
-                                <th>Assunto</th>
-                                <th>Registro</th>
-                                <th>Clientes</th>
-                                <th>Etiquetas</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
+                    <div *ngIf="!carregando" class="table-responsive tabela-atendimentos">
 
-                        <tbody>
+                        <table id="datatables-atendimento" class="table table-hover align-middle mb-0">
 
-                            <tr *ngFor="let item of dataSource.data">
+                            <thead>
 
-                                <!-- ASSUNTO -->
-                                <td>{{ item.assunto }}</td>
+                                <tr>
 
-                                <!-- REGISTRO -->
-                                <td>{{ item.registro }}</td>
+                                    <th class="py-3">
 
-                                <!-- ========================= -->
-                                <!-- 👥 CLIENTES (1 + ver mais) -->
-                                <!-- ========================= -->
-                                <td>
+                                        <i class="fas fa-comment-dots text-primary me-2"></i>
+                                        Assunto
 
-                                    <ng-container *ngIf="item.grupoAtendimentoCliente?.length > 0">
+                                    </th>
 
-                                        <span>
-                                            {{ item.grupoAtendimentoCliente[0].nome }}
-                                        </span>
+                                    <th class="py-3">
 
-                                        <ng-container *ngIf="item.grupoAtendimentoCliente.length > 1">
+                                        <i class="fas fa-file-lines text-primary me-2"></i>
+                                        Registro
 
-                                            <div class="dropdown d-inline ms-2">
+                                    </th>
 
-                                                <a href="#"
-                                                   data-bs-toggle="dropdown"
-                                                   data-bs-display="static">
+                                    <th class="py-3">
 
-                                                    <span class="badge badge-subtle-success">
-                                                        ver mais <i class="fas fa-list-ol"></i>
-                                                    </span>
+                                        <i class="fas fa-users text-primary me-2"></i>
+                                        Clientes
 
-                                                </a>
+                                    </th>
 
-                                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <th class="py-3">
 
-                                                    <li *ngFor="let c of item.grupoAtendimentoCliente.slice(1)">
-                                                        <span class="dropdown-item">
-                                                            {{ c.nome }}
-                                                        </span>
-                                                    </li>
+                                        <i class="fas fa-tags text-primary me-2"></i>
+                                        Etiquetas
 
-                                                </ul>
+                                    </th>
+
+                                    <th class="py-3 text-end" style="width: 100px;">
+
+                                        <i class="fas fa-gears text-primary me-2"></i>
+                                        Ações
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr *ngFor="let item of dataSource.data" class="atendimento-row">
+
+                                    <!-- ================================================= -->
+                                    <!-- ASSUNTO -->
+                                    <!-- ================================================= -->
+
+                                    <td style="max-width: 350px;">
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 me-3"
+                                                style="
+                                                    width: 38px;
+                                                    height: 38px;
+                                                    min-width: 38px;
+                                                ">
+
+                                                <i class="fas fa-headset"></i>
+
+                                            </div>
+
+                                            <div class="overflow-hidden">
+
+                                                <span class="fw-semibold text-truncate d-block" [title]="item.assunto">
+
+                                                    {{ item.assunto }}
+
+                                                </span>
+
+                                                <small class="text-muted">
+                                                    Atendimento
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- REGISTRO -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <span class="registro-resumido">
+
+                                                <i class="fas fa-file-lines text-primary me-2"></i>
+
+                                                {{ limitarRegistro(item.registro) }}
+
+                                            </span>
+
+
+                                            <a *ngIf="item.registro?.length > 30" href="javascript:void(0)"
+                                                class="text-decoration-none" title="Visualizar registro completo"
+                                                (click)="abrirRegistroCompleto(item.registro)">
+
+                                                <span class="badge badge-subtle-primary px-3 py-2">
+                                                    <i class="fas fa-eye me-1"></i>
+                                                    Ver mais
+                                                </span>
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- CLIENTES -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <ng-container *ngIf="
+                                                item.grupoAtendimentoCliente?.length > 0
+                                            ">
+
+                                            <div class="d-flex align-items-center">
+
+                                                <i class="fas fa-user text-primary me-2">
+                                                </i>
+
+                                                <span class="fw-medium">
+
+                                                    {{
+                                                    item
+                                                    .grupoAtendimentoCliente[0]
+                                                    .nome
+                                                    }}
+
+                                                </span>
+
+
+                                                <!-- VER MAIS -->
+
+                                                <ng-container *ngIf="
+                                                        item.grupoAtendimentoCliente.length > 1
+                                                    ">
+
+                                                    <div class="dropdown d-inline ms-2">
+
+                                                        <a href="#" class="text-decoration-none"
+                                                            data-bs-toggle="dropdown" data-bs-display="static"
+                                                            (click)="$event.preventDefault()">
+
+                                                      <span class="badge badge-subtle-primary px-3 py-2">
+
+    +{{ item.grupoAtendimentoEtiqueta.length - 1 }}
+
+    <i class="fas fa-tags ms-1"></i>
+
+</span>
+
+                                                        </a>
+
+
+                                                        <ul
+                                                            class="dropdown-menu dropdown-menu-end shadow-sm clientes-dropdown">
+
+                                                            <li *ngFor="
+                                                                    let c of
+                                                                    item
+                                                                        .grupoAtendimentoCliente
+                                                                        .slice(1)
+                                                                ">
+
+                                                                <span class="dropdown-item">
+
+                                                                    <i class="fas fa-user text-muted me-2">
+                                                                    </i>
+
+                                                                    {{ c.nome }}
+
+                                                                </span>
+
+                                                            </li>
+
+                                                        </ul>
+
+                                                    </div>
+
+                                                </ng-container>
 
                                             </div>
 
                                         </ng-container>
 
-                                    </ng-container>
 
-                                </td>
+                                        <span *ngIf="
+                                                !item.grupoAtendimentoCliente?.length
+                                            " class="text-muted">
 
-                                <!-- ========================= -->
-                                <!-- 🏷️ ETIQUETAS (1 + ver mais) -->
-                                <!-- ========================= -->
-                              <td>
+                                            -
 
-  <ng-container *ngIf="item.grupoAtendimentoEtiqueta?.length > 0">
+                                        </span>
 
-    <!-- PRIMEIRA ETIQUETA -->
-    <span class="badge me-1"
-          [ngStyle]="{ 'background-color': item.grupoAtendimentoEtiqueta[0].cor || '#0d6efd' }">
+                                    </td>
 
-      {{ item.grupoAtendimentoEtiqueta[0].nome }}
 
-    </span>
+                                    <!-- ================================================= -->
+                                    <!-- ETIQUETAS -->
+                                    <!-- ================================================= -->
 
-    <!-- VER MAIS -->
-    <ng-container *ngIf="item.grupoAtendimentoEtiqueta.length > 1">
+                                    <td>
 
-      <div class="dropdown d-inline">
+                                        <ng-container *ngIf="
+                                                item.grupoAtendimentoEtiqueta?.length > 0
+                                            ">
 
-        <a href="#"
-           data-bs-toggle="dropdown"
-           data-bs-display="static">
+                                            <!-- PRIMEIRA ETIQUETA -->
 
-          <span class="badge badge-subtle-primary">
-            ver mais <i class="fas fa-list"></i>
-          </span>
+                                            <span class="badge me-1 px-2 py-2" [ngStyle]="{
+                                                    'background-color':
+                                                        item
+                                                            .grupoAtendimentoEtiqueta[0]
+                                                            .cor || '#0d6efd'
+                                                }">
 
-        </a>
+                                                <i class="fas fa-tag me-1"></i>
 
-        <ul class="dropdown-menu dropdown-menu-end">
+                                                {{
+                                                item
+                                                .grupoAtendimentoEtiqueta[0]
+                                                .nome
+                                                }}
 
-          <li *ngFor="let e of item.grupoAtendimentoEtiqueta.slice(1)">
+                                            </span>
 
-            <span class="dropdown-item">
 
-              <span class="badge me-2"
-                    [ngStyle]="{ 'background-color': e.cor || '#0d6efd' }">
+                                            <!-- VER MAIS -->
 
-                {{ e.nome }}
+                                            <ng-container *ngIf="
+                                                    item.grupoAtendimentoEtiqueta.length > 1
+                                                ">
 
-              </span>
+                                                <div class="dropdown d-inline">
 
-            </span>
+                                                    <a href="#" class="text-decoration-none" data-bs-toggle="dropdown"
+                                                        data-bs-display="static" (click)="$event.preventDefault()">
 
-          </li>
+                                                        <span class="badge bg-primary-subtle text-primary border">
 
-        </ul>
+                                                            +{{
+                                                            item
+                                                            .grupoAtendimentoEtiqueta
+                                                            .length - 1
+                                                            }}
 
-      </div>
+                                                            <i class="fas fa-tags ms-1">
+                                                            </i>
 
-    </ng-container>
+                                                        </span>
 
-  </ng-container>
+                                                    </a>
 
-</td>
 
-                                <!-- ========================= -->
-                                <!-- AÇÕES -->
-                                <!-- ========================= -->
-                                <td class="text-end align-middle">
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
 
-                                    <a [routerLink]="['/admin/editar-atendimento', item.id]"
-                                       title="Editar">
+                                                        <li *ngFor="
+                                                                let e of
+                                                                item
+                                                                    .grupoAtendimentoEtiqueta
+                                                                    .slice(1)
+                                                            ">
 
-                                        <i class="fas fa-pencil-alt fa-lg"></i>
+                                                            <span class="dropdown-item">
 
-                                    </a>
+                                                                <span class="badge me-2" [ngStyle]="{
+                                                                        'background-color':
+                                                                            e.cor ||
+                                                                            '#0d6efd'
+                                                                    }">
 
-                                </td>
+                                                                    <i class="fas fa-tag me-1">
+                                                                    </i>
 
-                            </tr>
+                                                                    {{ e.nome }}
 
-                        </tbody>
+                                                                </span>
 
-                    </table>
+                                                            </span>
 
-                    <!-- ========================= -->
-                    <!-- PAGINAÇÃO -->
-                    <!-- ========================= -->
-                    <nav *ngIf="totalPaginas > 1">
+                                                        </li>
 
-                        <ul class="pagination justify-content-center mt-3">
+                                                    </ul>
 
-                            <li class="page-item" [class.disabled]="paginaAtual === 1">
-                                <a class="page-link" (click)="irParaPagina(1)">Primeira</a>
-                            </li>
+                                                </div>
 
-                            <li class="page-item" [class.disabled]="paginaAtual === 1">
-                                <a class="page-link" (click)="irParaPagina(paginaAtual - 1)">Anterior</a>
-                            </li>
+                                            </ng-container>
 
-                            <li class="page-item"
-                                *ngFor="let p of paginasVisiveis"
-                                [class.active]="p === paginaAtual">
+                                        </ng-container>
 
-                                <a class="page-link" (click)="irParaPagina(p)">
-                                    {{ p }}
-                                </a>
 
-                            </li>
+                                        <span *ngIf="
+                                                !item.grupoAtendimentoEtiqueta?.length
+                                            " class="text-muted">
 
-                            <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
-                                <a class="page-link" (click)="irParaPagina(paginaAtual + 1)">Próxima</a>
-                            </li>
+                                            -
 
-                            <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
-                                <a class="page-link" (click)="irParaPagina(totalPaginas)">Última</a>
-                            </li>
+                                        </span>
 
-                        </ul>
+                                    </td>
 
-                    </nav>
 
-                    <p class="text-end text-muted">
-                        Página {{ paginaAtual }} de {{ totalPaginas }} |
-                        Total: {{ totalRegistros }}
-                    </p>
+                                    <!-- ================================================= -->
+                                    <!-- AÇÕES -->
+                                    <!-- ================================================= -->
+
+                                    <td class="text-end">
+
+                                        <a [routerLink]="[
+                                                '/admin/editar-atendimento',
+                                                item.id
+                                            ]" title="Editar atendimento">
+
+                                            <i class="fas fa-pencil-alt fa-lg"></i>
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- ================================================= -->
+                                <!-- SEM REGISTROS -->
+                                <!-- ================================================= -->
+
+                                <tr *ngIf="
+                                        !carregando &&
+                                        dataSource.data.length === 0
+                                    ">
+
+                                    <td colspan="5" class="text-center py-5">
+
+                                        <div class="text-muted">
+
+                                            <i class="fas fa-headset fa-3x mb-3 opacity-50">
+                                            </i>
+
+                                            <div class="fw-semibold">
+                                                Nenhum atendimento encontrado
+                                            </div>
+
+                                            <small>
+                                                Altere os filtros e tente novamente.
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- RODAPÉ / PAGINAÇÃO -->
+                    <!-- ================================================= -->
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
+
+                        <div class="text-muted small">
+
+                            <i class="fas fa-circle-info me-1"></i>
+
+                            Página
+
+                            <strong>
+                                {{ paginaAtual }}
+                            </strong>
+
+                            de
+
+                            <strong>
+                                {{ totalPaginas }}
+                            </strong>
+
+                            <span class="mx-1">
+                                •
+                            </span>
+
+                            Total:
+
+                            <strong>
+                                {{ totalRegistros }}
+                            </strong>
+
+                            atendimento(s)
+
+                        </div>
+
+
+                        <nav *ngIf="
+                                totalPaginas > 1
+                            ">
+
+                            <ul class="pagination pagination-sm mb-0">
+
+                                <!-- PRIMEIRA -->
+
+                                <li class="page-item" [class.disabled]="paginaAtual === 1">
+
+                                    <button type="button" class="page-link" (click)="irParaPagina(1)">
+
+                                        <i class="fas fa-angles-left"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ANTERIOR -->
+
+                                <li class="page-item" [class.disabled]="paginaAtual === 1">
+
+                                    <button type="button" class="page-link" (click)="irParaPagina(paginaAtual - 1)">
+
+                                        <i class="fas fa-angle-left"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PÁGINAS -->
+
+                                <li class="page-item" *ngFor="let p of paginasVisiveis"
+                                    [class.active]="p === paginaAtual">
+
+                                    <button type="button" class="page-link" (click)="irParaPagina(p)">
+
+                                        {{ p }}
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PRÓXIMA -->
+
+                                <li class="page-item" [class.disabled]="
+                                        paginaAtual === totalPaginas
+                                    ">
+
+                                    <button type="button" class="page-link" (click)="irParaPagina(paginaAtual + 1)">
+
+                                        <i class="fas fa-angle-right"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ÚLTIMA -->
+
+                                <li class="page-item" [class.disabled]="
+                                        paginaAtual === totalPaginas
+                                    ">
+
+                                    <button type="button" class="page-link" (click)="irParaPagina(totalPaginas)">
+
+                                        <i class="fas fa-angles-right"></i>
+
+                                    </button>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
 
                 </div>
 
             </div>
 
         </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MODAL REGISTRO COMPLETO -->
+    <!-- ================================================= -->
+
+    <div class="modal fade" id="modalRegistroCompleto" tabindex="-1" aria-labelledby="modalRegistroCompletoLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <!-- HEADER -->
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title" id="modalRegistroCompletoLabel">
+
+                        <i class="fas fa-file-lines text-primary me-2"></i>
+
+                        Registro do Atendimento
+
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">
+                    </button>
+
+                </div>
+
+
+                <!-- BODY -->
+
+                <div class="modal-body">
+
+                    <div class="p-3 rounded border" style="
+                            white-space: pre-wrap;
+                            word-break: break-word;
+                        ">
+
+                        {{ registroSelecionado }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- FOOTER -->
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+
+                        <i class="fas fa-times me-1"></i>
+
+                        Fechar
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>

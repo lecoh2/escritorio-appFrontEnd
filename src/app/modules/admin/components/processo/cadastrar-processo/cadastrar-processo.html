@@ -80,10 +80,20 @@
 
                         <!-- CLIENTES -->
                         <div class="col-md-6">
-                            <app-autocomplete-pessoa label="Contribuinte" placeholder="Digite o nome do contribuinte"
+                            <app-autocomplete-pessoa label="Cliente *" placeholder="Digite o nome do Cliente"
                                 [resultados]="pessoasFiltradas" [(selecionadas)]="pessoasSelecionadas"
                                 [qualificacoes]="qualificacoes" (buscar)="buscarPessoas($event)">
                             </app-autocomplete-pessoa>
+<div
+    class="text-danger mt-1"
+    *ngIf="
+        tentouEnviar &&
+        pessoasSelecionadas.length === 0
+    ">
+
+    É obrigatório selecionar pelo menos um cliente.
+
+</div>
                         </div>
 
                         <!-- ENVOLVIDOS -->
@@ -236,7 +246,7 @@
                         <textarea class="form-control" rows="3" formControlName="observacao"></textarea>
                     </div>
                 </div>
-                <div class="col-md-6">
+               <!-- <div class="col-md-6">
                     <label class="form-label">Acesso</label>
 
                     <div class="d-flex gap-4">
@@ -269,15 +279,18 @@
                         </div>
 
                     </div>
-                </div>
+                </div>-->
 
                 <!-- BOTÃO -->
-                <button type="submit" class="btn btn-primary" [disabled]="!podeEnviar || carregando">
+              <button
+    type="submit"
+    class="btn btn-primary"
+    [disabled]="carregando">
 
-                    <i class="align-middle me-2 fas fa-save fa-lg"></i>
-                    Salvar
+    <i class="align-middle me-2 fas fa-save fa-lg"></i>
+    Salvar
 
-                </button>
+</button>
 
             </form>
 

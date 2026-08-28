@@ -11,6 +11,7 @@ export interface ObterAtendimentoResponse {
   casoId?: string | null;
   atendimentoPaiId?: string | null;
   responsavelId?: string | null;
+  observacao?: string;
 
   grupoAtendimentoCliente: GrupoAtendimentoClienteResponse[];
   grupoAtendimentoEtiqueta: GrupoEtiquetaAtendimentoResponse[];

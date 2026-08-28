@@ -1,34 +1,88 @@
 <div class="container-fluid p-0">
 
-  <h1 class="h3 mb-3">
-    Configuração Financeira
-  </h1>
+  <!-- ===================================================== -->
+  <!-- TÍTULO -->
+  <!-- ===================================================== -->
 
-  <div class="card">
+  <div class="mb-4">
 
-    <div class="card-header">
+    <h1 class="h3 mb-1">
 
-      <h5 class="card-title">
-        Metas Financeiras
-      </h5>
+      <i class="fas fa-sliders-h text-primary me-2"></i>
 
-      <h6 class="card-subtitle text-muted">
-        Configure as metas do escritório
-      </h6>
+      Configuração Financeira
+
+    </h1>
+
+    <p class="text-muted mb-0">
+
+      Defina as metas financeiras utilizadas no dashboard do escritório.
+
+    </p>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- CARD PRINCIPAL -->
+  <!-- ===================================================== -->
+
+  <div class="card shadow-sm border-0">
+
+    <!-- HEADER -->
+    <div class="card-header border-bottom py-3">
+
+      <div class="d-flex align-items-center">
+
+        <div class="me-3">
+
+          <div class="stat text-primary">
+
+            <i class="fas fa-bullseye"></i>
+
+          </div>
+
+        </div>
+
+        <div>
+
+          <h5 class="card-title mb-1">
+
+            Metas Financeiras
+
+          </h5>
+
+          <p class="text-muted mb-0 small">
+
+            Configure a meta mensal e a meta anual do escritório.
+
+          </p>
+
+        </div>
+
+      </div>
 
     </div>
 
-    <div class="card-body">
 
-      <!-- Spinner -->
+    <!-- BODY -->
+    <div class="card-body p-4">
+
+
+      <!-- ===================================================== -->
+      <!-- SPINNER -->
+      <!-- ===================================================== -->
 
       <app-spinner
         *ngIf="carregando"
         [show]="true"
-        message="Salvando configuração...">
+        message="Processando configuração...">
       </app-spinner>
 
-      <!-- Sucesso -->
+
+      <!-- ===================================================== -->
+      <!-- ALERTA SUCESSO -->
+      <!-- ===================================================== -->
 
       <app-alerts
         *ngIf="mensagemSucesso.length"
@@ -38,7 +92,10 @@
         icone="fas fa-check-circle">
       </app-alerts>
 
-      <!-- Erro -->
+
+      <!-- ===================================================== -->
+      <!-- ALERTA ERRO -->
+      <!-- ===================================================== -->
 
       <app-alerts
         *ngIf="mensagemErro.length"
@@ -48,58 +105,328 @@
         icone="fas fa-times-circle">
       </app-alerts>
 
+
+      <!-- ===================================================== -->
+      <!-- FORMULÁRIO -->
+      <!-- ===================================================== -->
+
       <form
         [formGroup]="form"
         (ngSubmit)="onSubmit()">
 
-        <div class="row">
 
-          <div class="col-md-6">
+        <!-- ===================================================== -->
+        <!-- INFORMAÇÕES -->
+        <!-- ===================================================== -->
 
-            <label class="form-label">
+        <div
+          class="alert alert-primary border-0 shadow-sm rounded-3 p-4 mb-4"
+          role="alert">
 
-              Meta Mensal
+          <div class="d-flex align-items-start">
 
-            </label>
+            <!-- ÍCONE -->
+            <div
+              class="d-flex align-items-center justify-content-center
+                     bg-primary text-white rounded-circle flex-shrink-0 me-3"
+              style="width: 46px; height: 46px;">
 
-           <input
-  type="text"
-  class="form-control"
-  formControlName="metaMensal"
-  (input)="onMoneyInput($event, 'metaMensal')">
+              <i class="fas fa-info fs-5"></i>
 
-          </div>
+            </div>
 
-          <div class="col-md-6">
 
-            <label class="form-label">
+            <!-- TEXTO -->
+            <div class="flex-grow-1">
 
-              Meta Anual
+              <h5 class="mb-2 fw-semibold">
 
-            </label>
+                Como funcionam as metas?
 
-         <input
-  type="text"
-  class="form-control"
-  formControlName="metaAnual"
-  (input)="onMoneyInput($event, 'metaAnual')">
+              </h5>
+
+              <p class="mb-0 lh-lg">
+
+                A <strong>Meta Mensal</strong> pode ser definida manualmente
+                ou calculada automaticamente pelo sistema com base no
+                histórico de recebimentos do escritório.
+
+                <br>
+
+                A <strong>Meta Anual</strong> representa o objetivo financeiro
+                planejado para o ano e pode ser definida conforme o
+                planejamento do escritório.
+
+              </p>
+
+            </div>
 
           </div>
 
         </div>
 
-        <hr>
 
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="carregando">
+        <!-- ===================================================== -->
+        <!-- CAMPOS -->
+        <!-- ===================================================== -->
 
-          <i class="fas fa-save me-2"></i>
+        <div class="row g-4">
 
-          Salvar Configuração
 
-        </button>
+          <!-- =================================================== -->
+          <!-- META MENSAL -->
+          <!-- =================================================== -->
+
+          <div class="col-lg-6">
+
+            <div class="border rounded-3 p-4 h-100">
+
+              <div class="d-flex align-items-center mb-4">
+
+                <div class="stat text-primary me-3">
+
+                  <i class="fas fa-calendar-alt"></i>
+
+                </div>
+
+                <div>
+
+                  <h6 class="mb-1 fw-semibold">
+
+                    Meta Mensal
+
+                  </h6>
+
+                  <small class="text-muted">
+
+                    Meta de recebimento para o mês.
+
+                  </small>
+
+                </div>
+
+              </div>
+
+
+              <label class="form-label fw-semibold">
+
+                Valor da Meta Mensal
+
+              </label>
+
+
+              <div class="input-group input-group-lg">
+
+                <span class="input-group-text">
+
+                  R$
+
+                </span>
+
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="metaMensal"
+                  (input)="onMoneyInput(
+                    $event,
+                    'metaMensal'
+                  )"
+                  placeholder="0,00">
+
+              </div>
+
+
+              <small class="text-muted d-block mt-3">
+
+                Caso utilize a meta automática, o sistema calculará
+                esse valor com base no histórico de recebimentos.
+
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <!-- =================================================== -->
+          <!-- META ANUAL -->
+          <!-- =================================================== -->
+
+          <div class="col-lg-6">
+
+            <div class="border rounded-3 p-4 h-100">
+
+              <div class="d-flex align-items-center mb-4">
+
+                <div class="stat text-info me-3">
+
+                  <i class="fas fa-chart-line"></i>
+
+                </div>
+
+                <div>
+
+                  <h6 class="mb-1 fw-semibold">
+
+                    Meta Anual
+
+                  </h6>
+
+                  <small class="text-muted">
+
+                    Meta financeira planejada para o ano.
+
+                  </small>
+
+                </div>
+
+              </div>
+
+
+              <label class="form-label fw-semibold">
+
+                Valor da Meta Anual
+
+              </label>
+
+
+              <div class="input-group input-group-lg">
+
+                <span class="input-group-text">
+
+                  R$
+
+                </span>
+
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="metaAnual"
+                  (input)="onMoneyInput(
+                    $event,
+                    'metaAnual'
+                  )"
+                  placeholder="0,00">
+
+              </div>
+
+
+              <small class="text-muted d-block mt-3">
+
+                Utilize este valor como referência para o
+                planejamento financeiro anual do escritório.
+
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- META AUTOMÁTICA -->
+        <!-- ===================================================== -->
+
+        <div class="card border mt-4">
+
+          <div class="card-body p-4">
+
+            <div
+              class="d-flex flex-column flex-md-row
+                     justify-content-between
+                     align-items-md-center
+                     gap-3">
+
+
+              <!-- TEXTO -->
+              <div class="d-flex align-items-center">
+
+                <div class="stat text-secondary me-3">
+
+                  <i class="fas fa-robot"></i>
+
+                </div>
+
+                <div>
+
+                  <h6 class="mb-1 fw-semibold">
+
+                    Meta Automática
+
+                  </h6>
+
+                  <small class="text-muted">
+
+                    O sistema calcula automaticamente a meta mensal
+                    utilizando o histórico real de recebimentos do escritório.
+
+                  </small>
+
+                </div>
+
+              </div>
+
+
+              <!-- BOTÃO -->
+              <button
+                type="button"
+                class="btn btn-secondary px-4 py-2 px-4 py-2"
+                [disabled]="carregando"
+                (click)="usarMetaAutomatica()">
+
+                <i class="fas fa-robot me-2"></i>
+
+                Usar Meta Automática
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- RODAPÉ -->
+        <!-- ===================================================== -->
+
+        <div
+          class="d-flex justify-content-end
+                 align-items-center
+                 mt-4 pt-4
+                 border-top">
+
+
+          <!-- SALVAR -->
+          <button
+            type="submit"
+            class="btn btn-primary px-4 py-2"
+            [disabled]="carregando || form.invalid">
+
+
+            <span *ngIf="!carregando">
+
+              <i class="fas fa-save me-2"></i>
+
+              Salvar Configuração
+
+            </span>
+
+
+            <span *ngIf="carregando">
+
+              <i class="fas fa-spinner fa-spin me-2"></i>
+
+              Processando...
+
+            </span>
+
+          </button>
+
+        </div>
 
       </form>
 

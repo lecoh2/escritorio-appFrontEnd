@@ -27,6 +27,9 @@ export class VisualizarContaReceber implements OnInit {
   mensagemErro: string[] = [];
   mensagemSucesso: string[] = [];
   mostrarModalBaixa = false;
+  pagamentoSelecionado: any = null;
+
+mostrarModalPagamento = false;
      // tela
 salvandoBaixa = false;     // modal
   formaRecebimentoEnum = FormaRecebimento;
@@ -232,6 +235,64 @@ confirmarBaixa(): void {
 
     this.cdr.detectChanges();
   }
+  abrirDetalhesPagamento(item: any): void {
+
+  this.mensagemErro = [];
+
+  if (!item) {
+    this.mensagemErro = [
+      'Pagamento não encontrado.'
+    ];
+
+    return;
+  }
+
+  // =========================
+  // PARCELA
+  // =========================
+
+  if (item.baixas) {
+
+    if (item.baixas.length === 0) {
+      this.mensagemErro = [
+        'Não foram encontrados dados do recebimento.'
+      ];
+
+      return;
+    }
+
+    this.pagamentoSelecionado =
+      item.baixas[0];
+  }
+
+  // =========================
+  // BAIXA DIRETA / À VISTA
+  // =========================
+
+  else {
+
+    this.pagamentoSelecionado =
+      item;
+  }
+
+
+  this.mostrarModalPagamento =
+    true;
+
+  this.cdr.detectChanges();
+}
+
+
+fecharDetalhesPagamento(): void {
+
+  this.mostrarModalPagamento =
+    false;
+
+  this.pagamentoSelecionado =
+    null;
+
+  this.cdr.detectChanges();
+}
   private tratarErro(err: any): void {
 
     this.mensagemErro = [];
@@ -268,4 +329,28 @@ confirmarBaixa(): void {
 
     this.cdr.detectChanges();
   }
+  abrirDetalhesContaPaga(): void {
+
+  this.mensagemErro = [];
+
+  if (
+    !this.conta?.baixas ||
+    this.conta.baixas.length === 0
+  ) {
+
+    this.mensagemErro = [
+      'Não foram encontrados os dados do recebimento desta conta.'
+    ];
+
+    return;
+  }
+
+  this.pagamentoSelecionado =
+    this.conta.baixas[0];
+
+  this.mostrarModalPagamento =
+    true;
+
+  this.cdr.detectChanges();
+}
 }

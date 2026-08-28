@@ -1,37 +1,107 @@
-import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment.development";
-import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { ConsultarSetoresResponse } from "../models/setores/consultar-setores-response";
-import { ConsultarNiveisResponse } from "../models/nivel/consultar-niveis-response";
+import { inject, Injectable } from '@angular/core';
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment.development';
+
+import { ConsultarNiveisResponse } from '../models/nivel/consultar-niveis-response';
 
 @Injectable({
-  providedIn: 'root' // Isso registra o serviço automaticamente no app
+  providedIn: 'root'
 })
 export class NivelService {
-  //atributos
+
   private url = environment.apiDeslandes;
   private http = inject(HttpClient);
 
-  //métodos para cadastrar reclamacao
 
- buscarPorNomeNivel(nome: string): Observable<ConsultarNiveisResponse[]> {
-    return this.http.get<ConsultarNiveisResponse[]>
-      (`${this.url}/api/v1/nivel/consultar-nivel-por-nome/${encodeURIComponent(nome)}`);
-  }
-     ConsultarNivel(): Observable<ConsultarNiveisResponse[]> {
-    return this.http.get<ConsultarNiveisResponse[]>
-      (`${this.url}/api/nivel/consultar-nivel`);
-  }
-     removerUsuarioNivel(idUsuario: string, idNivel: string): Observable<any> {
-        return this.http.delete(`${this.url}/api/nivel/remover-grupo-nivel/${idUsuario}/${idNivel}`);
-    }
+  // =====================================================
+  // HEADERS
+  // =====================================================
 
-    adicionarUsuarioNivel(idUsuario: string, idNivel: string): Observable<any> {
-        return this.http.post(
-            `${this.url}/api/nivel/adicionar-grupo-nivel/${idUsuario}/${idNivel}`,
-            null // sem corpo pois só usa params na URL
-        );
-    }
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // BUSCAR NÍVEL POR NOME
+  // =====================================================
+
+  buscarPorNomeNivel(
+    nome: string
+  ): Observable<ConsultarNiveisResponse[]> {
+
+    return this.http.get<ConsultarNiveisResponse[]>(
+      `${this.url}/api/v1/nivel/consultar-nivel-por-nome/${encodeURIComponent(nome)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR NÍVEIS
+  // =====================================================
+
+  ConsultarNivel(): Observable<ConsultarNiveisResponse[]> {
+
+    return this.http.get<ConsultarNiveisResponse[]>(
+      `${this.url}/api/nivel/consultar-nivel`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // REMOVER NÍVEL DO USUÁRIO
+  // =====================================================
+
+  removerUsuarioNivel(
+    idUsuario: string,
+    idNivel: string
+  ): Observable<any> {
+
+    return this.http.delete<any>(
+      `${this.url}/api/nivel/remover-grupo-nivel/${idUsuario}/${idNivel}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // ADICIONAR NÍVEL AO USUÁRIO
+  // =====================================================
+
+  adicionarUsuarioNivel(
+    idUsuario: string,
+    idNivel: string
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.url}/api/nivel/adicionar-grupo-nivel/${idUsuario}/${idNivel}`,
+      null,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
 }

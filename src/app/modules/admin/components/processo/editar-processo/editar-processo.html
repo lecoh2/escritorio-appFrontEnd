@@ -52,21 +52,65 @@
                     </app-etiquetas>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label class="form-label">Pasta</label>
-                        <input class="form-control" formControlName="pasta">
-                    </div>
-                </div>
+             <div class="row mb-3">
+    <div class="col-md-12">
+
+        <label class="form-label">
+            Pasta *
+        </label>
+
+        <input
+            class="form-control"
+            formControlName="pasta">
+
+        <div
+            class="text-danger mt-1"
+            *ngIf="
+                form.get('pasta')?.touched &&
+                form.get('pasta')?.errors
+            ">
+
+            <div
+                *ngIf="
+                    form.get('pasta')?.errors?.['required']
+                ">
+
+                A pasta é obrigatória.
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
                 <!-- ================= PESSOAS ================= -->
                 <div class="row mb-3">
 
                     <div class="col-md-6">
-                        <app-autocomplete-pessoa label="Contribuinte" placeholder="Digite o nome do contribuinte"
-                            [resultados]="pessoasFiltradas" [(selecionadas)]="pessoasSelecionadas"
-                            [qualificacoes]="qualificacoes" (buscar)="buscarPessoas($event)">
-                        </app-autocomplete-pessoa>
+                    <div class="col-md-6">
+
+    <app-autocomplete-pessoa
+        label="Cliente *"
+        placeholder="Digite o nome do cliente"
+        [resultados]="pessoasFiltradas"
+        [(selecionadas)]="pessoasSelecionadas"
+        [qualificacoes]="qualificacoes"
+        (buscar)="buscarPessoas($event)">
+    </app-autocomplete-pessoa>
+
+    <div
+        class="text-danger mt-1"
+        *ngIf="
+            tentouEnviar &&
+            pessoasSelecionadas.length === 0
+        ">
+
+        É obrigatório selecionar pelo menos um cliente.
+
+    </div>
+
+</div>
                     </div>
 
                     <div class="col-md-6">
@@ -78,12 +122,39 @@
 
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label class="form-label">Título</label>
-                        <input class="form-control" formControlName="titulo">
-                    </div>
-                </div>
+            <div class="row mb-3">
+
+    <div class="col-md-12">
+
+        <label class="form-label">
+            Título *
+        </label>
+
+        <input
+            class="form-control"
+            formControlName="titulo">
+
+        <div
+            class="text-danger mt-1"
+            *ngIf="
+                form.get('titulo')?.touched &&
+                form.get('titulo')?.errors
+            ">
+
+            <div
+                *ngIf="
+                    form.get('titulo')?.errors?.['required']
+                ">
+
+                O título é obrigatório.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 
                 <!-- ================= INSTÂNCIA / PROCESSO ================= -->
@@ -101,10 +172,36 @@
                         </select>
                     </div>
 
-                    <div class="col-md-8">
-                        <label class="form-label">Número do Processo</label>
-                        <input class="form-control" formControlName="numeroProcesso" mask="0000000-00.0000.0.00.0000">
-                    </div>
+                <div class="col-md-8">
+
+    <label class="form-label">
+        Número do Processo *
+    </label>
+
+    <input
+        class="form-control"
+        formControlName="numeroProcesso"
+        mask="0000000-00.0000.0.00.0000">
+
+    <div
+        class="text-danger mt-1"
+        *ngIf="
+            form.get('numeroProcesso')?.touched &&
+            form.get('numeroProcesso')?.errors
+        ">
+
+        <div
+            *ngIf="
+                form.get('numeroProcesso')?.errors?.['required']
+            ">
+
+            O número do processo é obrigatório.
+
+        </div>
+
+    </div>
+
+</div>
 
                 </div>
 
@@ -178,12 +275,20 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Valor da Causa</label>
-                        <input type="number" class="form-control" formControlName="valorCausa">
+                      <input
+  type="text"
+  class="form-control"
+  formControlName="valorCausa"
+  (input)="onMoneyInput($event, 'valorCausa')">
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Valor da Condenação</label>
-                        <input type="number" class="form-control" formControlName="valorCondenacao">
+                       <input
+  type="text"
+  class="form-control"
+  formControlName="valorCondenacao"
+  (input)="onMoneyInput($event, 'valorCondenacao')">
                     </div>
 
                     <div class="col-md-4">
@@ -204,31 +309,7 @@
                     </div>
                 </div>
                 <!-- ================= ACESSO ================= -->
-                <div class="col-md-3">
-                    <label class="form-label">Acesso</label>
-
-                    <div class="d-flex gap-4">
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" formControlName="acesso"
-                                [value]="acessoEnum.Publico">
-                            <label class="form-check-label">Público</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" formControlName="acesso"
-                                [value]="acessoEnum.Privado">
-                            <label class="form-check-label">Privado</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" formControlName="acesso"
-                                [value]="acessoEnum.Envolvidos">
-                            <label class="form-check-label">Envolvidos</label>
-                        </div>
-
-                    </div>
-                </div>
+          
 
                 <!-- BOTÃO -->
                 <button type="button" class="btn btn-secondary mt-3 me-2" (click)="irParaLista()">

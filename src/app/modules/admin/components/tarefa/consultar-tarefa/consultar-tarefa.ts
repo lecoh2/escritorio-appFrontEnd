@@ -135,8 +135,8 @@ export class ConsultarTarefa implements OnInit {
   getTipoVinculo(valor: number): string {
     switch (valor) {
       case 1: return 'Processo';
-      case 2: return 'Atendimento';
-      case 3: return 'Caso';
+      case 2: return 'Caso';
+      case 3: return 'Atendimento';
       default: return 'Sem vinculo';
     }
   }
@@ -150,4 +150,5 @@ export class ConsultarTarefa implements OnInit {
       default: return '-';
     }
   }
+  
 }

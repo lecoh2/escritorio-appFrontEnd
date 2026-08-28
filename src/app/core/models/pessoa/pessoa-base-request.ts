@@ -23,7 +23,7 @@ export interface PessoaBase {
 
 
   endereco?: EnderecoRequest;
-  informacoesComplementares?: InformacoesComplementaresRequest;
+
 
   idEtiqueta?: number;
 

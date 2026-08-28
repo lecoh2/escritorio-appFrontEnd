@@ -82,17 +82,23 @@
                                     placeholder="Digite o nome" />
 
                                 <div
-                                    *ngIf="form.get('nomeUsuario')?.touched
-                                    && form.get('nomeUsuario')?.invalid"
+                                    *ngIf="
+                                        form.get('nomeUsuario')?.touched &&
+                                        form.get('nomeUsuario')?.invalid
+                                    "
                                     class="text-danger">
 
                                     <span
-                                        *ngIf="form.get('nomeUsuario')
-                                        ?.hasError('required')">
+                                        *ngIf="
+                                            form.get('nomeUsuario')
+                                            ?.hasError('required')
+                                        ">
 
                                         O nome é obrigatório.
                                     </span>
+
                                 </div>
+
                             </div>
 
                             <!-- LOGIN -->
@@ -114,17 +120,23 @@
                                     placeholder="Digite o login" />
 
                                 <div
-                                    *ngIf="form.get('login')?.touched
-                                    && form.get('login')?.invalid"
+                                    *ngIf="
+                                        form.get('login')?.touched &&
+                                        form.get('login')?.invalid
+                                    "
                                     class="text-danger">
 
                                     <span
-                                        *ngIf="form.get('login')
-                                        ?.hasError('required')">
+                                        *ngIf="
+                                            form.get('login')
+                                            ?.hasError('required')
+                                        ">
 
                                         O login é obrigatório.
                                     </span>
+
                                 </div>
+
                             </div>
 
                             <!-- EMAIL -->
@@ -146,24 +158,117 @@
                                     placeholder="Digite o e-mail" />
 
                                 <div
-                                    *ngIf="form.get('email')?.touched
-                                    && form.get('email')?.invalid"
+                                    *ngIf="
+                                        form.get('email')?.touched &&
+                                        form.get('email')?.invalid
+                                    "
                                     class="text-danger">
 
                                     <span
-                                        *ngIf="form.get('email')
-                                        ?.hasError('required')">
+                                        *ngIf="
+                                            form.get('email')
+                                            ?.hasError('required')
+                                        ">
 
                                         O e-mail é obrigatório.
                                     </span>
 
                                     <span
-                                        *ngIf="form.get('email')
-                                        ?.hasError('email')">
+                                        *ngIf="
+                                            form.get('email')
+                                            ?.hasError('email')
+                                        ">
 
                                         Informe um e-mail válido.
                                     </span>
+
                                 </div>
+
+                            </div>
+
+                            <!-- ESCRITÓRIO -->
+
+                            <div class="mb-4 col-md-12 position-relative">
+
+                                <label
+                                    for="escritorioInput"
+                                    class="form-label">
+
+                                    Escritório*
+                                </label>
+
+                                <input
+                                    id="escritorioInput"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Digite o nome do escritório"
+                                    autocomplete="off"
+                                    [formControl]="escritorioControl"
+                                    (focus)="mostrarSugestoesEscritorio = true"
+                                    (blur)="ocultarSugestoesComDelayEscritorio()" />
+
+                                <!-- SUGESTÕES -->
+
+                                <ul
+                                    *ngIf="
+                                        mostrarSugestoesEscritorio &&
+                                        escritoriosFiltrados.length > 0
+                                    "
+                                    class="list-group position-absolute w-100 shadow-sm mt-1 zindex-dropdown">
+
+                                    <li
+                                        *ngFor="let escritorio of escritoriosFiltrados"
+                                        class="list-group-item d-flex justify-content-between align-items-center hover-click"
+                                        (mousedown)="selecionarEscritorio(escritorio)">
+
+                                        {{ escritorio.nome }}
+
+                                        <i class="fas fa-fw fa-plus-circle text-muted fa-lg"></i>
+
+                                    </li>
+
+                                </ul>
+
+                                <!-- ESCRITÓRIO SELECIONADO -->
+
+                                <div
+                                    *ngIf="escritorioSelecionado"
+                                    class="form-text text-success mt-2">
+
+                                    <h6 class="card-subtitle text-muted">
+
+                                        Escritório selecionado:
+
+                                    </h6>
+
+                                    <ul class="lista-sem-bolinha">
+
+                                        <li
+                                            class="d-flex justify-content-between align-items-center mb-2 px-1 py-2 border-bottom">
+
+                                            <span class="texto-maior">
+
+                                                <strong>
+                                                    {{ escritorioSelecionado.nome }}
+                                                </strong>
+
+                                            </span>
+
+                                            <button
+                                                type="button"
+                                                class="border-0 bg-transparent p-0"
+                                                (click)="removerEscritorioSelecionado()">
+
+                                                <i class="fas fa-fw fa-trash-alt text-muted fa-lg"></i>
+
+                                            </button>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
                             </div>
 
                             <!-- SETORES -->
@@ -190,8 +295,10 @@
                                 <!-- SUGESTÕES -->
 
                                 <ul
-                                    *ngIf="mostrarSugestoesSetor
-                                    && setorFiltradas.length > 0"
+                                    *ngIf="
+                                        mostrarSugestoesSetor &&
+                                        setorFiltradas.length > 0
+                                    "
                                     class="list-group position-absolute w-100 shadow-sm mt-1 zindex-dropdown">
 
                                     <li
@@ -202,7 +309,9 @@
                                         {{ setor.nomeSetor }}
 
                                         <i class="fas fa-fw fa-plus-circle text-muted fa-lg"></i>
+
                                     </li>
+
                                 </ul>
 
                                 <!-- SELECIONADOS -->
@@ -212,7 +321,9 @@
                                     class="form-text text-success mt-2">
 
                                     <h6 class="card-subtitle text-muted">
+
                                         Setores selecionados:
+
                                     </h6>
 
                                     <ul class="lista-sem-bolinha">
@@ -235,10 +346,15 @@
                                                 (click)="removerSetorSelecionada(s)">
 
                                                 <i class="fas fa-fw fa-trash-alt text-muted fa-lg"></i>
+
                                             </button>
+
                                         </li>
+
                                     </ul>
+
                                 </div>
+
                             </div>
 
                             <!-- NIVEIS -->
@@ -265,8 +381,10 @@
                                 <!-- SUGESTÕES -->
 
                                 <ul
-                                    *ngIf="mostrarSugestoesNiveis
-                                    && niveisFiltradas.length > 0"
+                                    *ngIf="
+                                        mostrarSugestoesNiveis &&
+                                        niveisFiltradas.length > 0
+                                    "
                                     class="list-group position-absolute w-100 shadow-sm mt-1 zindex-dropdown">
 
                                     <li
@@ -277,7 +395,9 @@
                                         {{ nivel.nomeNivel }}
 
                                         <i class="fas fa-fw fa-plus-circle text-muted fa-lg"></i>
+
                                     </li>
+
                                 </ul>
 
                                 <!-- SELECIONADOS -->
@@ -287,7 +407,9 @@
                                     class="form-text text-success mt-2">
 
                                     <h6 class="card-subtitle text-muted">
+
                                         Níveis selecionados:
+
                                     </h6>
 
                                     <ul class="lista-sem-bolinha">
@@ -310,10 +432,15 @@
                                                 (click)="removerNivelSelecionado(n)">
 
                                                 <i class="fas fa-fw fa-trash-alt text-muted fa-lg"></i>
+
                                             </button>
+
                                         </li>
+
                                     </ul>
+
                                 </div>
+
                             </div>
 
                             <!-- SENHA -->
@@ -335,27 +462,37 @@
                                     placeholder="Digite a senha" />
 
                                 <div
-                                    *ngIf="form.get('senha')?.touched
-                                    && form.get('senha')?.invalid"
+                                    *ngIf="
+                                        form.get('senha')?.touched &&
+                                        form.get('senha')?.invalid
+                                    "
                                     class="text-danger">
 
                                     <span
-                                        *ngIf="form.get('senha')
-                                        ?.hasError('required')">
+                                        *ngIf="
+                                            form.get('senha')
+                                            ?.hasError('required')
+                                        ">
 
                                         A senha é obrigatória.
+
                                     </span>
 
                                     <span
-                                        *ngIf="form.get('senha')
-                                        ?.hasError('senhaFraca')">
+                                        *ngIf="
+                                            form.get('senha')
+                                            ?.hasError('senhaFraca')
+                                        ">
 
                                         {{
                                             form.get('senha')
                                             ?.getError('senhaFraca')
                                         }}
+
                                     </span>
+
                                 </div>
+
                             </div>
 
                             <!-- CONFIRMAR SENHA -->
@@ -377,22 +514,32 @@
                                     placeholder="Confirme a senha" />
 
                                 <div
-                                    *ngIf="form.get('confirmarSenha')?.touched"
+                                    *ngIf="
+                                        form.get('confirmarSenha')?.touched
+                                    "
                                     class="text-danger">
 
                                     <span
-                                        *ngIf="form.get('confirmarSenha')
-                                        ?.hasError('required')">
+                                        *ngIf="
+                                            form.get('confirmarSenha')
+                                            ?.hasError('required')
+                                        ">
 
                                         A confirmação da senha é obrigatória.
+
                                     </span>
 
                                     <span
-                                        *ngIf="form.hasError('senhasDiferentes')">
+                                        *ngIf="
+                                            form.hasError('senhasDiferentes')
+                                        ">
 
                                         As senhas não coincidem.
+
                                     </span>
+
                                 </div>
+
                             </div>
 
                             <!-- BOTÃO -->
@@ -407,14 +554,21 @@
                                     <i class="align-middle me-2 fas fa-save fa-lg"></i>
 
                                     Salvar Alterações
+
                                 </button>
+
                             </div>
 
                         </div>
+
                     </form>
 
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </div>

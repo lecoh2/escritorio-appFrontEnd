@@ -1,5 +1,5 @@
 export interface NivelUsuario {
-  idNivel: string;
+  id: string;
   nomeNivel: string;
 }
 
@@ -7,10 +7,16 @@ export interface AutenticarUsuarioResponse {
   idUsuario: string;
   login: string;
   nomeUsuario: string;
-  sexo: string;
+
   nivel: NivelUsuario[];
+
   dataHoraAcesso: string;
   accessToken: string;
   dataHoraExpiracao: string;
 
+  foto: string;
+  ipAcesso: string;
+
+  escritorioId?: string;
+  escritorioNome?: string;
 }

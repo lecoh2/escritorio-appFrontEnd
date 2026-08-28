@@ -1,18 +1,211 @@
-<input
-  type="text"
-  class="form-control"
-  [formControl]="control"
-  (focus)="abrir()"
-  (blur)="fechar()"
-/>
+<div class="position-relative vinculo-wrapper">
 
-<ul *ngIf="mostrarSugestoes && resultados.length > 0"
-    class="list-group position-absolute w-100">
+  <!-- CAMPO DE BUSCA -->
+  <div class="input-group vinculo-input">
 
-  <li *ngFor="let item of resultados"
-      class="list-group-item"
+    <span class="input-group-text">
+
+      <i
+        *ngIf="tipoVinculo === 'processo'"
+        class="fas fa-scale-balanced text-primary">
+      </i>
+
+      <i
+        *ngIf="tipoVinculo === 'caso'"
+        class="fas fa-folder-open text-warning">
+      </i>
+
+      <i
+        *ngIf="tipoVinculo === 'atendimento'"
+        class="fas fa-headset text-success">
+      </i>
+
+      <i
+        *ngIf="!tipoVinculo"
+        class="fas fa-link text-muted">
+      </i>
+
+    </span>
+
+    <input
+      type="text"
+      class="form-control"
+      [formControl]="control"
+      autocomplete="off"
+      placeholder="Digite para buscar..."
+      (focus)="abrir()"
+      (blur)="fechar()">
+
+  </div>
+
+
+  <!-- RESULTADOS -->
+  <div
+    *ngIf="mostrarSugestoes && resultados.length > 0"
+    class="vinculo-resultados">
+
+    <button
+      type="button"
+      class="vinculo-item"
+      *ngFor="let item of resultados"
       (mousedown)="selecionar(item)">
-    {{ getLabel(item) }}
-  </li>
 
-</ul>
+      <!-- ÍCONE -->
+      <div
+        class="vinculo-icone"
+        [ngClass]="{
+          'processo': tipoVinculo === 'processo',
+          'caso': tipoVinculo === 'caso',
+          'atendimento': tipoVinculo === 'atendimento'
+        }">
+
+        <i
+          *ngIf="tipoVinculo === 'processo'"
+          class="fas fa-scale-balanced">
+        </i>
+
+        <i
+          *ngIf="tipoVinculo === 'caso'"
+          class="fas fa-folder-open">
+        </i>
+
+        <i
+          *ngIf="tipoVinculo === 'atendimento'"
+          class="fas fa-headset">
+        </i>
+
+      </div>
+
+
+      <!-- CONTEÚDO -->
+      <div class="vinculo-conteudo">
+
+        <!-- PROCESSO -->
+        <ng-container
+          *ngIf="tipoVinculo === 'processo'">
+
+          <div class="vinculo-titulo">
+
+            {{ item.titulo || item.pasta }}
+
+          </div>
+
+          <div
+            class="vinculo-detalhe"
+            *ngIf="item.numeroProcesso">
+
+            <i class="fas fa-gavel me-1"></i>
+
+            {{ formatarProcesso(item.numeroProcesso) }}
+
+          </div>
+
+          <div
+            class="vinculo-detalhe"
+            *ngIf="item.pasta">
+
+            <i class="fas fa-folder me-1"></i>
+
+            {{ item.pasta }}
+
+          </div>
+
+        </ng-container>
+
+
+        <!-- CASO -->
+        <ng-container
+          *ngIf="tipoVinculo === 'caso'">
+
+          <div class="vinculo-titulo">
+
+            {{ item.titulo || item.pasta }}
+
+          </div>
+
+          <div
+            class="vinculo-detalhe"
+            *ngIf="item.pasta">
+
+            <i class="fas fa-folder me-1"></i>
+
+            {{ item.pasta }}
+
+          </div>
+
+        </ng-container>
+
+
+        <!-- ATENDIMENTO -->
+        <ng-container
+          *ngIf="tipoVinculo === 'atendimento'">
+
+          <div class="vinculo-titulo">
+
+            {{ item.assunto }}
+
+          </div>
+
+          <div
+            class="vinculo-detalhe"
+            *ngIf="item.numeroControle">
+
+            <i class="fas fa-ticket me-1"></i>
+
+            {{ item.numeroControle }}
+
+          </div>
+
+          <div
+            class="vinculo-detalhe"
+            *ngIf="
+              !item.numeroControle &&
+              item.codigoControle !== null &&
+              item.codigoControle !== undefined &&
+              item.anoBaseControle
+            ">
+
+            <i class="fas fa-ticket me-1"></i>
+
+            {{
+              formatarNumeroControle(
+                item.codigoControle,
+                item.anoBaseControle
+              )
+            }}
+
+          </div>
+
+        </ng-container>
+
+      </div>
+
+
+      <!-- SETA -->
+      <div class="vinculo-seta">
+
+        <i class="fas fa-chevron-right"></i>
+
+      </div>
+
+    </button>
+
+  </div>
+
+
+  <!-- SEM RESULTADOS -->
+  <div
+    *ngIf="
+      mostrarSugestoes &&
+      resultados.length === 0 &&
+      control.value.length >= 2
+    "
+    class="vinculo-vazio">
+
+    <i class="fas fa-magnifying-glass me-2"></i>
+
+    Nenhum vínculo encontrado.
+
+  </div>
+
+</div>

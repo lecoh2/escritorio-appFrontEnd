@@ -1,8 +1,18 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment.development";
-import { Observable } from "rxjs";
-import { WebJurPublicacaoDetalhe } from "../models/webjur/webjur-publicacao-detalhe";
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
+
+import {
+  inject,
+  Injectable
+} from '@angular/core';
+
+import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment.development';
+
+import { WebJurPublicacaoDetalhe } from '../models/webjur/webjur-publicacao-detalhe';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +22,36 @@ export class WebJurService {
   private url = environment.apiDeslandes;
   private http = inject(HttpClient);
 
-  consultarPublicacoesPaginado(pageNumber: number, pageSize: number, searchTerm?: string) {
+
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR PUBLICAÇÕES PAGINADO
+  // =====================================================
+
+  consultarPublicacoesPaginado(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm?: string
+  ): Observable<any> {
+
     const params: any = {
       pageNumber: pageNumber.toString(),
       pageSize: pageSize.toString()
@@ -24,99 +63,208 @@ export class WebJurService {
 
     return this.http.get<any>(
       `${this.url}/api/v1/webjur/publicacoes/paginacao`,
-      { params }
+      {
+        params,
+        headers: this.getHeaders()
+      }
     );
   }
 
-  importarPublicacoes() {
-    const token = localStorage.getItem('token');
 
-    return this.http.post(
+  // =====================================================
+  // IMPORTAR PUBLICAÇÕES
+  // =====================================================
+
+  importarPublicacoes(): Observable<any> {
+
+    return this.http.post<any>(
       `${this.url}/api/v1/webjur/publicacoes/importar`,
       {},
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
-  sincronizarTudo() {
-    const token = localStorage.getItem('token');
 
-    return this.http.post(
+  // =====================================================
+  // SINCRONIZAR TUDO
+  // =====================================================
+
+  sincronizarTudo(): Observable<any> {
+
+    return this.http.post<any>(
       `${this.url}/api/v1/webjur/sincronizar`,
       {},
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
-  verificarProcesso(numeroProcesso: string) {
+
+  // =====================================================
+  // VERIFICAR PROCESSO
+  // =====================================================
+
+  verificarProcesso(
+    numeroProcesso: string
+  ): Observable<any> {
+
     return this.http.get<any>(
-      `${this.url}/api/v1/webjur/verificar/${numeroProcesso}`
+      `${this.url}/api/v1/webjur/verificar/${numeroProcesso}`,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
 
-  consultarAndamentos(processoId: string) {
+
+  // =====================================================
+  // CONSULTAR ANDAMENTOS
+  // =====================================================
+
+  consultarAndamentos(
+    processoId: string
+  ): Observable<any> {
+
     return this.http.get<any>(
-      `${this.url}/api/v1/webjur/andamentos/${processoId}`
+      `${this.url}/api/v1/webjur/andamentos/${processoId}`,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
-  obterDetalhe(id: string){
-  return this.http.get<WebJurPublicacaoDetalhe>(
-    `${this.url}/api/v1/webjur/publicacoes/${id}`
-  );
-}
 
-registrarVisualizacao(id:string){
-  return this.http.post(
-    `${this.url}/api/v1/webjur/publicacoes/${id}/visualizar`,
-    {}
-  );
-}
 
-sincronizarPublicacao(id:string){
-  return this.http.post(
-    `${this.url}/api/v1/webjur/publicacoes/${id}/sincronizar`,
-    {}
-  );
-}
-adicionarComentario(id: string, comentario: string) {
-  return this.http.post(
-    `${this.url}/api/v1/webjur/publicacoes/${id}/comentarios`,
-    { comentario }
-  );
-}
+  // =====================================================
+  // OBTER DETALHE DA PUBLICAÇÃO
+  // =====================================================
 
-baixarPdf(id:string){
+  obterDetalhe(
+    id: string
+  ): Observable<WebJurPublicacaoDetalhe> {
 
-  return this.http.get(
+    return this.http.get<WebJurPublicacaoDetalhe>(
+      `${this.url}/api/v1/webjur/publicacoes/${id}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // REGISTRAR VISUALIZAÇÃO
+  // =====================================================
+
+  registrarVisualizacao(
+    id: string
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.url}/api/v1/webjur/publicacoes/${id}/visualizar`,
+      {},
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // SINCRONIZAR PUBLICAÇÃO
+  // =====================================================
+
+  sincronizarPublicacao(
+    id: string
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.url}/api/v1/webjur/publicacoes/${id}/sincronizar`,
+      {},
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // ADICIONAR COMENTÁRIO
+  // =====================================================
+
+  adicionarComentario(
+    id: string,
+    comentario: string
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.url}/api/v1/webjur/publicacoes/${id}/comentarios`,
+      {
+        comentario
+      },
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // BAIXAR PDF
+  // =====================================================
+
+  baixarPdf(
+    id: string
+  ): Observable<Blob> {
+
+    return this.http.get(
       `${this.url}/api/v1/webjur/publicacoes/${id}/pdf`,
       {
-        responseType:'blob'
-      });
-
-}
-getComentarios(id: string) {
-  return this.http.get<any>(
-    `${this.url}/api/v1/webjur/publicacoes/${id}/comentarios`
-  );
-}
-
-getVisualizacoes(id: string, pageNumber: number, pageSize: number) {
-  return this.http.get<any>(
-    `${this.url}/api/v1/webjur/publicacoes/${id}/visualizacoes`,
-    {
-      params: {
-        pageNumber,
-        pageSize
+        headers: this.getHeaders(),
+        responseType: 'blob'
       }
-    }
-  );
-}
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR COMENTÁRIOS
+  // =====================================================
+
+  getComentarios(
+    id: string
+  ): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/webjur/publicacoes/${id}/comentarios`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR VISUALIZAÇÕES
+  // =====================================================
+
+  getVisualizacoes(
+    id: string,
+    pageNumber: number,
+    pageSize: number
+  ): Observable<any> {
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/webjur/publicacoes/${id}/visualizacoes`,
+      {
+        params: {
+          pageNumber: pageNumber.toString(),
+          pageSize: pageSize.toString()
+        },
+        headers: this.getHeaders()
+      }
+    );
+  }
 }

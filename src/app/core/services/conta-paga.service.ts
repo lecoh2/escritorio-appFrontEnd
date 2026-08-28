@@ -1,13 +1,13 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-import { environment } from "../../../environments/environment.development";
+import { environment } from '../../../environments/environment.development';
 
-import { ApiResponse } from "../models/respostas/api-response";
-import { ContaPagarRequest } from "../models/contas/conta-pagar-request";
-import { ContaPagarResponse } from "../models/contas/conta-pagar.response";
-
+import { ApiResponse } from '../models/respostas/api-response';
+import { ContaPagarRequest } from '../models/contas/conta-pagar-request';
+import { ContaPagarResponse } from '../models/contas/conta-pagar.response';
+import { ContaPagarUpdateRequest } from '../models/contas/conta-pagar-update-request';
 
 @Injectable({
   providedIn: 'root'
@@ -17,101 +17,153 @@ export class ContaPagarService {
   private url = environment.apiDeslandes;
   private http = inject(HttpClient);
 
+
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CADASTRAR
+  // =====================================================
+
   cadastrarContaPagar(
     request: ContaPagarRequest
   ): Observable<ApiResponse<ContaPagarResponse>> {
-
-    const token = localStorage.getItem('token');
 
     return this.http.post<ApiResponse<ContaPagarResponse>>(
       `${this.url}/api/v1/conta-pagar/cadastrar-conta-pagar`,
       request,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
-  editarContaPagar(
-    id: string,
-    request: any
-  ): Observable<ApiResponse<ContaPagarResponse>> {
 
-    const token = localStorage.getItem('token');
+  // =====================================================
+  // EDITAR
+  // =====================================================
 
-    return this.http.put<ApiResponse<ContaPagarResponse>>(
-      `${this.url}/api/v1/conta-pagar/atualizar-conta-pagar/${id}`,
-      request,
-      {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
-      }
-    );
-  }
+editarContaPagar(
+  id: string,
+  request: ContaPagarUpdateRequest
+): Observable<ApiResponse<ContaPagarResponse>> {
+
+  return this.http.put<ApiResponse<ContaPagarResponse>>(
+    `${this.url}/api/v1/conta-pagar/atualizar-conta-pagar/${id}`,
+    request,
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
+  // =====================================================
+  // EXCLUIR
+  // =====================================================
 
   excluirContaPagar(
     id: string
   ): Observable<ApiResponse<ContaPagarResponse>> {
 
-    const token = localStorage.getItem('token');
-
     return this.http.delete<ApiResponse<ContaPagarResponse>>(
       `${this.url}/api/v1/conta-pagar/excluir-conta-pagar/${id}`,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
+
+
+  // =====================================================
+  // CONSULTAR TODAS
+  // =====================================================
 
   consultarContasPagar(): Observable<ContaPagarResponse[]> {
 
     return this.http.get<ContaPagarResponse[]>(
-      `${this.url}/api/v1/conta-pagar/consultar-contas-pagar`
-    );
-  }
-
-  consultarContasPagarPaginado(pageNumber: number, pageSize: number, searchTerm?: string) {
-     const params: any = { pageNumber: pageNumber.toString(), pageSize: pageSize.toString() };
-
-     if (searchTerm) params.searchTerm = searchTerm;
-        return this.http.get<any>(`${this.url}/api/v1/conta-pagar/consultar-conta-pagar-paginacao`,
-      { params }
-    );
-  }
-
-  baixarContaPagar(
-    id: string,
-    request: any
-  ) {
-
-    const token = localStorage.getItem('token');
-
-    return this.http.post(
-      `${this.url}/api/v1/conta-pagar/baixar-conta-pagar/${id}`,
-      request,
+      `${this.url}/api/v1/conta-pagar/consultar-contas-pagar`,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
-  obterContaPagarPorId(id: string) {
 
-    const token = localStorage.getItem('token');
+  // =====================================================
+  // CONSULTAR PAGINADO
+  // =====================================================
+
+  consultarContasPagarPaginado(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm?: string
+  ): Observable<any> {
+
+    const params: any = {
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString()
+    };
+
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/conta-pagar/consultar-conta-pagar-paginacao`,
+      {
+        params,
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // BAIXAR CONTA
+  // =====================================================
+
+  baixarContaPagar(
+    id: string,
+    request: any
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.url}/api/v1/conta-pagar/baixar-conta-pagar/${id}`,
+      request,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // OBTER POR ID
+  // =====================================================
+
+  obterContaPagarPorId(
+    id: string
+  ): Observable<ContaPagarResponse> {
 
     return this.http.get<ContaPagarResponse>(
       `${this.url}/api/v1/conta-pagar/obter-conta-pagar-por-id/${id}`,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }

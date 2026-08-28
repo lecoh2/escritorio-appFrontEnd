@@ -35,7 +35,7 @@ export class PainelPrincipal implements OnInit {
   lembretes: LembreteResponse[] = [];
   clientesExpandidos: Set<string> = new Set();
   nomeUsuario = '';
-  sexoUsuario = '';
+
 
   ngOnInit(): void {
     this.carregarUsuario();
@@ -50,7 +50,7 @@ export class PainelPrincipal implements OnInit {
     const usuario = this.authHelper.get();
 
     this.nomeUsuario = usuario?.nomeUsuario ?? 'Usuário';
-    this.sexoUsuario = usuario?.sexo ?? 'Masculino';
+
   }
   obterLinkLembrete(item: any): string[] {
 

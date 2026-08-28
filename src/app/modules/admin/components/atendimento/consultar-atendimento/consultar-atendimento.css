@@ -1,55 +1,178 @@
+/* =====================================================
+   SPINNER
+   ===================================================== */
+
 .spinner-container {
   display: flex;
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
-  /* sem fundo cinza */
-  position: relative; /* se quiser sobrepor a tabela */
+
+  position: relative;
+
   z-index: 10;
+
   margin: 20px 0;
 }
 
+
 .spinner-bounce {
   display: flex;
+
   align-items: center;
   justify-content: center;
-  gap: 10px; /* espaço entre as bolinhas */
+
+  gap: 10px;
 }
+
 
 .spinner-bounce div {
   width: 15px;
   height: 15px;
-  background-color: #0d6efd; /* azul bootstrap */
+
+  background-color: #0d6efd;
+
   border-radius: 50%;
-  animation: bounce 1.4s infinite ease-in-out both;
+
+  animation:
+    bounce 1.4s infinite ease-in-out both;
 }
 
-.spinner-bounce div:nth-child(1) { animation-delay: -0.32s; }
-.spinner-bounce div:nth-child(2) { animation-delay: -0.16s; }
+
+.spinner-bounce div:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+
+.spinner-bounce div:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
 
 @keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
 }
+
 
 .spinner-message {
   margin-top: 10px;
+
   font-weight: 500;
+
   color: #0d6efd;
 }
+
+
+/* =====================================================
+   PAGINAÇÃO
+   ===================================================== */
+
 .pagination .page-item .page-link {
   color: #007bff;
+
   border-radius: 0.25rem;
 }
+
 
 .pagination .page-item.active .page-link {
   background-color: #007bff;
   border-color: #007bff;
+
   color: white;
 }
 
+
 .pagination .page-item.disabled .page-link {
   color: #6c757d;
+
   pointer-events: none;
 }
 
+
+/* =====================================================
+   TABELA
+   ===================================================== */
+
+.tabela-atendimentos {
+  overflow: visible !important;
+}
+
+
+.tabela-atendimentos .table {
+  overflow: visible !important;
+}
+
+
+.tabela-atendimentos tbody,
+.tabela-atendimentos tr,
+.tabela-atendimentos td {
+  overflow: visible !important;
+}
+
+
+/* =====================================================
+   DROPDOWN CLIENTES / ETIQUETAS
+   ===================================================== */
+
+.tabela-atendimentos .dropdown {
+  position: relative;
+}
+
+
+.tabela-atendimentos .dropdown-menu {
+  z-index: 99999 !important;
+
+  max-height: none !important;
+
+  overflow: visible !important;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   DROPDOWN CLIENTES
+   ===================================================== */
+
+.clientes-dropdown {
+  min-width: 240px;
+
+  width: max-content;
+  max-width: 420px;
+
+  overflow: visible !important;
+}
+
+
+.clientes-dropdown .dropdown-item {
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   REGISTRO RESUMIDO
+   ===================================================== */
+
+.registro-resumido {
+  display: inline-block;
+
+  max-width: 260px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  vertical-align: middle;
+}

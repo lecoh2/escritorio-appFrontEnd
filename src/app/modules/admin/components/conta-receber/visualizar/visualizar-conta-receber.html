@@ -1,68 +1,111 @@
-<!-- BOTÃO BAIXA -->
-
 <div class="container-fluid p-0">
-    <app-alerts *ngIf="mensagemSucesso.length" titulo="Sucesso!" [mensagens]="mensagemSucesso" tipo="success"
+
+    <!-- ALERTAS -->
+
+    <app-alerts
+        *ngIf="mensagemSucesso.length"
+        titulo="Sucesso!"
+        [mensagens]="mensagemSucesso"
+        tipo="success"
         icone="fas fa-check-circle">
     </app-alerts>
 
-    <app-alerts *ngIf="mensagemErro.length" titulo="Erro!" [mensagens]="mensagemErro" tipo="danger"
+    <app-alerts
+        *ngIf="mensagemErro.length"
+        titulo="Erro!"
+        [mensagens]="mensagemErro"
+        tipo="danger"
         icone="fas fa-times-circle">
     </app-alerts>
-    <div class="d-flex justify-content-between align-items-center mb-4">
 
+
+    <!-- CABEÇALHO -->
+
+    <div
+        class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
+
             <h1 class="h3 mb-1">
+
                 <i class="fas fa-file-invoice-dollar text-success me-2"></i>
+
                 Conta a Receber
+
             </h1>
 
             <p class="text-muted mb-0">
+
                 {{ conta?.descricao }}
+
             </p>
+
         </div>
+
+
+        <!-- STATUS -->
 
         <div class="d-flex gap-2">
 
+            <span
+                *ngIf="conta?.status === 1"
+                class="badge bg-warning text-dark px-3 py-2">
 
-
-            <span class="badge bg-success fs-6" *ngIf="conta?.status === 2">
-
-                <i class="fas fa-check-circle me-1"></i>
-                Paga
-
-            </span>
-
-            <span *ngIf="conta?.status === 1" class="badge bg-warning text-dark">
+                <i class="fas fa-clock me-1"></i>
 
                 Aberta
 
             </span>
 
-            <span class="badge bg-danger fs-6" *ngIf="conta?.status === 3">
+
+            <span
+                *ngIf="conta?.status === 2"
+                class="badge bg-success px-3 py-2">
+
+                <i class="fas fa-check-circle me-1"></i>
+
+                Paga
+
+            </span>
+
+
+            <span
+                *ngIf="conta?.status === 3"
+                class="badge bg-danger px-3 py-2">
 
                 <i class="fas fa-exclamation-circle me-1"></i>
+
                 Vencida
 
             </span>
-            <span *ngIf="conta?.status === 4" class="badge bg-info">
+
+
+            <span
+                *ngIf="conta?.status === 4"
+                class="badge bg-info text-dark px-3 py-2">
+
+                <i class="fas fa-circle-half-stroke me-1"></i>
 
                 Parcialmente Paga
 
             </span>
+
         </div>
 
-
     </div>
+
 
     <!-- RESUMO -->
 
     <div class="row mb-4">
 
 
+        <!-- VALOR TOTAL -->
+
         <div class="col-md-4 mb-3">
 
-            <div class="card border-0 shadow-sm text-white"
+            <div
+                class="card border-0 shadow-sm text-white"
                 style="background: linear-gradient(135deg,#198754,#20c997);">
 
                 <div class="card-body">
@@ -72,7 +115,9 @@
                     </small>
 
                     <h3 class="fw-bold mb-0">
+
                         {{ conta?.valor | currency:'BRL' }}
+
                     </h3>
 
                 </div>
@@ -81,19 +126,25 @@
 
         </div>
 
+
+        <!-- VALOR RECEBIDO -->
+
         <div class="col-md-4 mb-3">
 
-            <div class="card border-0 shadow-sm text-white"
+            <div
+                class="card border-0 shadow-sm text-white"
                 style="background: linear-gradient(135deg,#0d6efd,#3d8bfd);">
 
                 <div class="card-body">
 
                     <small class="text-white-50">
-                        Valor Pago
+                        Valor Recebido
                     </small>
 
                     <h3 class="fw-bold mb-0">
+
                         {{ conta?.valorPago | currency:'BRL' }}
+
                     </h3>
 
                 </div>
@@ -102,9 +153,13 @@
 
         </div>
 
+
+        <!-- SALDO -->
+
         <div class="col-md-4 mb-3">
 
-            <div class="card border-0 shadow-sm text-white"
+            <div
+                class="card border-0 shadow-sm text-white"
                 style="background: linear-gradient(135deg,#dc3545,#fd7e14);">
 
                 <div class="card-body">
@@ -114,7 +169,9 @@
                     </small>
 
                     <h3 class="fw-bold mb-0">
+
                         {{ saldo | currency:'BRL' }}
+
                     </h3>
 
                 </div>
@@ -123,24 +180,32 @@
 
         </div>
 
-
     </div>
 
-    <!-- INFORMAÇÕES -->
+
+    <!-- INFORMAÇÕES GERAIS -->
 
     <div class="card shadow-sm mb-4">
 
-
         <div class="card-header">
+
             <h5 class="mb-0">
+
                 <i class="fas fa-info-circle text-primary me-2"></i>
+
                 Informações Gerais
+
             </h5>
+
         </div>
+
 
         <div class="card-body">
 
             <div class="row">
+
+
+                <!-- CLIENTE -->
 
                 <div class="col-md-6 mb-3">
 
@@ -149,10 +214,15 @@
                     </label>
 
                     <div class="fw-bold">
+
                         {{ conta?.cliente }}
+
                     </div>
 
                 </div>
+
+
+                <!-- CONTRATO -->
 
                 <div class="col-md-6 mb-3">
 
@@ -161,10 +231,30 @@
                     </label>
 
                     <div class="fw-bold">
-                        {{ formatarContrato(conta?.contrato) }}
+
+                        <span *ngIf="conta?.contrato">
+
+                            <i class="fas fa-file-contract text-primary me-2"></i>
+
+                            {{ formatarContrato(conta?.contrato) }}
+
+                        </span>
+
+
+                        <span
+                            *ngIf="!conta?.contrato"
+                            class="text-muted">
+
+                            Nenhum contrato vinculado
+
+                        </span>
+
                     </div>
 
                 </div>
+
+
+                <!-- DESCRIÇÃO -->
 
                 <div class="col-12">
 
@@ -173,7 +263,9 @@
                     </label>
 
                     <div>
+
                         {{ conta?.descricao }}
+
                     </div>
 
                 </div>
@@ -182,119 +274,185 @@
 
         </div>
 
-
     </div>
 
-    <!-- FINANCEIRO -->
+
+    <!-- INFORMAÇÕES FINANCEIRAS -->
 
     <div class="card shadow-sm mb-4">
-
 
         <div class="card-header">
 
             <h5 class="mb-0">
+
                 <i class="fas fa-wallet text-success me-2"></i>
+
                 Informações Financeiras
+
             </h5>
 
         </div>
 
+
         <div class="card-body">
 
-            <div class="row">
+            <div class="row align-items-end">
 
-                <div class="col-md-3">
+
+                <!-- EMISSÃO -->
+
+                <div class="col-md-3 mb-3">
 
                     <label class="small text-muted">
                         Emissão
                     </label>
 
                     <div>
+
                         {{ conta?.dataEmissao | date:'dd/MM/yyyy' }}
+
                     </div>
 
                 </div>
 
-                <div class="col-md-3">
+
+                <!-- VENCIMENTO -->
+
+                <div class="col-md-3 mb-3">
 
                     <label class="small text-muted">
                         Vencimento
                     </label>
 
                     <div>
+
                         {{ conta?.dataVencimento | date:'dd/MM/yyyy' }}
+
                     </div>
 
                 </div>
 
-                <div class="col-md-3">
+
+                <!-- FORMA -->
+
+                <div class="col-md-3 mb-3">
 
                     <label class="small text-muted">
-                        Forma Recebimento
+                        Forma de Recebimento
                     </label>
 
                     <div>
 
-                        <i [class]="getFormaRecebimentoIcon(conta?.formaRecebimento)" class="me-2">
+                        <i
+                            [class]="getFormaRecebimentoIcon(
+                                conta?.formaRecebimento
+                            )"
+                            class="me-2">
                         </i>
 
-                        {{ getFormaRecebimento(conta?.formaRecebimento) }}
+                        {{
+                            getFormaRecebimento(
+                                conta?.formaRecebimento
+                            )
+                        }}
 
                     </div>
 
                 </div>
 
-               <div class="col-md-3">
 
-    <label class="small text-muted d-block mb-2">
-        Parcelamento
-    </label>
+                <!-- PARCELAMENTO / AÇÕES -->
 
-    <div class="d-flex align-items-center gap-3">
+                <div class="col-md-3 mb-3">
 
-        <span *ngIf="conta?.parcelado"
-              class="badge bg-warning text-dark px-3 py-2">
+                    <label class="small text-muted d-block mb-2">
+                        Parcelamento
+                    </label>
 
-            {{ conta?.totalParcelas }}x
 
-        </span>
+                    <div
+                        class="d-flex align-items-center gap-3">
 
-        <span *ngIf="!conta?.parcelado"
-              class="badge bg-success px-3 py-2">
 
-            À Vista
+                        <!-- BADGE PARCELADO -->
 
-        </span>
+                        <span
+                            *ngIf="conta?.parcelado"
+                            class="badge bg-warning text-dark px-3 py-2">
 
-        <button
-            *ngIf="!conta?.parcelado"
-            class="btn btn-outline-success btn-sm px-3"
-            [disabled]="conta?.status === 2"
-            (click)="abrirModalBaixa(conta.id, saldo)">
+                            <i class="fas fa-layer-group me-1"></i>
 
-            <i class="fas fa-hand-holding-usd me-2"></i>
+                            {{ conta?.totalParcelas }}x
 
-            {{ conta?.status === 2 ? 'Paga' : 'Baixar' }}
+                        </span>
 
-        </button>
 
-    </div>
+                        <!-- BADGE À VISTA -->
 
-</div>
+                        <span
+                            *ngIf="!conta?.parcelado"
+                            class="badge bg-success px-3 py-2">
+
+                            <i class="fas fa-check-circle me-1"></i>
+
+                            À Vista
+
+                        </span>
+
+
+    <!-- BAIXAR CONTA À VISTA -->
+<button
+    *ngIf="
+        !conta?.parcelado &&
+        conta?.status !== 2
+    "
+    type="button"
+    class="btn btn-link text-success p-0 border-0"
+    (click)="abrirModalBaixa(
+        conta.id,
+        saldo
+    )"
+    title="Registrar recebimento">
+
+    <i class="fas fa-money-check-dollar fa-lg"></i>
+
+</button>
+
+
+<!-- VISUALIZAR RECEBIMENTO DA CONTA À VISTA -->
+<button
+    *ngIf="
+        !conta?.parcelado &&
+        conta?.status === 2
+    "
+    type="button"
+    class="btn btn-link text-primary p-0 border-0"
+    (click)="abrirDetalhesContaPaga()"
+    title="Ver detalhes do recebimento">
+
+    <i class="fas fa-eye fa-lg"></i>
+
+</button>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-
     </div>
 
-    <!-- BAIXAS -->
 
-    <div class="card shadow-sm mb-4" *ngIf="conta?.baixas?.length">
+    <!-- BAIXAS DA CONTA PRINCIPAL / À VISTA -->
 
+    <div
+        class="card shadow-sm mb-4"
+        *ngIf="conta?.baixas?.length">
 
-        <div class="card-header d-flex justify-content-between">
+        <div
+            class="card-header d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0">
 
@@ -304,50 +462,130 @@
 
             </h5>
 
-            <span class="badge bg-success">
+
+            <span class="badge bg-success px-3 py-2">
+
                 {{ conta.baixas.length }}
+
             </span>
 
         </div>
 
+
         <div class="table-responsive">
 
-            <table class="table table-hover mb-0">
+            <table
+                class="table table-hover align-middle mb-0">
 
-                <thead class="table-light">
+                <thead class="">
 
                     <tr>
-                        <th>Data</th>
-                        <th>Forma</th>
-                        <th>Valor</th>
-                        <th>Observação</th>
+
+                        <th>
+                            <i class="fas fa-calendar-check me-1"></i>
+                            Data
+                        </th>
+
+                        <th>
+                            <i class="fas fa-wallet me-1"></i>
+                            Forma
+                        </th>
+
+                        <th>
+                            <i class="fas fa-money-bill-wave me-1"></i>
+                            Valor
+                        </th>
+
+                        <th>
+                            <i class="fas fa-align-left me-1"></i>
+                            Observação
+                        </th>
+
+                        <th class="text-end">
+                            <i class="fas fa-cogs me-1"></i>
+                            Ações
+                        </th>
+
                     </tr>
 
                 </thead>
 
+
                 <tbody>
 
-                    <tr *ngFor="let baixa of conta.baixas">
+                    <tr
+                        *ngFor="let baixa of conta.baixas">
+
+
+                        <!-- DATA -->
 
                         <td>
-                            {{ baixa.dataBaixa | date:'dd/MM/yyyy HH:mm' }}
+
+                            {{
+                                baixa.dataBaixa
+                                    | date:'dd/MM/yyyy HH:mm'
+                            }}
+
                         </td>
 
+
+                        <!-- FORMA -->
+
                         <td>
 
-                            <i [class]="getFormaRecebimentoIcon(baixa.formaRecebimento)" class="me-2">
+                            <i
+                                [class]="getFormaRecebimentoIcon(
+                                    baixa.formaRecebimento
+                                )"
+                                class="me-2">
                             </i>
 
-                            {{ getFormaRecebimento(baixa.formaRecebimento) }}
+                            {{
+                                getFormaRecebimento(
+                                    baixa.formaRecebimento
+                                )
+                            }}
 
                         </td>
+
+
+                        <!-- VALOR -->
 
                         <td class="fw-bold text-success">
-                            {{ baixa.valorPago | currency:'BRL' }}
+
+                            {{
+                                baixa.valorPago
+                                    | currency:'BRL'
+                            }}
+
                         </td>
 
+
+                        <!-- OBSERVAÇÃO -->
+
                         <td>
+
                             {{ baixa.observacao || '-' }}
+
+                        </td>
+
+
+                        <!-- AÇÃO -->
+
+                        <td class="text-end">
+
+                            <button
+                                type="button"
+                                class="btn btn-link text-primary p-0 border-0"
+                                (click)="abrirDetalhesPagamento(
+                                    baixa
+                                )"
+                                title="Ver detalhes">
+
+                                <i class="fas fa-eye fa-lg"></i>
+
+                            </button>
+
                         </td>
 
                     </tr>
@@ -358,14 +596,17 @@
 
         </div>
 
-
     </div>
+
 
     <!-- PARCELAS -->
 
-    <div class="card shadow-sm" *ngIf="conta?.parcelas?.length">
+    <div
+        class="card shadow-sm"
+        *ngIf="conta?.parcelas?.length">
 
-        <div class="card-header">
+        <div
+            class="card-header d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0">
 
@@ -375,71 +616,244 @@
 
             </h5>
 
+
+            <span
+                class="badge bg-warning text-dark px-3 py-2">
+
+                {{ conta?.parcelas?.length }}
+
+            </span>
+
         </div>
+
 
         <div class="table-responsive">
 
-            <table class="table table-hover mb-0">
+            <table
+                class="table table-hover align-middle mb-0">
 
-                <thead>
+
+                <thead class="">
 
                     <tr>
-                        <th>Parcela</th>
-                        <th>Vencimento</th>
-                        <th>Valor</th>
-                        <th>Status</th>
-                        <th>Ações</th>
+
+                        <th>
+                            <i class="fas fa-list-ol me-1"></i>
+                            Parcela
+                        </th>
+
+                        <th>
+                            <i class="fas fa-calendar-day me-1"></i>
+                            Vencimento
+                        </th>
+
+                        <th>
+                            <i class="fas fa-money-bill me-1"></i>
+                            Valor
+                        </th>
+
+                        <th>
+                            <i class="fas fa-hand-holding-dollar me-1"></i>
+                            Recebido
+                        </th>
+
+                        <th>
+                            <i class="fas fa-coins me-1"></i>
+                            Saldo
+                        </th>
+
+                        <th>
+                            <i class="fas fa-flag me-1"></i>
+                            Status
+                        </th>
+
+                        <th class="text-end">
+                            <i class="fas fa-cogs me-1"></i>
+                            Ações
+                        </th>
+
                     </tr>
 
                 </thead>
 
+
                 <tbody>
 
-                    <tr *ngFor="let parcela of conta.parcelas">
+                    <tr
+                        *ngFor="let parcela of conta.parcelas">
 
-                        <td>
-                            {{ parcela.numeroParcela }}/{{ parcela.totalParcelas }}
+
+                        <!-- PARCELA -->
+
+                        <td class="fw-semibold">
+
+                            {{
+                                parcela.numeroParcela
+                            }}/{{ parcela.totalParcelas }}
+
                         </td>
 
+
+                        <!-- VENCIMENTO -->
+
                         <td>
-                            {{ parcela.dataVencimento | date:'dd/MM/yyyy' }}
+
+                            {{
+                                parcela.dataVencimento
+                                    | date:'dd/MM/yyyy'
+                            }}
+
                         </td>
 
+
+                        <!-- VALOR -->
+
                         <td>
-                            {{ parcela.valor | currency:'BRL' }}
+
+                            {{
+                                parcela.valor
+                                    | currency:'BRL'
+                            }}
+
                         </td>
 
+
+                        <!-- RECEBIDO -->
+
+                        <td class="text-success fw-semibold">
+
+                            {{
+                                parcela.valorPago
+                                    | currency:'BRL'
+                            }}
+
+                        </td>
+
+
+                        <!-- SALDO -->
+
                         <td>
 
-                            <span *ngIf="parcela.status === 2" class="badge bg-success">
+                            {{
+                                (
+                                    parcela.valor -
+                                    (parcela.valorPago || 0)
+                                )
+                                    | currency:'BRL'
+                            }}
 
-                                Paga
+                        </td>
 
-                            </span>
 
-                            <span *ngIf="parcela.status === 1" class="badge bg-warning text-dark">
+                        <!-- STATUS -->
+
+                        <td>
+
+
+                            <!-- ABERTA -->
+
+                            <span
+                                *ngIf="parcela.status === 1"
+                                class="badge bg-warning text-dark px-3 py-2">
+
+                                <i class="fas fa-clock me-1"></i>
 
                                 Aberta
 
                             </span>
 
+
+                            <!-- PAGA -->
+
+                            <span
+                                *ngIf="parcela.status === 2"
+                                class="badge bg-success px-3 py-2">
+
+                                <i class="fas fa-check-circle me-1"></i>
+
+                                Paga
+
+                            </span>
+
+
+                            <!-- VENCIDA -->
+
+                            <span
+                                *ngIf="parcela.status === 3"
+                                class="badge bg-danger px-3 py-2">
+
+                                <i class="fas fa-exclamation-circle me-1"></i>
+
+                                Vencida
+
+                            </span>
+
+
+                            <!-- PARCIAL -->
+
+                            <span
+                                *ngIf="parcela.status === 4"
+                                class="badge bg-info text-dark px-3 py-2">
+
+                                <i class="fas fa-circle-half-stroke me-1"></i>
+
+                                Parcialmente Paga
+
+                            </span>
+
                         </td>
-                        <td>
 
-                            <button class="btn btn-sm" [ngClass]="{
-    'btn-success': parcela.status !== 2,
-    'btn-secondary': parcela.status === 2
-  }" [disabled]="parcela.status === 2" (click)="abrirModalBaixa(parcela.id, parcela.valor)">
 
-                                <i class="fas" [ngClass]="{
-      'fa-hand-holding-usd': parcela.status !== 2,
-      'fa-check': parcela.status === 2
-    }">
-                                </i>
+                        <!-- AÇÕES -->
 
-                                {{ parcela.status === 2 ? 'Paga' : 'Baixar' }}
+                        <td class="text-end align-middle">
 
-                            </button>
+                            <div
+                                class="d-flex justify-content-end align-items-center gap-3">
+
+
+                                <!-- RECEBER -->
+
+                                <button
+                                    *ngIf="parcela.status !== 2"
+                                    type="button"
+                                    class="btn btn-link text-success p-0 border-0"
+                                    (click)="abrirModalBaixa(
+                                        parcela.id,
+                                        parcela.valor -
+                                        (parcela.valorPago || 0)
+                                    )"
+                                    title="Registrar recebimento">
+
+                                    <i
+                                        class="fas fa-money-check-dollar fa-lg">
+                                    </i>
+
+                                </button>
+
+
+                                <!-- VISUALIZAR -->
+
+                                <button
+                                    *ngIf="
+                                        parcela.status === 2 &&
+                                        parcela.baixas?.length
+                                    "
+                                    type="button"
+                                    class="btn btn-link text-primary p-0 border-0"
+                                    (click)="abrirDetalhesPagamento(
+                                        parcela
+                                    )"
+                                    title="Ver detalhes do recebimento">
+
+                                    <i class="fas fa-eye fa-lg"></i>
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
                     </tr>
 
                 </tbody>
@@ -448,51 +862,88 @@
 
         </div>
 
-
     </div>
 
 </div>
 
+
+<!-- ===================================================== -->
 <!-- MODAL BAIXA -->
+<!-- ===================================================== -->
 
-<div class="modal" *ngIf="mostrarModalBaixa" style="display:block;background:rgba(0,0,0,.5)">
+<div
+    class="modal"
+    *ngIf="mostrarModalBaixa"
+    style="display:block;background:rgba(0,0,0,.5)">
 
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
 
-        <div class="modal-content">
+        <div class="modal-content shadow">
+
+
+            <!-- HEADER -->
 
             <div class="modal-header">
 
                 <h5 class="modal-title">
-                    Baixa Financeira
+
+                    <i class="fas fa-hand-holding-usd text-success me-2"></i>
+
+                    Registrar Recebimento
+
                 </h5>
 
-                <button class="btn-close" (click)="fecharModalBaixa()">
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    [disabled]="salvandoBaixa"
+                    (click)="fecharModalBaixa()">
                 </button>
 
             </div>
 
+
+            <!-- BODY -->
+
             <div class="modal-body">
 
-                <div class="mb-3">
 
-                    <label class="form-label">
-                        Valor Pago
-                    </label>
-
-                    <input type="number" class="form-control" [(ngModel)]="baixa.valorPago">
-
-                </div>
+                <!-- VALOR -->
 
                 <div class="mb-3">
 
                     <label class="form-label">
-                        Data da Baixa
+                        Valor Recebido
                     </label>
 
-                    <input type="date" class="form-control" [(ngModel)]="baixa.dataBaixa">
+                    <input
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        class="form-control"
+                        [(ngModel)]="baixa.valorPago">
 
                 </div>
+
+
+                <!-- DATA -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Data do Recebimento
+                    </label>
+
+                    <input
+                        type="date"
+                        class="form-control"
+                        [(ngModel)]="baixa.dataBaixa">
+
+                </div>
+
+
+                <!-- FORMA -->
 
                 <div class="mb-3">
 
@@ -500,18 +951,64 @@
                         Forma de Recebimento
                     </label>
 
-                    <select class="form-select" [(ngModel)]="baixa.formaRecebimento">
+                    <select
+                        class="form-select"
+                        [(ngModel)]="baixa.formaRecebimento">
 
-                        <option [ngValue]="formaRecebimentoEnum.Dinheiro">Dinheiro</option>
-                        <option [ngValue]="formaRecebimentoEnum.Pix">PIX</option>
-                        <option [ngValue]="formaRecebimentoEnum.CartaoCredito">Cartão Crédito</option>
-                        <option [ngValue]="formaRecebimentoEnum.CartaoDebito">Cartão Débito</option>
-                        <option [ngValue]="formaRecebimentoEnum.Boleto">Boleto</option>
-                        <option [ngValue]="formaRecebimentoEnum.Transferencia">Transferência</option>
+
+                        <option
+                            [ngValue]="formaRecebimentoEnum.Dinheiro">
+
+                            Dinheiro
+
+                        </option>
+
+
+                        <option
+                            [ngValue]="formaRecebimentoEnum.Pix">
+
+                            PIX
+
+                        </option>
+
+
+                        <option
+                            [ngValue]="formaRecebimentoEnum.CartaoCredito">
+
+                            Cartão de Crédito
+
+                        </option>
+
+
+                        <option
+                            [ngValue]="formaRecebimentoEnum.CartaoDebito">
+
+                            Cartão de Débito
+
+                        </option>
+
+
+                        <option
+                            [ngValue]="formaRecebimentoEnum.Boleto">
+
+                            Boleto
+
+                        </option>
+
+
+                        <option
+                            [ngValue]="formaRecebimentoEnum.Transferencia">
+
+                            Transferência
+
+                        </option>
 
                     </select>
 
                 </div>
+
+
+                <!-- OBSERVAÇÃO -->
 
                 <div class="mb-3">
 
@@ -519,36 +1016,238 @@
                         Observação
                     </label>
 
-                    <textarea rows="3" class="form-control" [(ngModel)]="baixa.observacao">
-      </textarea>
+                    <textarea
+                        rows="3"
+                        class="form-control"
+                        [(ngModel)]="baixa.observacao">
+                    </textarea>
 
                 </div>
 
             </div>
 
+
+            <!-- FOOTER -->
+
             <div class="modal-footer">
 
-                <button class="btn btn-secondary" (click)="fecharModalBaixa()">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    [disabled]="salvandoBaixa"
+                    (click)="fecharModalBaixa()">
 
                     Cancelar
 
                 </button>
 
-             <button
-  class="btn btn-success"
-  [disabled]="salvandoBaixa"
-  (click)="confirmarBaixa()">
 
-  <span *ngIf="!salvandoBaixa">
-    Confirmar Baixa
-  </span>
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    [disabled]="salvandoBaixa"
+                    (click)="confirmarBaixa()">
 
-  <span *ngIf="salvandoBaixa">
-    <i class="fas fa-spinner fa-spin me-1"></i>
-    Salvando...
-  </span>
 
-</button>
+                    <span *ngIf="!salvandoBaixa">
+
+                        <i class="fas fa-check me-2"></i>
+
+                        Confirmar Recebimento
+
+                    </span>
+
+
+                    <span *ngIf="salvandoBaixa">
+
+                        <i class="fas fa-spinner fa-spin me-2"></i>
+
+                        Salvando...
+
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- MODAL DETALHES DO RECEBIMENTO -->
+<!-- ===================================================== -->
+
+<div
+    class="modal"
+    *ngIf="mostrarModalPagamento"
+    style="display:block;background:rgba(0,0,0,.5)">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content shadow">
+
+
+            <!-- HEADER -->
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="fas fa-receipt text-success me-2"></i>
+
+                    Detalhes do Recebimento
+
+                </h5>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    (click)="fecharDetalhesPagamento()">
+                </button>
+
+            </div>
+
+
+            <!-- BODY -->
+
+            <div
+                class="modal-body"
+                *ngIf="pagamentoSelecionado">
+
+                <div class="row g-3">
+
+
+                    <!-- VALOR -->
+
+                    <div class="col-md-6">
+
+                        <label
+                            class="small text-muted d-block mb-1">
+
+                            Valor Recebido
+
+                        </label>
+
+                        <div
+                            class="fw-bold text-success fs-5">
+
+                            <i class="fas fa-money-bill-wave me-1"></i>
+
+                            {{
+                                pagamentoSelecionado.valorPago
+                                    | currency:'BRL'
+                            }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DATA -->
+
+                    <div class="col-md-6">
+
+                        <label
+                            class="small text-muted d-block mb-1">
+
+                            Data do Recebimento
+
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            <i
+                                class="fas fa-calendar-check text-primary me-1">
+                            </i>
+
+                            {{
+                                pagamentoSelecionado.dataBaixa
+                                    | date:'dd/MM/yyyy'
+                            }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FORMA -->
+
+                    <div class="col-md-12">
+
+                        <label
+                            class="small text-muted d-block mb-1">
+
+                            Forma de Recebimento
+
+                        </label>
+
+                        <div class="fw-semibold">
+
+                            <i
+                                [class]="getFormaRecebimentoIcon(
+                                    pagamentoSelecionado.formaRecebimento
+                                )"
+                                class="me-2">
+                            </i>
+
+                            {{
+                                getFormaRecebimento(
+                                    pagamentoSelecionado.formaRecebimento
+                                )
+                            }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- OBSERVAÇÃO -->
+
+                    <div class="col-md-12">
+
+                        <label
+                            class="small text-muted d-block mb-1">
+
+                            Observação
+
+                        </label>
+
+                        <div
+                            class="border rounded p-3">
+
+                            {{
+                                pagamentoSelecionado.observacao ||
+                                'Nenhuma observação informada.'
+                            }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="fecharDetalhesPagamento()">
+
+                    <i class="fas fa-times me-2"></i>
+
+                    Fechar
+
+                </button>
 
             </div>
 

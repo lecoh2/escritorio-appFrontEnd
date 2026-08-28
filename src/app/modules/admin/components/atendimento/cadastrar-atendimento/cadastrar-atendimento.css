@@ -24,3 +24,28 @@
   background-color: #6c757d; /* mesma cor do text-muted */
   color: #fff; /* deixa o texto branco para contraste */
 }
+.card,
+.card-body,
+form,
+.row,
+.col-md-8 {
+  overflow: visible !important;
+}.autocomplete-row {
+  position: relative;
+  z-index: 2000;
+}
+
+.autocomplete-col {
+  position: relative;
+  z-index: 2000;
+}
+
+.vinculo-row {
+  position: relative;
+  z-index: 1500;
+}
+
+.vinculo-col {
+  position: relative;
+  z-index: 1500;
+}

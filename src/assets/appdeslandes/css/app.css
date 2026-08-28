@@ -36977,4 +36977,85 @@ circle.jvm-marker {
 
 [data-bs-theme=dark] .sw-theme-arrows.sw-dark>.nav .nav-link.danger {
     color: #fff
+}/* =====================================================
+   NOTIFICAÇÃO SWEETALERT - AJUSTE FINAL
+   ===================================================== */
+
+
+/* CÍRCULO DO SINO */
+
+body .swal2-container
+.swal2-popup.notificacao-toast
+.swal2-icon.notificacao-toast-icone {
+    width: 46px !important;
+    height: 46px !important;
+
+    margin: 0 14px 0 0 !important;
+
+    background-color: rgba(74, 222, 128, 0.15) !important;
+    background: rgba(74, 222, 128, 0.15) !important;
+
+    border: 2px solid #4ade80 !important;
+    border-color: #4ade80 !important;
+
+    border-radius: 50% !important;
+
+    color: #4ade80 !important;
+
+    box-shadow:
+        0 0 0 4px rgba(74, 222, 128, 0.06),
+        0 0 12px rgba(74, 222, 128, 0.20) !important;
+}
+
+
+/* SINO */
+
+body .swal2-container
+.swal2-popup.notificacao-toast
+.swal2-icon.notificacao-toast-icone
+.fa-bell {
+    color: #4ade80 !important;
+
+    font-size: 19px !important;
+
+    border: none !important;
+
+    background: transparent !important;
+
+    text-shadow:
+        0 0 8px rgba(74, 222, 128, 0.25) !important;
+}
+
+
+/* REMOVE CORES PADRÃO DO ÍCONE DO SWEETALERT */
+
+body .swal2-container
+.swal2-popup.notificacao-toast
+.swal2-icon.notificacao-toast-icone::before,
+body .swal2-container
+.swal2-popup.notificacao-toast
+.swal2-icon.notificacao-toast-icone::after {
+    border: none !important;
+    background: transparent !important;
+}
+
+
+/* =====================================================
+   BARRA DE PROGRESSO VERDE
+   ===================================================== */
+
+body .swal2-container
+.swal2-popup.notificacao-toast
+.swal2-timer-progress-bar.notificacao-toast-progress {
+    height: 4px !important;
+
+    background: #4ade80 !important;
+    background-color: #4ade80 !important;
+
+    opacity: 1 !important;
+
+    border: none !important;
+
+    box-shadow:
+        0 0 8px rgba(74, 222, 128, 0.65) !important;
 }

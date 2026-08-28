@@ -1,0 +1,211 @@
+<div class="container-fluid p-0">
+
+    <h1 class="h3 mb-3">
+
+        <i class="align-middle me-2 fas fa-fw fa-building"></i>
+
+        Cadastro de Escritório:
+
+    </h1>
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <!-- SPINNER -->
+
+                    <app-spinner
+                        *ngIf="carregando"
+                        [show]="true"
+                        message="Cadastrando..."
+                        class="d-inline-block">
+                    </app-spinner>
+
+                    <!-- ALERTA SUCESSO -->
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemSucesso.length > 0
+                        "
+                        class="w-100"
+                        titulo="Sucesso!"
+                        [mensagens]="mensagemSucesso"
+                        tipo="success"
+                        icone="fas fa-check-circle fa-lg">
+                    </app-alerts>
+
+                    <!-- ALERTA ERRO -->
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemErro.length > 0
+                        "
+                        class="w-100"
+                        titulo="Erro!"
+                        [mensagens]="mensagemErro"
+                        tipo="danger"
+                        icone="fas fa-times-circle fa-lg">
+                    </app-alerts>
+
+                    <!-- FORMULÁRIO -->
+
+                    <form
+                        [formGroup]="form"
+                        (ngSubmit)="onSubmit()"
+                        class="user">
+
+                        <div class="row">
+
+                            <!-- NOME -->
+
+                            <div class="mb-4 col-md-6 position-relative">
+
+                                <label
+                                    for="nome"
+                                    class="form-label">
+
+                                    Nome do Escritório*
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="nome"
+                                    class="form-control"
+                                    formControlName="nome"
+                                    placeholder="Digite o nome do escritório" />
+
+                                <div
+                                    *ngIf="
+                                        form.get('nome')?.touched &&
+                                        form.get('nome')?.invalid
+                                    "
+                                    class="text-danger">
+
+                                    <span
+                                        *ngIf="
+                                            form.get('nome')
+                                            ?.hasError('required')
+                                        ">
+
+                                        O nome do escritório é obrigatório.
+                                    </span>
+
+                                    <span
+                                        *ngIf="
+                                            form.get('nome')
+                                            ?.hasError('minlength')
+                                        ">
+
+                                        O nome deve possuir pelo menos 3 caracteres.
+                                    </span>
+
+                                    <span
+                                        *ngIf="
+                                            form.get('nome')
+                                            ?.hasError('maxlength')
+                                        ">
+
+                                        O nome deve possuir no máximo 200 caracteres.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <!-- DOCUMENTO -->
+
+                            <div class="mb-4 col-md-6 position-relative">
+
+                                <label
+                                    for="documento"
+                                    class="form-label">
+
+                                    CPF ou CNPJ*
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="documento"
+                                    class="form-control"
+                                    formControlName="documento"
+                                    placeholder="Digite o CPF ou CNPJ"
+                                    maxlength="18"
+                                    inputmode="numeric"
+                                    (input)="formatarDocumento()" />
+
+                                <div
+                                    *ngIf="
+                                        form.get('documento')?.touched &&
+                                        form.get('documento')?.invalid
+                                    "
+                                    class="text-danger">
+
+                                    <span
+                                        *ngIf="
+                                            form.get('documento')
+                                            ?.hasError('required')
+                                        ">
+
+                                        O CPF ou CNPJ é obrigatório.
+                                    </span>
+
+                                    <span
+                                        *ngIf="
+                                            form.get('documento')
+                                            ?.hasError('documentoInvalido')
+                                        ">
+
+                                        Informe um CPF ou CNPJ válido.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <!-- BOTÕES -->
+
+                            <div class="col-12 mt-4">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    [disabled]="
+                                        !podeEnviar ||
+                                        carregando
+                                    ">
+
+                                    <i class="align-middle me-2 fas fa-save fa-lg"></i>
+
+                                    Salvar
+                                </button>
+
+                                <a
+                                    routerLink="/admin/consultar-escritorios"
+                                    class="btn btn-secondary ms-2">
+
+                                    <i class="align-middle me-2 fas fa-arrow-left"></i>
+
+                                    Voltar
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

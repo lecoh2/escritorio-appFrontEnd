@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 
 import { FormBuilder, Validators } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
+import { CentroCustoUpdateRequest } from "../../../../../core/models/centro-custo/centro-custo-update-request";
 
 @Component({
     selector: 'app-editar-centro-custo',
@@ -82,54 +83,50 @@ export class EditarCentroCusto implements OnInit {
 
     }
 
-    onSubmit(): void {
+onSubmit(): void {
 
+    this.mensagemErro = [];
+    this.mensagemSucesso = [];
 
-        this.mensagemErro = [];
-        this.mensagemSucesso = [];
-
-        if (this.form.invalid) {
-
-            this.form.markAllAsTouched();
-
-            return;
-        }
-
-        this.carregando = true;
-
-        const request = {
-            nome: this.form.value.nome!,
-            descricao: this.form.value.descricao,
-             ativo: this.form.value.ativo
-        };
-
-        this.centroCustoService
-            .editarCentroCusto(this.id, request)
-            .subscribe({
-                next: (res: any) => {
-
-                    this.carregando = false;
-
-                    this.mensagemSucesso = [
-                        res.message ??
-                        'Centro de custo atualizado com sucesso.'
-                    ];
-
-                    this.cdr.detectChanges();
-
-                    setTimeout(() => {
-
-                        this.router.navigate([
-                            '/admin/consultar-centro-custo'
-                        ]);
-
-                    }, 3000);
-                },
-                error: (err) => this.tratarErro(err)
-            });
-
-
+    if (this.form.invalid) {
+        this.form.markAllAsTouched();
+        return;
     }
+
+    this.carregando = true;
+
+    const request: CentroCustoUpdateRequest = {
+        nome: this.form.value.nome!,
+        descricao: this.form.value.descricao ?? '',
+        ativo: this.form.value.ativo ?? true
+    };
+
+    this.centroCustoService
+        .editarCentroCusto(this.id, request)
+        .subscribe({
+            next: (res: any) => {
+
+                this.carregando = false;
+
+                this.mensagemSucesso = [
+                    res.message ??
+                    'Centro de custo atualizado com sucesso.'
+                ];
+
+                this.cdr.detectChanges();
+
+                setTimeout(() => {
+                    this.router.navigate([
+                        '/admin/consultar-centro-custo'
+                    ]);
+                }, 3000);
+            },
+
+            error: (err: HttpErrorResponse) => {
+                this.tratarErro(err);
+            }
+        });
+}
 
     private tratarErro(err: HttpErrorResponse): void {
 

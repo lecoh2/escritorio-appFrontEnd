@@ -13,12 +13,21 @@
       <app-spinner *ngIf="carregando" [show]="true" message="Atualizando..."></app-spinner>
 
       <!-- ALERTAS -->
-      <app-alerts *ngIf="!carregando && mensagemSucesso.length" titulo="Sucesso!" [mensagens]="mensagemSucesso"
-        tipo="success">
-      </app-alerts>
+      <app-alerts
+  *ngIf="!carregando && mensagemSucesso.length"
+  titulo="Sucesso!"
+  [mensagens]="mensagemSucesso"
+  tipo="success"
+  icone="fas fa-check-circle">
+</app-alerts>
+         <app-alerts
+  *ngIf="!carregando && mensagemErro.length"
+  titulo="Erro!"
+  [mensagens]="mensagemErro"
+  tipo="danger"
+  icone="fas fa-times-circle">
+</app-alerts>
 
-      <app-alerts *ngIf="!carregando && mensagemErro.length" titulo="Erro!" [mensagens]="mensagemErro" tipo="danger">
-      </app-alerts>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
@@ -41,60 +50,167 @@
           <app-etiquetas [etiquetas]="tiposetiquetas" [(selecionadas)]="etiquetasSelecionadas">
           </app-etiquetas>
         </div>
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <app-autocomplete-pessoa-atendimento label="Clientes" placeholder="Digite o nome do cliente"
-              [resultados]="pessoasFiltradas" [(selecionadas)]="pessoasSelecionadas" (buscar)="buscarPessoas($event)">
-            </app-autocomplete-pessoa-atendimento>
-          </div>
+  <div class="row mb-3 autocomplete-row">
 
+  <div class="col-md-6 autocomplete-col">
 
-          <!-- ================= ETIQUETAS ================= -->
+    <app-autocomplete-pessoa-atendimento
+      label="Clientes *"
+      placeholder="Digite o nome do cliente"
+      [resultados]="pessoasFiltradas"
+      [(selecionadas)]="pessoasSelecionadas"
+      (buscar)="buscarPessoas($event)">
+    </app-autocomplete-pessoa-atendimento>
 
+    <div
+      *ngIf="
+        tentouEnviar &&
+        pessoasSelecionadas.length === 0
+      "
+      class="text-danger mt-1">
 
-          <div class="col-md-6">
-            <label class="form-label">Assunto *</label>
-            <input class="form-control" formControlName="assunto">
-          </div>
+      <small>
+        É obrigatório selecionar pelo menos um cliente.
+      </small>
 
+    </div>
 
-        </div>
+  </div>
 
-        <div class="row mb-3">
-          <!-- ITEM DINÂMICO -->
+  <div class="col-md-6">
 
-          <div class="col-md-4">
-            <label class="form-label">Tipo de Vínculo</label>
-            <select class="form-control" formControlName="tipoVinculo" [disabled]="true">
-              <option [ngValue]="null">Selecione</option>
-              <option value="processo">Processo</option>
-              <option value="caso">Caso</option>
-              <option value="atendimento">Atendimento</option>
-            </select>
-          </div>
+    <label class="form-label">
+      Assunto *
+    </label>
 
-          <div class="col-md-8">
-            <label class="form-label">Buscar vínculo</label>
-            <app-vinculo [resultados]="resultadosVinculo" [vinculoSelecionado]="vinculoSelecionado"
-              (buscar)="buscarVinculo($event)" (selecionado)="selecionarVinculo($event)">
-            </app-vinculo>
+    <input
+      class="form-control"
+      formControlName="assunto">
 
-          </div>
+    <div
+      *ngIf="
+        form.get('assunto')?.touched &&
+        form.get('assunto')?.hasError('required')
+      "
+      class="text-danger mt-1">
 
+      <small>
+        Assunto é de preenchimento obrigatório.
+      </small>
 
+    </div>
 
+  </div>
 
+</div>
 
-        </div>
+       <div class="row mb-3 vinculo-row">
+
+  <div class="col-md-4">
+
+    <label class="form-label">
+      Tipo de Vínculo
+    </label>
+
+    <select
+      class="form-select"
+      formControlName="tipoVinculo"
+      [disabled]="true">
+
+      <option [ngValue]="null">
+        Selecione
+      </option>
+
+      <option value="processo">
+        Processo
+      </option>
+
+      <option value="caso">
+        Caso
+      </option>
+
+      <option value="atendimento">
+        Atendimento
+      </option>
+
+    </select>
+
+  </div>
+
+  <div class="col-md-8 vinculo-col">
+
+    <label class="form-label">
+      Buscar vínculo
+    </label>
+
+    <app-vinculo
+      [resultados]="resultadosVinculo"
+      [vinculoSelecionado]="vinculoSelecionado"
+      [tipoVinculo]="form.get('tipoVinculo')?.value ?? null"
+      (buscar)="buscarVinculo($event)"
+      (selecionado)="selecionarVinculo($event)">
+    </app-vinculo>
+
+  </div>
+
+</div>
+      
+         <div class="mb-3">
+
+  <label class="form-label">
+    1º Registro do atendimento *
+  </label>
+
+  <textarea
+    class="form-control"
+    rows="4"
+    formControlName="registro">
+  </textarea>
+
+  <div
+    *ngIf="
+      form.get('registro')?.touched &&
+      form.get('registro')?.hasError('required')
+    "
+    class="text-danger mt-1">
+
+    <small>
+      Registro do atendimento é de preenchimento obrigatório.
+    </small>
+
+  </div>
+
+</div>
+  
+
+       
         <div class="mb-3">
-          <label class="form-label">1º Registro do atendimento*</label>
-          <textarea class="form-control" rows="4" formControlName="registro"></textarea>
-        </div>
 
-        <div class="mb-3">
-          <label class="form-label">Motivo da Alteração *</label>
-          <textarea class="form-control" rows="4" formControlName="registro"></textarea>
-        </div>
+  <label class="form-label">
+    Motivo da Alteração *
+  </label>
+
+  <textarea
+    class="form-control"
+    rows="4"
+    formControlName="observacao">
+  </textarea>
+
+  <div
+    *ngIf="
+      form.get('observacao')?.touched &&
+      form.get('observacao')?.hasError('required')
+    "
+    class="text-danger mt-1">
+
+    <small>
+      Motivo da alteração é de preenchimento obrigatório.
+    </small>
+
+  </div>
+
+</div>
+        
 
 
         <button type="button" class="btn btn-secondary mt-3 me-2" (click)="irParaLista()">
@@ -140,7 +256,7 @@
 
               <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
 
-                <strong>
+            <strong>
                   {{ h.observacao || 'Atualização' }}
                 </strong>
 

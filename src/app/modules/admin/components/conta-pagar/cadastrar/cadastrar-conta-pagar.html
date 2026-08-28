@@ -79,8 +79,7 @@
 
         <!-- FORNECEDOR -->
         <div class="mb-3">
-
-          <label class="form-label">Fornecedor *</label>
+   
 
           <app-autocomplete-pessoa-unica
             label="Fornecedor"
@@ -122,117 +121,285 @@
 
         </div>
 
-        <!-- CATEGORIA + CENTRO CUSTO -->
-        <div class="row mb-3">
+       <!-- CATEGORIA + CENTRO CUSTO -->
 
-          <div class="col-md-6">
-            <label class="form-label">Categoria Financeira</label>
+<!-- CATEGORIA + CENTRO DE CUSTO -->
 
-            <select class="form-select" formControlName="categoriaFinanceiraId">
-              <option value="">Selecione...</option>
-
-              <option *ngFor="let c of categorias" [value]="c.id">
-                {{ c.nome }}
-              </option>
-            </select>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Centro de Custo</label>
-
-            <select class="form-select" formControlName="centroCustoId">
-              <option value="">Selecione...</option>
-
-              <option *ngFor="let c of centrosCusto" [value]="c.id">
-                {{ c.nome }}
-              </option>
-            </select>
-          </div>
-
-        </div>
-
-        <!-- PARCELAMENTO -->
-      <!-- PARCELAMENTO -->
 <div class="row mb-3">
 
-  <div class="col-md-4">
-    <label class="form-label">
-      Forma de Pagamento
-    </label>
+    <div class="col-md-6">
 
-    <select class="form-select" formControlName="parcelado">
+        <label class="form-label">
+            Categoria Financeira
+        </label>
 
-      <option [ngValue]="false">
-        À Vista
-      </option>
+        <select
+            class="form-select"
+            formControlName="categoriaFinanceiraId">
 
-      <option [ngValue]="true">
-        Parcelado
-      </option>
+            <option value="">
+                Selecione...
+            </option>
 
-    </select>
+            <option
+                *ngFor="let c of categorias"
+                [value]="c.id">
 
-  </div>
+                {{ c.nome }}
 
-  <div
-    class="col-md-4"
-    *ngIf="form.get('parcelado')?.value">
+            </option>
 
-    <label class="form-label">
-      Quantidade de Parcelas
-    </label>
-
-    <input
-      type="number"
-      min="2"
-      class="form-control"
-      formControlName="quantidadeParcelas">
-
-  </div>
-
-</div>
-
-<!-- RESUMO DO PARCELAMENTO (IGUAL RECEBER) -->
-<div
-  class="bg-dark text-white border-0 shadow-sm d-flex align-items-center p-3 mt-3 rounded-3 animate__animated animate__fadeIn"
-  *ngIf="form.get('parcelado')?.value">
-
-  <div class="me-3">
-    <i class="fas fa-calculator fs-3 text-warning bg-opacity-10 bg-warning rounded-circle p-2"></i>
-  </div>
-
-  <div class="flex-grow-1">
-
-    <h6 class="fw-bold mb-2 text-uppercase small text-white-50">
-      Resumo do Parcelamento
-    </h6>
-
-    <div class="row g-3 align-items-center">
-
-      <div class="col-sm-4">
-        <span class="text-white-50 small d-block">Valor Total:</span>
-        <span class="fs-5 fw-semibold text-white">
-          {{ form.get('valor')?.value | currency:'BRL' }}
-        </span>
-      </div>
-
-      <div class="col-sm-4">
-        <span class="text-white-50 small d-block">Quantidade:</span>
-        <span class="fs-5 fw-semibold text-info">
-          {{ form.get('quantidadeParcelas')?.value }}x
-        </span>
-      </div>
-
-      <div class="col-sm-4">
-        <span class="text-white-50 small d-block">Valor da Parcela:</span>
-        <span class="fs-4 fw-bold text-success">
-          {{ valorParcela }}
-        </span>
-      </div>
+        </select>
 
     </div>
 
-  </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Centro de Custo
+        </label>
+
+        <select
+            class="form-select"
+            formControlName="centroCustoId">
+
+            <option value="">
+                Selecione...
+            </option>
+
+            <option
+                *ngFor="let c of centrosCusto"
+                [value]="c.id">
+
+                {{ c.nome }}
+
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<!-- CONTRATO -->
+
+<div class="row mb-3">
+
+    <div class="col-md-12">
+
+        <label class="form-label">
+            Contrato
+        </label>
+
+        <select
+            class="form-select"
+            formControlName="contratoId">
+
+            <option value="">
+                Nenhum contrato
+            </option>
+
+            <option
+                *ngFor="let contrato of contratos"
+                [value]="contrato.id">
+
+                {{ contrato.numero }} - {{ contrato.nomePessoa }}
+
+            </option>
+
+        </select>
+
+        <small class="text-muted">
+
+            Opcional. Selecione somente quando esta despesa
+            estiver relacionada diretamente a um contrato.
+
+        </small>
+
+    </div>
+
+</div>
+
+
+<!-- FORMA + CONDIÇÃO DE PAGAMENTO -->
+
+<div class="row mb-3">
+
+    <!-- FORMA -->
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Forma de Pagamento *
+        </label>
+
+        <select
+            class="form-select"
+            formControlName="formaRecebimento">
+
+            <option
+                [ngValue]="formaRecebimentoEnum.Dinheiro">
+                Dinheiro
+            </option>
+
+            <option
+                [ngValue]="formaRecebimentoEnum.Pix">
+                PIX
+            </option>
+
+            <option
+                [ngValue]="formaRecebimentoEnum.CartaoCredito">
+                Cartão de Crédito
+            </option>
+
+            <option
+                [ngValue]="formaRecebimentoEnum.CartaoDebito">
+                Cartão de Débito
+            </option>
+
+            <option
+                [ngValue]="formaRecebimentoEnum.Boleto">
+                Boleto
+            </option>
+
+            <option
+                [ngValue]="formaRecebimentoEnum.Transferencia">
+                Transferência
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- CONDIÇÃO -->
+
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Condição de Pagamento
+        </label>
+
+        <select
+            class="form-select"
+            formControlName="parcelado">
+
+            <option [ngValue]="false">
+                À Vista
+            </option>
+
+            <option [ngValue]="true">
+                Parcelado
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<!-- QUANTIDADE DE PARCELAS -->
+
+<div
+    class="row mb-3"
+    *ngIf="form.get('parcelado')?.value">
+
+    <div class="col-md-4">
+
+        <label class="form-label">
+            Quantidade de Parcelas
+        </label>
+
+        <input
+            type="number"
+            min="2"
+            class="form-control"
+            formControlName="quantidadeParcelas">
+
+    </div>
+
+</div>
+
+
+<!-- RESUMO DO PARCELAMENTO -->
+
+<div
+    class="bg-dark text-white border-0 shadow-sm d-flex align-items-center p-3 mb-3 rounded-3 animate__animated animate__fadeIn"
+    *ngIf="form.get('parcelado')?.value">
+
+    <div class="me-3">
+
+        <i
+            class="fas fa-calculator fs-3 text-warning bg-opacity-10 bg-warning rounded-circle p-2">
+        </i>
+
+    </div>
+
+    <div class="flex-grow-1">
+
+        <h6 class="fw-bold mb-2 text-uppercase small text-white-50">
+            Resumo do Parcelamento
+        </h6>
+
+        <div class="row g-3 align-items-center">
+
+            <div class="col-sm-4">
+
+                <span class="text-white-50 small d-block">
+                    Valor Total:
+                </span>
+
+                <span class="fs-5 fw-semibold text-white">
+
+                    {{
+                        form.get('valor')?.value
+                            | currency:'BRL'
+                    }}
+
+                </span>
+
+            </div>
+
+
+            <div class="col-sm-4">
+
+                <span class="text-white-50 small d-block">
+                    Quantidade:
+                </span>
+
+                <span class="fs-5 fw-semibold text-info">
+
+                    {{
+                        form.get(
+                            'quantidadeParcelas'
+                        )?.value
+                    }}x
+
+                </span>
+
+            </div>
+
+
+            <div class="col-sm-4">
+
+                <span class="text-white-50 small d-block">
+                    Valor da Parcela:
+                </span>
+
+                <span class="fs-4 fw-bold text-success">
+
+                    {{ valorParcela }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

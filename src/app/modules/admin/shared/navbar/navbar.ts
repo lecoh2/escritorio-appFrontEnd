@@ -9,287 +9,698 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 
-import { AuthHelper } from '../../../../core/helpers/auth.helper';
-import { UsuarioService } from '../../../../core/services/usuario.service';
-import { environment } from '../../../../../environments/environment.development';
-import { LembreteResponse } from '../../../../core/models/lembrete/lembrete-response';
-import { DashboardService } from '../../../../core/services/dashboard.service';
-import { Notificacao } from '../../../../core/models/notficacao/notificacao';
-import { NotificacoService } from '../../../../core/services/notificacao.service';
-import { NotificacaoSignalRService } from '../../../../core/services/notificacao-signalr.service';
-import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+
+import Swal from 'sweetalert2';
+
+import { AuthHelper } from '../../../../core/helpers/auth.helper';
+
+import { UsuarioService } from '../../../../core/services/usuario.service';
+
+import { environment } from '../../../../../environments/environment.development';
+
+import { Notificacao } from '../../../../core/models/notficacao/notificacao';
+
+import { NotificacoService } from '../../../../core/services/notificacao.service';
+
+import { NotificacaoSignalRService } from '../../../../core/services/notificacao-signalr.service';
+
 import { AccessService } from '../../../../core/services/access.service';
+
 @Component({
   selector: 'app-navbar',
   standalone: false,
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class Navbar implements OnInit, AfterViewInit, OnDestroy {
+export class Navbar
+  implements OnInit, AfterViewInit, OnDestroy {
 
+  // =========================
   // INJEÇÕES
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
-  private usuarioService = inject(UsuarioService);
-  private cdr = inject(ChangeDetectorRef);
-  private dashboardService = inject(DashboardService);
-  private notificacaoService = inject(NotificacoService);
-   private notificacaoSignalR = inject(NotificacaoSignalRService);
-    constructor(
+  // =========================
+
+  private el =
+    inject(ElementRef);
+
+  private renderer =
+    inject(Renderer2);
+
+  private usuarioService =
+    inject(UsuarioService);
+
+  private cdr =
+    inject(ChangeDetectorRef);
+
+  private notificacaoService =
+    inject(NotificacoService);
+
+  private notificacaoSignalR =
+    inject(NotificacaoSignalRService);
+
+  authHelper =
+    inject(AuthHelper);
+
+  constructor(
     public access: AccessService,
     private router: Router
-  ) { }
-  authHelper = inject(AuthHelper);
+  ) {
+  }
 
+  // =========================
+  // NOTIFICAÇÕES
+  // =========================
 
-  notificacoes: Notificacao[] = [];
+  notificacoes: Notificacao[] =
+    [];
 
-  // ATRIBUTOS
-  nomeUsuario: string = 'Usuário';
-  usuarioLogado: any = null;
+  // =========================
+  // USUÁRIO
+  // =========================
+
+  nomeUsuario: string =
+    'Usuário';
+
+  usuarioLogado: any =
+    null;
 
   fotoUsuario: string =
     'assets/appdeslandes/img/default-avatar.jpg';
 
+  // =====================================================
   // INIT
-ngOnInit(): void {
+  // =====================================================
 
-  this.carregarUsuario();
- 
-  this.carregarNotificacoes();
+  ngOnInit(): void {
 
-  const usuario = this.authHelper.get();
+    // =========================
+    // USUÁRIO
+    // =========================
 
-  if (usuario?.idUsuario) {
-this.notificacaoSignalR.iniciar(
-  usuario.idUsuario,
-  (data) => {
+    this.carregarUsuario();
 
-    console.log('🔔 SignalR recebido:', data);
+    // =========================
+    // NOTIFICAÇÕES INICIAIS
+    // =========================
 
-    this.notificacoes.unshift({
-      id: '',
-      usuarioId: usuario.idUsuario,
-      titulo: data.titulo,
-      mensagem: data.mensagem,
-      lida: false,
-      dataCriacao: new Date().toISOString()
-    });
+    this.carregarNotificacoes();
 
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'info',
+    // =========================
+    // SIGNALR
+    // =========================
 
-      title: data.titulo,
-      text: data.mensagem,
+    const usuario =
+      this.authHelper.get();
 
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
+    if (usuario?.idUsuario) {
 
-      background: '#1f2937',
-      color: '#fff',
-      iconColor: '#3b82f6',
+      this.notificacaoSignalR
+        .iniciar(
+          usuario.idUsuario,
 
-      showClass: {
-        popup: 'animate__animated animate__fadeInRight'
-      },
+          (data: any) => {
 
-      hideClass: {
-        popup: 'animate__animated animate__fadeOutRight'
-      }
-    });
+            console.log(
+              '🔔 SignalR recebido:',
+              data
+            );
 
-    this.cdr.markForCheck();
-  }
-);
-  }this.notificacaoSignalR.onNotificacaoLida((id: string) => {
+            // =========================
+            // RECARREGA DO BANCO
+            // =========================
+            //
+            // Não adicionamos manualmente
+            // com id vazio.
+            //
+            // Assim recebemos:
+            // Id real
+            // Data real
+            // Tipo
+            // EntidadeId
+            // Link
+            // etc.
+            // =========================
 
-  const notificacao =
-    this.notificacoes.find(x => x.id === id);
+            this.carregarNotificacoes();
 
-  if (notificacao) {
+            // =========================
+            // TOAST
+            // =========================
 
-    notificacao.lida = true;
+            Swal.fire({
+              toast: true,
 
-    this.cdr.markForCheck();
-  }
-});
-}
+              position:
+                'top-end',
 
-carregarNotificacoes() {
+              iconHtml:
+                '<i class="fas fa-bell"></i>',
 
- const usuario = this.authHelper.get();
+              title:
+                data.titulo,
 
-console.log('👤 USUARIO LOGADO:', usuario);
+              text:
+                data.mensagem,
 
-if (!usuario?.idUsuario) return;
+              showConfirmButton:
+                false,
 
-this.notificacaoService
-  .getNotificacoes(usuario.idUsuario)
-  .subscribe({
-    next: (res) => {
-      console.log('🔔 NOTIFICAÇÕES:', res);
+              timer:
+                6000,
 
-      this.notificacoes = res ?? [];
-      this.cdr.markForCheck();
-    },
-    error: (err) => {
-      console.error('❌ Erro ao buscar notificações:', err);
-      this.notificacoes = [];
+              timerProgressBar:
+                true,
+
+              background:
+                '#1f2937',
+
+              color:
+                '#ffffff',
+
+              customClass: {
+                popup:
+                  'notificacao-toast',
+
+                icon:
+                  'notificacao-toast-icone',
+
+                title:
+                  'notificacao-toast-titulo',
+
+                htmlContainer:
+                  'notificacao-toast-mensagem',
+
+                timerProgressBar:
+                  'notificacao-toast-progress'
+              },
+
+              showClass: {
+                popup:
+                  'animate__animated animate__fadeInRight animate__faster'
+              },
+
+              hideClass: {
+                popup:
+                  'animate__animated animate__fadeOutRight animate__faster'
+              }
+            });
+
+            this.cdr
+              .detectChanges();
+          }
+        );
     }
-  });
-}
-marcarComoLida(item: Notificacao): void {
 
-  if (!item?.id) return;
+    // =========================
+    // NOTIFICAÇÃO LIDA
+    // SIGNALR
+    // =========================
 
-  this.notificacaoService.marcarComoLida(item.id)
-    .subscribe({
-next: () => {
+    this.notificacaoSignalR
+      .onNotificacaoLida(
+        (id: string) => {
 
-  this.notificacoes =
-    this.notificacoes.filter(x => x.id !== item.id);
+          console.log(
+            '🔔 Notificação marcada como lida via SignalR:',
+            id
+          );
 
-  this.cdr.markForCheck();
+          const notificacao =
+            this.notificacoes
+              .find(
+                x =>
+                  x.id === id
+              );
 
-  Swal.fire({
-  toast: true,
-  position: 'top-end',
-  icon: 'success',
+          if (notificacao) {
 
-  title: 'Marcada como lida',
+            notificacao.lida =
+              true;
 
-  showConfirmButton: false,
-  timer: 1800,
-  timerProgressBar: true,
-
-  background: '#1f2937',
-  color: '#fff',
-
-  iconColor: '#22c55e'
-});
-},
-      error: (err) => {
-        console.error('Erro ao marcar como lida:', err);
-      }
-    });
-}
-  get naoLidas() {
-    return (this.notificacoes ?? []).filter(x => !x.lida).length;
+            this.cdr
+              .detectChanges();
+          }
+        }
+      );
   }
 
+  // =====================================================
+  // CARREGAR NOTIFICAÇÕES
+  // =====================================================
 
+  carregarNotificacoes(): void {
 
-  // DESTROY
-  ngOnDestroy(): void {
-    console.log('NAVBAR DESTRUIDA');
+    const usuario =
+      this.authHelper.get();
+
+    console.log(
+      '👤 USUÁRIO LOGADO:',
+      usuario
+    );
+
+    if (!usuario?.idUsuario) {
+
+      console.warn(
+        'Usuário sem idUsuario.'
+      );
+
+      return;
+    }
+
+    console.log(
+      '🔔 Buscando notificações do usuário:',
+      usuario.idUsuario
+    );
+
+    this.notificacaoService
+      .getNotificacoes(
+        usuario.idUsuario
+      )
+      .subscribe({
+
+        next: (
+          res: Notificacao[]
+        ) => {
+
+          console.log(
+            '🔔 NOTIFICAÇÕES API:',
+            res
+          );
+
+          this.notificacoes =
+            res ?? [];
+
+          this.cdr
+            .detectChanges();
+        },
+
+        error: (
+          err
+        ) => {
+
+          console.error(
+            '❌ Erro ao buscar notificações:',
+            err
+          );
+
+          this.notificacoes =
+            [];
+
+          this.cdr
+            .detectChanges();
+        }
+
+      });
   }
 
+  // =====================================================
+  // MARCAR COMO LIDA
+  // =====================================================
+
+  marcarComoLida(
+    item: Notificacao
+  ): void {
+
+    if (!item?.id) {
+
+      console.warn(
+        'Notificação sem ID.'
+      );
+
+      return;
+    }
+
+    this.notificacaoService
+      .marcarComoLida(
+        item.id
+      )
+      .subscribe({
+
+        next: () => {
+
+          // =========================
+          // REMOVE DA LISTA
+          // =========================
+
+          this.notificacoes =
+            this.notificacoes
+              .filter(
+                x =>
+                  x.id !== item.id
+              );
+
+          this.cdr
+            .detectChanges();
+
+          Swal.fire({
+            toast: true,
+
+            position:
+              'top-end',
+
+            icon:
+              'success',
+
+            title:
+              'Marcada como lida',
+
+            showConfirmButton:
+              false,
+
+            timer:
+              1800,
+
+            timerProgressBar:
+              true,
+
+            background:
+              '#1f2937',
+
+            color:
+              '#fff',
+
+            iconColor:
+              '#22c55e'
+          });
+        },
+
+        error: (
+          err
+        ) => {
+
+          console.error(
+            'Erro ao marcar como lida:',
+            err
+          );
+
+        }
+
+      });
+  }
+
+  // =====================================================
+  // TOTAL NÃO LIDAS
+  // =====================================================
+
+  get naoLidas(): number {
+
+    return (
+      this.notificacoes ??
+      []
+    )
+      .filter(
+        x =>
+          !x.lida
+      )
+      .length;
+  }
+
+  // =====================================================
   // USUÁRIO
+  // =====================================================
+
   private carregarUsuario(): void {
 
     this.fotoUsuario =
       'assets/appdeslandes/img/default-avatar.jpg';
 
-    this.usuarioLogado = this.authHelper.get();
+    this.usuarioLogado =
+      this.authHelper.get();
 
     this.nomeUsuario =
-      this.usuarioLogado?.nomeUsuario ?? 'Usuário';
+      this.usuarioLogado
+        ?.nomeUsuario
+      ??
+      'Usuário';
 
-    if (!this.usuarioLogado?.idUsuario) return;
+    if (
+      !this.usuarioLogado
+        ?.idUsuario
+    ) {
+
+      return;
+    }
 
     this.usuarioService
-      .consultarPerfilUsuarioPorId(this.usuarioLogado.idUsuario)
+      .consultarPerfilUsuarioPorId(
+        this.usuarioLogado.idUsuario
+      )
       .subscribe({
 
-        next: (usuario) => {
+        next: (
+          usuario
+        ) => {
 
-          const foto = usuario?.foto?.fileUrl;
+          const foto =
+            usuario
+              ?.foto
+              ?.fileUrl;
 
           this.fotoUsuario =
             foto
               ? `${environment.apiDeslandes}${foto}`
               : 'assets/appdeslandes/img/default-avatar.jpg';
 
-          this.cdr.markForCheck();
+          this.cdr
+            .detectChanges();
         },
 
-        error: (err) => {
+        error: (
+          err
+        ) => {
 
-          console.error('Erro ao carregar foto:', err);
+          console.error(
+            'Erro ao carregar foto:',
+            err
+          );
 
           this.fotoUsuario =
             'assets/appdeslandes/img/default-avatar.jpg';
 
-          this.cdr.markForCheck();
+          this.cdr
+            .detectChanges();
         }
+
       });
   }
 
-  // LEMBRETES
-
-
+  // =====================================================
   // SIDEBAR
+  // =====================================================
+
   ngAfterViewInit(): void {
 
     const sidebar =
-      document.querySelector('.sidebar');
+      document.querySelector(
+        '.sidebar'
+      );
 
     const toggleBtn =
-      this.el.nativeElement.querySelector('.sidebar-toggle');
+      this.el
+        .nativeElement
+        .querySelector(
+          '.sidebar-toggle'
+        );
 
-    if (sidebar && toggleBtn) {
+    if (
+      sidebar &&
+      toggleBtn
+    ) {
 
-      this.renderer.listen(toggleBtn, 'click', () => {
+      this.renderer
+        .listen(
+          toggleBtn,
+          'click',
+          () => {
 
-        sidebar.classList.toggle('collapsed');
+            sidebar.classList
+              .toggle(
+                'collapsed'
+              );
 
-        window.dispatchEvent(new Event('resize'));
-      });
+            window.dispatchEvent(
+              new Event(
+                'resize'
+              )
+            );
+
+          }
+        );
     }
   }
 
+  // =====================================================
   // TEMA
+  // =====================================================
+
   toggleTheme(): void {
 
-    const themeKey = 'appstack-config-theme';
+    const themeKey =
+      'appstack-config-theme';
 
-    const currentTheme = localStorage.getItem(themeKey);
+    const currentTheme =
+      localStorage.getItem(
+        themeKey
+      );
 
     const newTheme =
-      currentTheme === 'dark' ? 'default' : 'dark';
+      currentTheme === 'dark'
+        ? 'default'
+        : 'dark';
 
-    document.documentElement.setAttribute('data-bs-theme', newTheme);
-    document.documentElement.setAttribute('data-sidebar-theme', newTheme);
+    document
+      .documentElement
+      .setAttribute(
+        'data-bs-theme',
+        newTheme
+      );
 
-    localStorage.setItem(themeKey, newTheme);
+    document
+      .documentElement
+      .setAttribute(
+        'data-sidebar-theme',
+        newTheme
+      );
+
+    localStorage.setItem(
+      themeKey,
+      newTheme
+    );
 
     document.dispatchEvent(
-      new Event('DOMContentLoaded', {
-        bubbles: true,
-        cancelable: true
-      })
+      new Event(
+        'DOMContentLoaded',
+        {
+          bubbles:
+            true,
+
+          cancelable:
+            true
+        }
+      )
     );
   }
 
+  // =====================================================
   // LOGOUT
+  // =====================================================
+
   logout(): void {
 
-    const confirmar = confirm(
-      `Deseja realmente sair do sistema, ${this.nomeUsuario}?`
-    );
+    const confirmar =
+      confirm(
+        `Deseja realmente sair do sistema, ${this.nomeUsuario}?`
+      );
 
     if (!confirmar) {
+
       return;
     }
 
-    // Remove os dados do usuário autenticado
-    this.authHelper.remove();
+    this.usuarioService
+      .logout()
+      .subscribe({
 
-    // Redireciona para a tela de login
-    this.router.navigate(['/login/autenticar-usuario']);
+        next: async () => {
+
+          // =========================
+          // PARA SIGNALR
+          // =========================
+
+          try {
+
+            await this
+              .notificacaoSignalR
+              .parar();
+
+          }
+          catch (err) {
+
+            console.error(
+              'Erro ao parar SignalR:',
+              err
+            );
+
+          }
+
+          // =========================
+          // REMOVE LOGIN
+          // =========================
+
+          this.authHelper
+            .remove();
+
+          // =========================
+          // LOGIN
+          // =========================
+
+          this.router.navigate([
+            '/login/autenticar-usuario'
+          ]);
+        },
+
+        error: async (
+          err
+        ) => {
+
+          console.error(
+            'Erro ao encerrar sessão:',
+            err
+          );
+
+          try {
+
+            await this
+              .notificacaoSignalR
+              .parar();
+
+          }
+          catch (signalRError) {
+
+            console.error(
+              'Erro ao parar SignalR:',
+              signalRError
+            );
+
+          }
+
+          /*
+           * Mesmo que o backend falhe,
+           * remove os dados locais.
+           */
+
+          this.authHelper
+            .remove();
+
+          this.router.navigate([
+            '/login/autenticar-usuario'
+          ]);
+        }
+
+      });
+  }
+
+  // =====================================================
+  // DESTROY
+  // =====================================================
+
+  ngOnDestroy(): void {
+
+    console.log(
+      'NAVBAR DESTRUÍDA'
+    );
+
+    this.notificacaoSignalR
+      .parar()
+      .catch(
+        err => {
+
+          console.error(
+            'Erro ao desconectar SignalR:',
+            err
+          );
+
+        }
+      );
   }
 }

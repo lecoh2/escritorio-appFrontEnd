@@ -1,43 +1,157 @@
 <div class="container-fluid p-0">
 
-    <h1 class="h3 mb-3">Consultar Contratos</h1>
+    <!-- ================================================= -->
+    <!-- CABEÇALHO -->
+    <!-- ================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+
+            <h1 class="h3 mb-1">
+
+                <i class="fas fa-file-contract text-primary me-2"></i>
+
+                Consultar Contratos
+
+            </h1>
+
+            <p class="text-muted mb-0">
+
+                Consulte e gerencie os contratos cadastrados.
+
+            </p>
+
+        </div>
+
+    </div>
+
 
     <div class="row">
+
         <div class="col-md-12">
 
-            <div class="card">
+            <div class="card shadow-sm border-0">
 
-                <div class="card-header">
-                    <h5 class="card-title">Pesquisa de Contratos</h5>
-                </div>
+                <!-- ================================================= -->
+                <!-- HEADER -->
+                <!-- ================================================= -->
 
-                <div class="card-body">
+                <div class="card-header bg-transparent border-bottom py-3">
 
-                    <!-- FILTRO -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
 
-                        <input type="text"
-                               class="form-control form-control-sm w-50"
-                               placeholder="Pesquisar número ou cliente"
-                               [(ngModel)]="filtro"
-                               (keyup.enter)="aplicarFiltro()">
+                        <div
+                            class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle me-2"
+                            style="
+                                width: 40px;
+                                height: 40px;
+                            ">
+
+                            <i class="fas fa-magnifying-glass"></i>
+
+                        </div>
 
                         <div>
-                            <select class="form-select form-select-sm"
-                                    [(ngModel)]="tamanhoPagina"
-                                    (change)="aplicarFiltro()">
 
-                                <option *ngFor="let size of [5,10,20,50]"
-                                        [value]="size">
-                                    {{ size }} por página
-                                </option>
+                            <h5 class="card-title mb-0">
 
-                            </select>
+                                Pesquisa de Contratos
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Localize contratos pelo número ou cliente.
+
+                            </small>
+
                         </div>
 
                     </div>
 
+                </div>
+
+
+                <div class="card-body">
+
+                    <!-- ================================================= -->
+                    <!-- FILTRO -->
+                    <!-- ================================================= -->
+
+                    <div class="row align-items-end mb-4">
+
+                        <div class="col-md-8">
+
+                            <label class="form-label fw-semibold">
+
+                                Pesquisar
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text bg-transparent">
+
+                                    <i class="fas fa-search text-muted"></i>
+
+                                </span>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Pesquisar número ou cliente"
+                                    [(ngModel)]="filtro"
+                                    (keyup.enter)="aplicarFiltro()">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    (click)="aplicarFiltro()">
+
+                                    <i class="fas fa-search me-1"></i>
+
+                                    Buscar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Registros por página
+
+                            </label>
+
+                            <select
+                                class="form-select"
+                                [(ngModel)]="tamanhoPagina"
+                                (change)="aplicarFiltro()">
+
+                                <option
+                                    *ngFor="let size of [5,10,20,50]"
+                                    [value]="size">
+
+                                    {{ size }} registros
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
                     <!-- LOADING -->
+                    <!-- ================================================= -->
+
                     <app-spinner-consulta
                         *ngIf="carregando"
                         [carregando]="true"
@@ -45,146 +159,433 @@
                         class="d-inline-block">
                     </app-spinner-consulta>
 
+
+                    <!-- ================================================= -->
                     <!-- ALERTAS -->
+                    <!-- ================================================= -->
+
                     <app-alerts
-                        *ngIf="!carregando && mensagemSucesso.length > 0"
+                        *ngIf="
+                            !carregando &&
+                            mensagemSucesso.length > 0
+                        "
                         titulo="Sucesso!"
                         [mensagens]="mensagemSucesso"
                         tipo="success">
                     </app-alerts>
 
+
                     <app-alerts
-                        *ngIf="!carregando && mensagemErro.length > 0"
+                        *ngIf="
+                            !carregando &&
+                            mensagemErro.length > 0
+                        "
                         titulo="Erro!"
                         [mensagens]="mensagemErro"
                         tipo="danger">
                     </app-alerts>
 
+
+                    <!-- ================================================= -->
                     <!-- TABELA -->
-                    <table class="table table-striped w-100">
+                    <!-- ================================================= -->
 
-                        <thead>
-                            <tr>
-                                <th>Número</th>
-                                <th>Cliente</th>
-                            
-                                <th>Início</th>
-                                <th>Fim</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
+                    <div
+                        *ngIf="!carregando"
+                        class="table-responsive">
 
-                        <tbody>
+                        <table
+                            class="table table-hover align-middle mb-0">
 
-                            <tr *ngFor="let item of dataSource.data">
-<td>
-    <i class="fas fa-hashtag text-muted me-1"></i>
-    {{ item.numero }}
-</td>
+                            <thead class="">
 
-<td>
-    <i class="fas fa-user text-muted me-1"></i>
-    {{ item.nomePessoa }}
-</td>
+                                <tr>
+
+                                    <th>
+
+                                        <i class="fas fa-hashtag text-primary me-2"></i>
+
+                                        Número
+
+                                    </th>
 
 
+                                    <th>
 
-<td>
-    <i class="fas fa-calendar-day text-primary me-1"></i>
-    {{ item.dataInicio | date:'dd/MM/yyyy' }}
-</td>
+                                        <i class="fas fa-user text-primary me-2"></i>
 
-<td>
-    <i class="fas fa-calendar-xmark text-danger me-1"></i>
-    {{ item.dataFim | date:'dd/MM/yyyy' }}
-</td>
-                                <td class="text-end align-middle">
+                                        Cliente
 
-                                    <a [routerLink]="['/admin/editar-contrato', item.id]"
-                                       title="Editar">
+                                    </th>
 
-                                        <i class="fas fa-pencil-alt fa-lg"></i>
 
-                                    </a>
+                                    <th>
 
-                                </td>
+                                        <i class="fas fa-calendar-day text-primary me-2"></i>
 
-                            </tr>
+                                        Data de Início
 
-                        </tbody>
+                                    </th>
 
-                    </table>
 
-                    <!-- PAGINAÇÃO -->
-                    <nav *ngIf="totalPaginas > 1">
+                                    <th>
 
-                        <ul class="pagination justify-content-center mt-3">
+                                        <i class="fas fa-calendar-xmark text-primary me-2"></i>
 
-                            <li class="page-item"
-                                [class.disabled]="paginaAtual === 1">
+                                        Data de Fim
 
-                                <a class="page-link"
-                                   (click)="irParaPagina(1)">
-                                    Primeira
-                                </a>
+                                    </th>
 
-                            </li>
 
-                            <li class="page-item"
-                                [class.disabled]="paginaAtual === 1">
+                                    <th
+                                        class="text-end"
+                                        style="width: 100px;">
 
-                                <a class="page-link"
-                                   (click)="irParaPagina(paginaAtual - 1)">
-                                    Anterior
-                                </a>
+                                        <i class="fas fa-gears text-primary me-2"></i>
 
-                            </li>
+                                        Ações
 
-                            <li class="page-item"
-                                *ngFor="let p of paginasVisiveis"
-                                [class.active]="p === paginaAtual">
+                                    </th>
 
-                                <a class="page-link"
-                                   (click)="irParaPagina(p)">
-                                    {{ p }}
-                                </a>
+                                </tr>
 
-                            </li>
+                            </thead>
 
-                            <li class="page-item"
-                                [class.disabled]="paginaAtual === totalPaginas">
 
-                                <a class="page-link"
-                                   (click)="irParaPagina(paginaAtual + 1)">
-                                    Próxima
-                                </a>
+                            <tbody>
 
-                            </li>
+                                <tr
+                                    *ngFor="let item of dataSource.data">
 
-                            <li class="page-item"
-                                [class.disabled]="paginaAtual === totalPaginas">
+                                    <!-- ================================================= -->
+                                    <!-- NÚMERO -->
+                                    <!-- ================================================= -->
 
-                                <a class="page-link"
-                                   (click)="irParaPagina(totalPaginas)">
-                                    Última
-                                </a>
+                                    <td>
 
-                            </li>
+                                        <div class="d-flex align-items-center">
 
-                        </ul>
+                                            <div
+                                                class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 me-3"
+                                                style="
+                                                    width: 38px;
+                                                    height: 38px;
+                                                    min-width: 38px;
+                                                ">
 
-                    </nav>
+                                                <i class="fas fa-file-contract"></i>
 
-                    <p class="text-end text-muted">
-                        Página {{ paginaAtual }} de {{ totalPaginas }} |
-                        Total: {{ totalRegistros }}
-                    </p>
+                                            </div>
+
+                                            <div>
+
+                                                <span class="fw-semibold d-block">
+
+                                                    {{ item.numero }}
+
+                                                </span>
+
+                                                <small class="text-muted">
+
+                                                    Contrato
+
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- CLIENTE -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <i class="fas fa-user-circle text-primary me-2"></i>
+
+                                        <span class="fw-semibold">
+
+                                            {{ item.nomePessoa }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- DATA INÍCIO -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <i class="fas fa-calendar-check text-success me-2"></i>
+
+                                        {{
+                                            item.dataInicio
+                                                | date:'dd/MM/yyyy'
+                                        }}
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- DATA FIM -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <ng-container
+                                            *ngIf="item.dataFim; else semDataFim">
+
+                                            <i class="fas fa-calendar-xmark text-danger me-2"></i>
+
+                                            {{
+                                                item.dataFim
+                                                    | date:'dd/MM/yyyy'
+                                            }}
+
+                                        </ng-container>
+
+
+                                        <ng-template #semDataFim>
+
+                                            <span class="text-muted">
+
+                                                <i class="fas fa-infinity me-2"></i>
+
+                                                Sem data definida
+
+                                            </span>
+
+                                        </ng-template>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- AÇÕES -->
+                                    <!-- ================================================= -->
+
+                                    <td class="text-end">
+
+                                        <a
+                                            [routerLink]="[
+                                                '/admin/editar-contrato',
+                                                item.id
+                                            ]"
+                                            class="text-primary"
+                                            title="Editar contrato">
+
+                                            <i class="fas fa-pencil-alt fa-lg"></i>
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- ================================================= -->
+                                <!-- SEM REGISTROS -->
+                                <!-- ================================================= -->
+
+                                <tr
+                                    *ngIf="
+                                        !carregando &&
+                                        dataSource.data.length === 0
+                                    ">
+
+                                    <td
+                                        colspan="5"
+                                        class="text-center py-5">
+
+                                        <div class="text-muted">
+
+                                            <i class="fas fa-file-contract fa-3x mb-3 opacity-50"></i>
+
+                                            <div class="fw-semibold">
+
+                                                Nenhum contrato encontrado
+
+                                            </div>
+
+                                            <small>
+
+                                                Altere os filtros e tente novamente.
+
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- RODAPÉ / PAGINAÇÃO -->
+                    <!-- ================================================= -->
+
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
+
+                        <div class="text-muted small">
+
+                            <i class="fas fa-circle-info me-1"></i>
+
+                            Página
+
+                            <strong>
+                                {{ paginaAtual }}
+                            </strong>
+
+                            de
+
+                            <strong>
+                                {{ totalPaginas }}
+                            </strong>
+
+                            <span class="mx-1">
+                                •
+                            </span>
+
+                            Total:
+
+                            <strong>
+                                {{ totalRegistros }}
+                            </strong>
+
+                            contrato(s)
+
+                        </div>
+
+
+                        <nav
+                            *ngIf="totalPaginas > 1">
+
+                            <ul class="pagination pagination-sm mb-0">
+
+                                <!-- PRIMEIRA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="paginaAtual === 1">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(1)">
+
+                                        <i class="fas fa-angles-left"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ANTERIOR -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="paginaAtual === 1">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(
+                                            paginaAtual - 1
+                                        )">
+
+                                        <i class="fas fa-angle-left"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PÁGINAS -->
+
+                                <li
+                                    class="page-item"
+                                    *ngFor="let p of paginasVisiveis"
+                                    [class.active]="p === paginaAtual">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(p)">
+
+                                        {{ p }}
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PRÓXIMA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="
+                                        paginaAtual === totalPaginas
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(
+                                            paginaAtual + 1
+                                        )">
+
+                                        <i class="fas fa-angle-right"></i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ÚLTIMA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="
+                                        paginaAtual === totalPaginas
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="irParaPagina(
+                                            totalPaginas
+                                        )">
+
+                                        <i class="fas fa-angles-right"></i>
+
+                                    </button>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
 
                 </div>
 
             </div>
 
         </div>
+
     </div>
 
 </div>

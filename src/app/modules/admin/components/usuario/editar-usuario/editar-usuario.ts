@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -25,9 +26,11 @@ import { AuthHelper } from '../../../../../core/helpers/auth.helper';
 import { UsuarioService } from '../../../../../core/services/usuario.service';
 import { SetorService } from '../../../../../core/services/setor.service';
 import { NivelService } from '../../../../../core/services/nivel.service';
+import { EscritorioService } from '../../../../../core/services/escritorio.service';
 
 import { ConsultarSetoresResponse } from '../../../../../core/models/setores/consultar-setores-response';
 import { ConsultarNiveisResponse } from '../../../../../core/models/nivel/consultar-niveis-response';
+import { EscritorioResponse } from '../../../../../core/models/escritorio/escritorio-response';
 
 import { AutenticarUsuarioResponse } from '../../../../../core/models/usuario/autenticar-usuario.response';
 
@@ -48,6 +51,7 @@ export class EditarUsuario implements OnInit {
   private usuarioService = inject(UsuarioService);
   private setorService = inject(SetorService);
   private nivelService = inject(NivelService);
+  private escritorioService = inject(EscritorioService);
 
   private builder = inject(FormBuilder);
   private router = inject(Router);
@@ -82,6 +86,18 @@ export class EditarUsuario implements OnInit {
   niveisSelecionadas: ConsultarNiveisResponse[] = [];
 
   // =========================
+  // AUTOCOMPLETE ESCRITÓRIO
+  // =========================
+
+  escritorioControl = new FormControl('');
+
+  mostrarSugestoesEscritorio = false;
+
+  escritoriosFiltrados: EscritorioResponse[] = [];
+
+  escritorioSelecionado?: EscritorioResponse;
+
+  // =========================
   // FORM
   // =========================
 
@@ -94,7 +110,8 @@ export class EditarUsuario implements OnInit {
     confirmarSenha: ['', Validators.required],
 
     GrupoSetor: this.setorControl,
-    GrupoNivel: this.niveisControl
+    GrupoNivel: this.niveisControl,
+    Escritorio: this.escritorioControl
 
   }, {
     validators: this.validarSenhasIguais()
@@ -137,6 +154,41 @@ export class EditarUsuario implements OnInit {
       this.form.updateValueAndValidity();
 
     });
+
+    // =========================
+    // AUTOCOMPLETE ESCRITÓRIO
+    // =========================
+
+    this.escritorioControl.valueChanges
+      .pipe(
+
+        debounceTime(300),
+
+        filter(
+          (nome): nome is string =>
+            !!nome &&
+            nome.length >= 1
+        ),
+
+        switchMap(
+          nome =>
+            this.escritorioService
+              .buscarPorNome(nome)
+        ),
+
+        catchError(() =>
+          of([] as EscritorioResponse[])
+        )
+
+      )
+      .subscribe(
+        escritorios => {
+
+          this.escritoriosFiltrados =
+            escritorios;
+
+        }
+      );
 
     // =========================
     // AUTOCOMPLETE SETOR
@@ -185,7 +237,8 @@ export class EditarUsuario implements OnInit {
                   (n) =>
                     n.nomeNivel
                       .trim()
-                      .toLowerCase() === 'super administrador'
+                      .toLowerCase() ===
+                    'super administrador'
                 );
 
               if (!usuarioEhSuperAdmin) {
@@ -194,7 +247,8 @@ export class EditarUsuario implements OnInit {
                   (n) =>
                     n.nomeNivel
                       .trim()
-                      .toLowerCase() !== 'super administrador'
+                      .toLowerCase() !==
+                    'super administrador'
                 );
               }
 
@@ -209,7 +263,8 @@ export class EditarUsuario implements OnInit {
       )
       .subscribe((niveisFiltrados) => {
 
-        this.niveisFiltradas = niveisFiltrados;
+        this.niveisFiltradas =
+          niveisFiltrados;
 
       });
 
@@ -226,7 +281,8 @@ export class EditarUsuario implements OnInit {
 
   carregarUsuario(): void {
 
-    const id = this.route.snapshot.paramMap.get('id');
+    const id =
+      this.route.snapshot.paramMap.get('id');
 
     if (!id) {
 
@@ -252,11 +308,52 @@ export class EditarUsuario implements OnInit {
           this.form.patchValue({
 
             id: usuario.id,
-            nomeUsuario: usuario.nomeUsuario,
-            login: usuario.login,
-            email: usuario.email
+
+            nomeUsuario:
+              usuario.nomeUsuario,
+
+            login:
+              usuario.login,
+
+            email:
+              usuario.email
 
           });
+
+          // =========================
+          // ESCRITÓRIO
+          // =========================
+
+          if (
+            usuario.escritorioId &&
+            usuario.nomeEscritorio
+          ) {
+
+            this.escritorioSelecionado = {
+              id: usuario.escritorioId,
+              nome: usuario.nomeEscritorio
+            } as EscritorioResponse;
+
+            this.escritorioControl.setValue(
+              usuario.nomeEscritorio,
+              {
+                emitEvent: false
+              }
+            );
+
+          }
+          else {
+
+            this.escritorioSelecionado =
+              undefined;
+
+            this.escritorioControl.setValue(
+              '',
+              {
+                emitEvent: false
+              }
+            );
+          }
 
           // =========================
           // SETORES
@@ -264,19 +361,21 @@ export class EditarUsuario implements OnInit {
 
           this.setorSelecionadas =
 
-            usuario.grupoSetores?.map((x: any) => ({
+            usuario.grupoSetores?.map(
+              (x: any) => ({
 
-              idSetor:
-                x.setor?.idSetor ??
-                x.idSetor ??
-                x.id,
+                idSetor:
+                  x.setor?.idSetor ??
+                  x.idSetor ??
+                  x.id,
 
-              nomeSetor:
-                x.setor?.nomeSetor ??
-                x.nomeSetor ??
-                ''
+                nomeSetor:
+                  x.setor?.nomeSetor ??
+                  x.nomeSetor ??
+                  ''
 
-            })) ?? [];
+              })
+            ) ?? [];
 
           // =========================
           // NIVEIS
@@ -284,19 +383,21 @@ export class EditarUsuario implements OnInit {
 
           this.niveisSelecionadas =
 
-            usuario.grupoNiveis?.map((x: any) => ({
+            usuario.grupoNiveis?.map(
+              (x: any) => ({
 
-              idNivel:
-                x.nivel?.idNivel ??
-                x.idNivel ??
-                x.id,
+                idNivel:
+                  x.nivel?.idNivel ??
+                  x.idNivel ??
+                  x.id,
 
-              nomeNivel:
-                x.nivel?.nomeNivel ??
-                x.nomeNivel ??
-                ''
+                nomeNivel:
+                  x.nivel?.nomeNivel ??
+                  x.nomeNivel ??
+                  ''
 
-            })) ?? [];
+              })
+            ) ?? [];
 
           this.carregandoConsulta = false;
 
@@ -313,14 +414,63 @@ export class EditarUsuario implements OnInit {
   }
 
   // =========================
+  // SELECIONAR ESCRITÓRIO
+  // =========================
+
+  selecionarEscritorio(
+    escritorio: EscritorioResponse
+  ): void {
+
+    this.escritorioSelecionado =
+      escritorio;
+
+    this.escritorioControl.setValue(
+      escritorio.nome,
+      {
+        emitEvent: false
+      }
+    );
+
+    this.escritoriosFiltrados = [];
+
+    this.mostrarSugestoesEscritorio =
+      false;
+  }
+
+  // =========================
+  // REMOVER ESCRITÓRIO
+  // =========================
+
+  removerEscritorioSelecionado(): void {
+
+    this.escritorioSelecionado =
+      undefined;
+
+    this.escritorioControl.setValue(
+      '',
+      {
+        emitEvent: false
+      }
+    );
+
+    this.escritoriosFiltrados = [];
+
+    this.mostrarSugestoesEscritorio =
+      false;
+  }
+
+  // =========================
   // SELECIONAR SETOR
   // =========================
 
-  selecionarSetor(setor: ConsultarSetoresResponse): void {
+  selecionarSetor(
+    setor: ConsultarSetoresResponse
+  ): void {
 
     if (
       this.setorSelecionadas.some(
-        (s) => s.idSetor === setor.idSetor
+        (s) =>
+          s.idSetor === setor.idSetor
       )
     ) {
 
@@ -331,7 +481,9 @@ export class EditarUsuario implements OnInit {
       return;
     }
 
-    this.setorSelecionadas.push(setor);
+    this.setorSelecionadas.push(
+      setor
+    );
 
     this.setorControl.setValue('');
 
@@ -348,7 +500,8 @@ export class EditarUsuario implements OnInit {
 
     this.setorSelecionadas =
       this.setorSelecionadas.filter(
-        (s) => s.idSetor !== setor.idSetor
+        (s) =>
+          s.idSetor !== setor.idSetor
       );
   }
 
@@ -362,7 +515,8 @@ export class EditarUsuario implements OnInit {
 
     if (
       this.niveisSelecionadas.some(
-        (n) => n.idNivel === nivel.idNivel
+        (n) =>
+          n.idNivel === nivel.idNivel
       )
     ) {
 
@@ -373,11 +527,14 @@ export class EditarUsuario implements OnInit {
       return;
     }
 
-    this.niveisSelecionadas.push(nivel);
+    this.niveisSelecionadas.push(
+      nivel
+    );
 
     this.niveisControl.setValue('');
 
-    this.mostrarSugestoesNiveis = false;
+    this.mostrarSugestoesNiveis =
+      false;
   }
 
   // =========================
@@ -390,7 +547,8 @@ export class EditarUsuario implements OnInit {
 
     this.niveisSelecionadas =
       this.niveisSelecionadas.filter(
-        (n) => n.idNivel !== nivel.idNivel
+        (n) =>
+          n.idNivel !== nivel.idNivel
       );
   }
 
@@ -400,12 +558,12 @@ export class EditarUsuario implements OnInit {
 
   onSubmit(): void {
 
-this.carregando = true;
+    this.carregando = true;
 
-this.mensagemErro = [];
-this.mensagemSucesso = [];
+    this.mensagemErro = [];
+    this.mensagemSucesso = [];
 
-this.cd.detectChanges();
+    this.cd.detectChanges();
 
     if (!this.podeEnviar) {
 
@@ -420,99 +578,131 @@ this.cd.detectChanges();
 
     const request: EditarUsuarioRequest = {
 
-      id: this.form.value.id ?? undefined,
+      id:
+        this.form.value.id ??
+        undefined,
 
       nomeUsuario:
-        this.form.value.nomeUsuario ?? undefined,
+        this.form.value.nomeUsuario ??
+        undefined,
 
       login:
-        this.form.value.login ?? undefined,
+        this.form.value.login ??
+        undefined,
 
       email:
-        this.form.value.email ?? undefined,
+        this.form.value.email ??
+        undefined,
 
       senha:
-        this.form.value.senha ?? undefined,
+        this.form.value.senha ??
+        undefined,
+
+      escritorioId:
+        this.escritorioSelecionado?.id,
 
       grupoSetores:
 
-        this.setorSelecionadas.map((s) => ({
+        this.setorSelecionadas.map(
+          (s) => ({
 
-          idSetor: s.idSetor!
+            idSetor:
+              s.idSetor!
 
-        })),
+          })
+        ),
 
       grupoNiveis:
 
-        this.niveisSelecionadas.map((n) => ({
+        this.niveisSelecionadas.map(
+          (n) => ({
 
-          idNivel: n.idNivel!
+            idNivel:
+              n.idNivel!
 
-        }))
-    };console.log(
-  'Objeto request enviado para edição:',
-  JSON.stringify(request, null, 2)
-);
+          })
+        )
+    };
+
+    console.log(
+      'Objeto request enviado para edição:',
+      JSON.stringify(
+        request,
+        null,
+        2
+      )
+    );
 
     console.log(
       'Objeto request enviado:',
       request
     );
 
- this.usuarioService
-  .editarPorId(request)
-  .pipe(
+    this.usuarioService
+      .editarPorId(request)
+      .pipe(
 
-    finalize(() => {
+        finalize(() => {
 
-      this.carregando = false;
+          this.carregando = false;
 
-      this.cd.detectChanges();
-    })
-  )
-  .subscribe({
+          this.cd.detectChanges();
+        })
+      )
+      .subscribe({
 
-    next: (response) => {
+        next: (response) => {
 
-      console.log('RESPONSE:', response);
+          console.log(
+            'RESPONSE:',
+            response
+          );
 
-      this.mensagemSucesso = [
+          this.mensagemSucesso = [
 
-        response.message ??
-        'Usuário atualizado com sucesso!'
-      ];
+            response.message ??
+            'Usuário atualizado com sucesso!'
+          ];
 
-      this.cd.detectChanges();
+          this.cd.detectChanges();
 
-      setTimeout(() => {
+          setTimeout(() => {
 
-        this.router.navigate([
-          '/admin/consultar-usuarios'
-        ]);
+            this.router.navigate([
+              '/admin/consultar-usuarios'
+            ]);
 
-      }, 3000);
-    },
+          }, 3000);
+        },
 
-    error: (e) => {
+        error: (e) => {
 
-      this.tratarErro(e);
-    }
-  });
+          this.tratarErro(e);
+        }
+      });
   }
 
   // =========================
   // TRATAR ERRO
   // =========================
 
-  private tratarErro(e: any): void {
+  private tratarErro(
+    e: any
+  ): void {
 
-    const errorResponse = e?.error;
+    const errorResponse =
+      e?.error;
 
     this.mensagemErro = [];
 
-    if (errorResponse?.errors) {
+    if (
+      errorResponse?.errors
+    ) {
 
-      for (const key in errorResponse.errors) {
+      for (
+        const key in
+        errorResponse.errors
+      ) {
 
         if (
           Array.isArray(
@@ -527,13 +717,17 @@ this.cd.detectChanges();
       }
     }
 
-    else if (errorResponse?.mensagem) {
+    else if (
+      errorResponse?.mensagem
+    ) {
 
       this.mensagemErro.push(
         errorResponse.mensagem
       );
 
-      if (errorResponse.detalhes) {
+      if (
+        errorResponse.detalhes
+      ) {
 
         this.mensagemErro.push(
           errorResponse.detalhes
@@ -541,7 +735,9 @@ this.cd.detectChanges();
       }
     }
 
-    else if (errorResponse?.Message) {
+    else if (
+      errorResponse?.Message
+    ) {
 
       this.mensagemErro.push(
         errorResponse.Message
@@ -556,7 +752,9 @@ this.cd.detectChanges();
     }
 
     this.mensagemErro = [
-      ...new Set(this.mensagemErro)
+      ...new Set(
+        this.mensagemErro
+      )
     ];
 
     console.error(
@@ -569,7 +767,8 @@ this.cd.detectChanges();
   // VALIDAR SENHAS
   // =========================
 
-  validarSenhasIguais(): ValidatorFn {
+  validarSenhasIguais():
+    ValidatorFn {
 
     return (
       group: AbstractControl
@@ -579,7 +778,9 @@ this.cd.detectChanges();
         group.get('senha')?.value;
 
       const confirmar =
-        group.get('confirmarSenha')?.value;
+        group.get(
+          'confirmarSenha'
+        )?.value;
 
       if (
         senha &&
@@ -600,15 +801,19 @@ this.cd.detectChanges();
   // SENHA FORTE
   // =========================
 
-  senhaForteValidator(): ValidatorFn {
+  senhaForteValidator():
+    ValidatorFn {
 
     return (
       control: AbstractControl
     ): ValidationErrors | null => {
 
-      const valor = control.value;
+      const valor =
+        control.value;
 
-      if (!valor) return null;
+      if (!valor) {
+        return null;
+      }
 
       const regex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
@@ -628,20 +833,35 @@ this.cd.detectChanges();
   // SUGESTÕES
   // =========================
 
-  ocultarSugestoesComDelaySetor(): void {
+  ocultarSugestoesComDelaySetor():
+    void {
 
     setTimeout(() => {
 
-      this.mostrarSugestoesSetor = false;
+      this.mostrarSugestoesSetor =
+        false;
 
     }, 200);
   }
 
-  ocultarSugestoesComDelayNiveis(): void {
+  ocultarSugestoesComDelayNiveis():
+    void {
 
     setTimeout(() => {
 
-      this.mostrarSugestoesNiveis = false;
+      this.mostrarSugestoesNiveis =
+        false;
+
+    }, 200);
+  }
+
+  ocultarSugestoesComDelayEscritorio():
+    void {
+
+    setTimeout(() => {
+
+      this.mostrarSugestoesEscritorio =
+        false;
 
     }, 200);
   }

@@ -1,5 +1,5 @@
 declare var bootstrap: any;
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -43,6 +43,8 @@ export class EditarTarefa implements OnInit {
   private casoService = inject(CasoService);
   private atendimentoService = inject(AtendimentoService);
   private cdr = inject(ChangeDetectorRef);
+  private zone =
+  inject(NgZone);
   private historicoService = inject(HistoricoService);
   id!: string;
   tipoVinculoEnum = TipoVinculoEnum;
@@ -74,7 +76,13 @@ export class EditarTarefa implements OnInit {
     casoId: this.fb.control<string | null>(null),
     atendimentoId: this.fb.control<string | null>(null),
 
-    tipoVinculo: this.fb.control<any>(null)
+    tipoVinculo:
+  this.fb.control<
+    'processo' |
+    'caso' |
+    'atendimento' |
+    null
+  >(null)
   });
   removerBackdrop() {
     // remove classe do body
@@ -149,63 +157,104 @@ export class EditarTarefa implements OnInit {
       x.nomeUsuario?.toLowerCase().includes(termoLower)
     );
   }
-  buscarVinculo(termo: string) {
+buscarVinculo(
+  termo: string
+): void {
 
-    const tipo = this.form.get('tipoVinculo')?.value;
+  const tipo =
+    this.form
+      .get('tipoVinculo')
+      ?.value;
 
-    if (!tipo || !termo) {
-      this.resultadosVinculo = [];
-      return;
-    }
-
-    let request$: Observable<any[]>;
-
-    if (tipo === TipoVinculoEnum.Processo || tipo === 'processo') {
-      request$ = this.processoService.consultarProcessoAutoComplete(termo);
-    }
-    else if (tipo === TipoVinculoEnum.Caso || tipo === 'caso') {
-      request$ = this.casoService.consultarCasoAutoComplete(termo);
-    }
-    else {
-      request$ = this.atendimentoService.consultarAtendimentoAutoComplete(termo);
-    }
-
-    request$.subscribe(res => {
-      this.resultadosVinculo = res;
-    });
-  }
-  selecionarVinculo(item: any) {
-
-    const tipo = this.form.get('tipoVinculo')?.value;
-
-    // 🔥 limpa tudo antes
-    this.limparVinculos();
+  if (!tipo || !termo) {
 
     this.resultadosVinculo = [];
 
-    this.vinculoSelecionado = item;
-
-    if (tipo === TipoVinculoEnum.Processo || tipo === 'processo') {
-
-      this.form.patchValue({
-        processoId: item.id
-      });
-    }
-    else if (tipo === TipoVinculoEnum.Caso || tipo === 'caso') {
-
-      this.form.patchValue({
-        casoId: item.id
-      });
-    }
-    else if (tipo === TipoVinculoEnum.Atendimento || tipo === 'atendimento') {
-
-      this.form.patchValue({
-        atendimentoId: item.id
-      });
-    }
-
-    console.log('FORM FINAL:', this.form.value);
+    return;
   }
+
+  let request$:
+    Observable<any[]>;
+
+  if (tipo === 'processo') {
+
+    request$ =
+      this.processoService
+        .consultarProcessoAutoComplete(
+          termo
+        );
+
+  }
+  else if (tipo === 'caso') {
+
+    request$ =
+      this.casoService
+        .consultarCasoAutoComplete(
+          termo
+        );
+
+  }
+  else {
+
+    request$ =
+      this.atendimentoService
+        .consultarAtendimentoAutoComplete(
+          termo
+        );
+  }
+
+  request$.subscribe({
+
+    next: res => {
+
+      this.resultadosVinculo =
+        res;
+
+    }
+
+  });
+}
+selecionarVinculo(
+  item: any
+): void {
+
+  const tipo =
+    this.form
+      .get('tipoVinculo')
+      ?.value;
+
+  // limpa todos antes
+  this.limparVinculos();
+
+  this.resultadosVinculo = [];
+
+  this.vinculoSelecionado =
+    item;
+
+  if (tipo === 'processo') {
+
+    this.form.patchValue({
+      processoId: item.id
+    });
+
+  }
+  else if (tipo === 'caso') {
+
+    this.form.patchValue({
+      casoId: item.id
+    });
+
+  }
+  else if (
+    tipo === 'atendimento'
+  ) {
+
+    this.form.patchValue({
+      atendimentoId: item.id
+    });
+
+  }
+}
   // =========================
   // CARREGA TAREFA
   // =========================
@@ -220,11 +269,30 @@ export class EditarTarefa implements OnInit {
         console.log('ATENDIMENTO:', res.atendimentoAssunto);
 
         // 🔗 TIPO DE VÍNCULO
-        let tipoVinculo: TipoVinculoEnum | null = null;
+       let tipoVinculo:
+  'processo' |
+  'caso' |
+  'atendimento' |
+  null =
+  null;
 
-        if (res.processoId) tipoVinculo = TipoVinculoEnum.Processo;
-        else if (res.casoId) tipoVinculo = TipoVinculoEnum.Caso;
-        else if (res.atendimentoId) tipoVinculo = TipoVinculoEnum.Atendimento;
+if (res.processoId) {
+
+  tipoVinculo =
+    'processo';
+
+}
+else if (res.casoId) {
+
+  tipoVinculo =
+    'caso';
+
+}
+else if (res.atendimentoId) {
+
+  tipoVinculo =
+    'atendimento';
+}
 
         // 🧾 FORM
         this.form.patchValue({
@@ -383,36 +451,177 @@ export class EditarTarefa implements OnInit {
           dataConclusao: x.concluida ? new Date() : null
         }))
     };
+this.tarefaService
+  .editarTarefa(
+    this.id,
+    request
+  )
+  .pipe(
+    finalize(() => {
 
-    this.tarefaService.editarTarefa(this.id, request)
-      .pipe(
-        finalize(() => {
-          this.carregando = false;
-          this.cdr.detectChanges();
-        })
-      )
-      .subscribe({
-        next: (res: any) => {
-          this.mensagemSucesso = [
-            res.message ?? 'Tarefa atualizada com sucesso'
-          ];
-          setTimeout(() => {
-            this.router.navigate(['/admin/gestao-atividades']);
-          }, 3000);
+      this.carregando =
+        false;
 
-        },
-        error: err => {
-          this.tratarErro(err);
-        }
-      });
+      this.cdr.detectChanges();
+
+    })
+  )
+  .subscribe({
+
+ next: (res: any) => {
+
+  this.zone.run(() => {
+
+    this.mensagemErro = [];
+
+    this.mensagemSucesso = [
+      res.message ??
+      'Tarefa atualizada com sucesso'
+    ];
+
+    this.carregando =
+      false;
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+
+      this.router.navigate(
+        ['/admin/gestao-atividades']
+      );
+
+    }, 3000);
+
+  });
+},
+
+    error: err => {
+
+      this.tratarErro(err);
+
+    }
+
+  });
   }
   // =========================
   // ERRO
   // =========================
-  tratarErro(err: HttpErrorResponse) {
-    this.mensagemErro = ['Erro ao atualizar tarefa'];
-    this.carregando = false;
-  }
+tratarErro(
+  err: HttpErrorResponse
+): void {
+
+  this.zone.run(() => {
+
+    this.mensagemErro = [];
+
+    const e =
+      err.error;
+
+    // =========================
+    // FLUENT VALIDATION
+    // =========================
+
+    if (Array.isArray(e?.errors)) {
+
+      this.mensagemErro =
+        e.errors
+          .map(
+            (x: any) =>
+              x.erro ??
+              x.errorMessage ??
+              x.message
+          )
+          .filter(
+            (x: any) => !!x
+          );
+    }
+
+    // =========================
+    // ERROS POR CAMPO
+    // =========================
+
+    else if (
+      e?.errors &&
+      typeof e.errors === 'object'
+    ) {
+
+      for (const key in e.errors) {
+
+        const erros =
+          e.errors[key];
+
+        if (Array.isArray(erros)) {
+
+          this.mensagemErro.push(
+            ...erros
+          );
+
+        }
+        else if (erros) {
+
+          this.mensagemErro.push(
+            erros
+          );
+        }
+      }
+    }
+
+    // =========================
+    // BUSINESS EXCEPTION
+    // =========================
+
+    else if (e?.message) {
+
+      this.mensagemErro = [
+        e.message
+      ];
+
+    }
+
+    else if (e?.mensagem) {
+
+      this.mensagemErro = [
+        e.mensagem
+      ];
+
+    }
+
+    // =========================
+    // FALLBACK
+    // =========================
+
+    else {
+
+      this.mensagemErro = [
+        'Erro ao atualizar tarefa.'
+      ];
+    }
+
+    // =========================
+    // FINALIZA LOADING
+    // =========================
+
+    this.carregando =
+      false;
+
+    // =========================
+    // FORÇA ATUALIZAÇÃO
+    // =========================
+
+    this.cdr.markForCheck();
+
+    setTimeout(() => {
+
+      this.zone.run(() => {
+
+        this.cdr.detectChanges();
+
+      });
+
+    }, 0);
+
+  });
+}
   irParaLista() {
     this.router.navigate(['/admin/gestao-atividades']);
   }

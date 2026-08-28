@@ -1,157 +1,384 @@
 <div class="container-fluid p-0">
 
-    <h1 class="h3 mb-3">Cadastrar Contrato</h1>
+    <h1 class="h3 mb-3">
+        Cadastrar Contrato
+    </h1>
+
 
     <div class="card">
 
         <div class="card-header">
-            <h5 class="card-title">Cadastro de Contrato</h5>
+
+            <h5 class="card-title">
+                Cadastro de Contrato
+            </h5>
+
             <h6 class="card-subtitle text-muted">
                 Preencha os dados do contrato
             </h6>
+
         </div>
 
+
         <div class="card-body">
-            <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center p-3 mb-4 rounded-3 alert-dismissible fade show"
+
+            <!-- ================================================= -->
+            <!-- INFORMAÇÃO -->
+            <!-- ================================================= -->
+
+            <div
+                class="alert alert-primary border-0 shadow-sm d-flex align-items-center p-3 mb-4 rounded-3 alert-dismissible fade show"
                 role="alert">
 
                 <div class="me-3">
-                    <i class="fas fa-circle-info fs-4 text-white bg-primary rounded-circle p-2"></i>
+
+                    <i
+                        class="fas fa-circle-info fs-4 text-white bg-primary rounded-circle p-2">
+                    </i>
+
                 </div>
 
                 <div class="flex-grow-1">
+
                     <h6 class="fw-bold mb-0">
-                        Preencha os campos marcados com <strong>*</strong>. Os demais são opcionais.
+
+                        Preencha os campos marcados com
+                        <strong>*</strong>.
+                        Os demais são opcionais.
+
                     </h6>
+
                 </div>
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
                 </button>
 
             </div>
 
-            <app-spinner *ngIf="carregando" [show]="true" message="Salvando contrato...">
+
+            <!-- ================================================= -->
+            <!-- SPINNER -->
+            <!-- ================================================= -->
+
+            <app-spinner
+                *ngIf="carregando"
+                [show]="true"
+                message="Salvando contrato...">
             </app-spinner>
 
-            <app-alerts *ngIf="!carregando && mensagemSucesso.length" titulo="Sucesso!" [mensagens]="mensagemSucesso"
-                tipo="success" icone="fas fa-check-circle">
+
+            <!-- ================================================= -->
+            <!-- ALERTAS -->
+            <!-- ================================================= -->
+
+            <app-alerts
+                *ngIf="
+                    !carregando &&
+                    mensagemSucesso.length
+                "
+                titulo="Sucesso!"
+                [mensagens]="mensagemSucesso"
+                tipo="success"
+                icone="fas fa-check-circle">
             </app-alerts>
 
-            <app-alerts *ngIf="!carregando && mensagemErro.length" titulo="Erro!" [mensagens]="mensagemErro"
-                tipo="danger" icone="fas fa-times-circle">
+
+            <app-alerts
+                *ngIf="
+                    !carregando &&
+                    mensagemErro.length
+                "
+                titulo="Erro!"
+                [mensagens]="mensagemErro"
+                tipo="danger"
+                icone="fas fa-times-circle">
             </app-alerts>
 
-            <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-                <!-- CONTRATO -->
+            <form
+                [formGroup]="form"
+                (ngSubmit)="onSubmit()">
+
+
+                <!-- ================================================= -->
+                <!-- NÚMERO + CLIENTE -->
+                <!-- ================================================= -->
+
                 <div class="row mb-3">
 
+                    <!-- NÚMERO -->
+
                     <div class="col-md-4">
-                        <label class="form-label">Número *</label>
-                        <input class="form-control" formControlName="numero" mask="00000-0000" placeholder="00000-0000">
-                    </div>
-                    <div class="text-danger mt-1" *ngIf="form.get('numero')?.touched && form.get('numero')?.errors">
-                        <div *ngIf="form.get('numero')?.errors?.['required']">
+
+                        <label class="form-label">
+                            Número *
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            formControlName="numero"
+                            mask="00000-0000"
+                            placeholder="00000-0000">
+
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="
+                                form.get('numero')?.touched &&
+                                form.get('numero')?.hasError('required')
+                            ">
+
                             O número do contrato é obrigatório.
+
                         </div>
+
                     </div>
+
+
+                    <!-- CLIENTE -->
 
                     <div class="col-md-8">
 
-                        <app-autocomplete-pessoa-unica label="Cliente *" placeholder="Digite o cliente"
-                            [resultados]="clientesFiltrados" [selecionada]="clienteSelecionado"
-                            (buscar)="buscarClientes($event)" (selecionadaChange)="clienteSelecionado = $event">
+                        <app-autocomplete-pessoa-unica
+                            label="Cliente *"
+                            placeholder="Digite o cliente"
+                            [resultados]="clientesFiltrados"
+                            [selecionada]="clienteSelecionado"
+                            (buscar)="buscarClientes($event)"
+                           (selecionadaChange)="selecionarCliente($event)">
                         </app-autocomplete-pessoa-unica>
-                    </div>
-                    <div class="text-danger mt-1" *ngIf="!clienteSelecionado && form.touched">
 
-                        Escolha um cliente.
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="
+                                !clienteSelecionado &&
+                                form.touched
+                            ">
 
-                    </div>
-                    <div class="col-md-8">
-                        <label class="form-label">Processos: * </label>
-                        <app-vinculo [resultados]="processosFiltrados" (buscar)="buscarProcessos($event)"
-                            (selecionado)="selecionarProcesso($event)">
-                        </app-vinculo>
+                            Escolha um cliente.
 
-                    </div>
-                    <div class="text-danger mt-1" *ngIf="processosSelecionados.length === 0 && form.touched">
-
-                        Escolha pelo menos um processo.
+                        </div>
 
                     </div>
-                    <div class="mt-3">
-                        <div *ngIf="processosSelecionados.length" class="mt-3">
 
-                            <h6 class="text-muted mb-2">
-                                Processos Vinculados
+                </div>
 
-                                <span class="badge bg-primary ms-1">
-                                    {{ processosSelecionados.length }}
-                                </span>
-                            </h6>
 
-                            <div *ngFor="let processo of processosSelecionados"
-                                class="d-flex justify-content-between align-items-center py-2 px-2 border-bottom">
+                <!-- ================================================= -->
+                <!-- PROCESSOS -->
+                <!-- ================================================= -->
 
-                                <div class="d-flex align-items-center flex-grow-1">
+                <div class="row mb-3">
 
-                                    <i class="fas fa-balance-scale text-primary me-3"></i>
+                    <div class="col-md-12">
 
-                                    <div class="d-flex flex-column">
+                        <label class="form-label">
+                            Processos *
+                        </label>
 
-                                        <strong>
-                                            {{ processo.numeroProcesso }}
-                                        </strong>
+                   <app-vinculo
+    [tipoVinculo]="'processo'"
+    [resultados]="processosFiltrados"
+    (buscar)="buscarProcessos($event)"
+    (selecionado)="selecionarProcesso($event)">
+</app-vinculo>
 
-                                        <small class="text-muted">
-                                            {{ processo.pasta }}
-                                        </small>
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="
+                                processosSelecionados.length === 0 &&
+                                form.touched
+                            ">
 
-                                    </div>
+                            Escolha pelo menos um processo.
 
-                                </div>
+                        </div>
 
-                                <button type="button" class="border-0 bg-transparent p-0"
-                                    (click)="removerProcesso(processo)">
+                    </div>
 
-                                    <i class="fas fa-fw fa-trash-alt text-muted"></i>
+                </div>
 
-                                </button>
+
+                <!-- ================================================= -->
+                <!-- PROCESSOS SELECIONADOS -->
+                <!-- ================================================= -->
+
+                <div
+                    *ngIf="processosSelecionados.length"
+                    class="mb-4">
+
+                    <h6 class="text-muted mb-2">
+
+                        Processos Vinculados
+
+                        <span class="badge bg-primary ms-1">
+
+                            {{ processosSelecionados.length }}
+
+                        </span>
+
+                    </h6>
+
+
+                    <div
+                        *ngFor="
+                            let processo of processosSelecionados
+                        "
+                        class="d-flex justify-content-between align-items-center py-2 px-2 border-bottom">
+
+                        <div
+                            class="d-flex align-items-center flex-grow-1">
+
+                            <i
+                                class="fas fa-balance-scale text-primary me-3">
+                            </i>
+
+                            <div class="d-flex flex-column">
+
+                                <strong>
+                                    {{ processo.numeroProcesso }}
+                                </strong>
+
+                                <small class="text-muted">
+                                    {{ processo.pasta }}
+                                </small>
 
                             </div>
 
                         </div>
 
+
+                        <button
+                            type="button"
+                            class="btn btn-link text-danger p-0"
+                            (click)="removerProcesso(processo)"
+                            title="Remover processo">
+
+                            <i class="fas fa-trash-alt"></i>
+
+                        </button>
+
                     </div>
 
                 </div>
 
 
-                <!-- VALORES -->
+                <!-- ================================================= -->
+                <!-- DATAS -->
+                <!-- ================================================= -->
+
                 <div class="row mb-3">
 
-            
-                    <div class="col-md-4">
-                        <label class="form-label">Data Início *</label>
-                        <input type="date" class="form-control" formControlName="dataInicio">
-                    </div>
-                    <div class="text-danger mt-1"
-                        *ngIf="form.get('dataInicio')?.touched && form.get('dataInicio')?.errors">
-                        <div *ngIf="form.get('dataInicio')?.errors?.['required']">
+                    <!-- DATA INÍCIO -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Data Início *
+                        </label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            formControlName="dataInicio">
+
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="
+                                form.get('dataInicio')?.touched &&
+                                form.get('dataInicio')?.hasError('required')
+                            ">
+
                             A data de início do contrato é obrigatória.
+
                         </div>
+
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Data Fim </label>
-                        <input type="date" class="form-control" formControlName="dataFim">
+
+
+                    <!-- DATA FIM -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Data Fim
+                        </label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            formControlName="dataFim">
+
                     </div>
 
                 </div>
 
-                <button type="submit" class="btn btn-primary" [disabled]="!podeEnviar || carregando">
 
-                    <i class="align-middle me-2 fas fa-save fa-lg"></i>
+                <!-- ================================================= -->
+                <!-- OBSERVAÇÃO -->
+                <!-- ================================================= -->
+
+                <div class="row mb-4">
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Observação
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            rows="4"
+                            maxlength="500"
+                            formControlName="observacao"
+                            placeholder="Digite uma observação sobre o contrato">
+                        </textarea>
+
+
+                        <div class="text-end small text-muted mt-1">
+
+                            {{
+                                form.get('observacao')?.value?.length || 0
+                            }}/500
+
+                        </div>
+
+
+                        <div
+                            class="text-danger mt-1"
+                            *ngIf="
+                                form.get('observacao')?.touched &&
+                                form.get('observacao')?.hasError('maxlength')
+                            ">
+
+                            A observação deve possuir no máximo
+                            500 caracteres.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- SALVAR -->
+                <!-- ================================================= -->
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="
+                        !podeEnviar ||
+                        carregando
+                    ">
+
+                    <i class="fas fa-save me-2"></i>
+
                     Salvar
 
                 </button>

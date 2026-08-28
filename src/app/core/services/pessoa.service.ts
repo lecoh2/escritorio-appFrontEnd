@@ -1,154 +1,270 @@
-import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment.development";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { PessoaFisicaRequest } from "../models/pessoa/pessoas-fisica-request";
-import { PessoaJuridicaRequest } from "../models/pessoa/pessoa-juridica-request";
-import { PessoaFisicaResponse } from "../models/pessoa/pessoa-fisica-response";
-import { PessoaJuridicaResponse } from "../models/pessoa/pessoa-jurisica-response";
-import { PessoaResumo } from "../models/pessoa/pessoa-resumo";
-import { ApiResponse } from "../models/respostas/api-response";
+import { inject, Injectable } from '@angular/core';
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment.development';
 
+import { PessoaFisicaRequest } from '../models/pessoa/pessoas-fisica-request';
+import { PessoaJuridicaRequest } from '../models/pessoa/pessoa-juridica-request';
+
+import { PessoaFisicaResponse } from '../models/pessoa/pessoa-fisica-response';
+import { PessoaJuridicaResponse } from '../models/pessoa/pessoa-jurisica-response';
+
+import { PessoaResumo } from '../models/pessoa/pessoa-resumo';
+
+import { ApiResponse } from '../models/respostas/api-response';
+
+import { PessoaFisicaUpdateRequest } from '../models/pessoa/pessoa-fisica-update-request';
+import { PessoaJuridicaUpdateRequest } from '../models/pessoa/pessoa-juridica-update-request';
 
 @Injectable({
-  providedIn: 'root' // Isso registra o serviço automaticamente no app
+  providedIn: 'root'
 })
 export class PessoaService {
-  //atributos
+
+  // =====================================================
+  // ATRIBUTOS
+  // =====================================================
+
   private url = environment.apiDeslandes;
   private http = inject(HttpClient);
 
- 
 
-cadastrarPessoaFisica(request: PessoaFisicaRequest): Observable<ApiResponse<PessoaFisicaResponse>> {
-  const token = localStorage.getItem('token'); // ou de onde você armazena
-  return this.http.post<ApiResponse<PessoaFisicaResponse>>(
-    `${this.url}/api/v1/pessoa-fisica/cadastrar-pessoa-fisica`,
-    request,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
+  // =====================================================
+  // HEADERS
+  // =====================================================
+
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CADASTRAR PESSOA FÍSICA
+  // =====================================================
+
+  cadastrarPessoaFisica(
+    request: PessoaFisicaRequest
+  ): Observable<
+    ApiResponse<PessoaFisicaResponse>
+  > {
+
+    return this.http.post<
+      ApiResponse<PessoaFisicaResponse>
+    >(
+      `${this.url}/api/v1/pessoa-fisica/cadastrar-pessoa-fisica`,
+      request,
+      {
+        headers: this.getHeaders()
       }
-    }
-  );
-}
-consultarPessoasResumo(termo?: string, limite: number = 50) {
-  const params: any = { limite: limite.toString() };
-
-  if (termo) {
-    params.termo = termo;
+    );
   }
 
-  return this.http.get<PessoaResumo[]>(
-    `${this.url}/api/v1/pessoas/resumo`,
-    { params }
-  );
-}
- cadastrarPessoaJuridica(request: PessoaJuridicaRequest): Observable<ApiResponse<PessoaJuridicaResponse>> {
-  const token = localStorage.getItem('token');
 
-  return this.http.post<ApiResponse<PessoaJuridicaResponse>>(
-    `${this.url}/api/v1/pessoa-juridica/cadastrar-pessoa-juridica`,
-    request,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
+  // =====================================================
+  // CONSULTAR PESSOA FÍSICA POR ID
+  // =====================================================
+
+  consultarPessoaFisicaPorId(
+    id: string
+  ): Observable<
+    ApiResponse<PessoaFisicaResponse>
+  > {
+
+    return this.http.get<
+      ApiResponse<PessoaFisicaResponse>
+    >(
+      `${this.url}/api/v1/pessoa-fisica/consultar-pessoa-fisica/${id}`,
+      {
+        headers: this.getHeaders()
       }
+    );
+  }
+
+
+  // =====================================================
+  // EDITAR PESSOA FÍSICA
+  // =====================================================
+
+  editarPessoaFisica(
+    id: string,
+    request: PessoaFisicaUpdateRequest
+  ): Observable<
+    ApiResponse<PessoaFisicaResponse>
+  > {
+
+    return this.http.put<
+      ApiResponse<PessoaFisicaResponse>
+    >(
+      `${this.url}/api/v1/pessoa-fisica/atualizar-pessoa-fisica/${id}`,
+      request,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR PESSOA JURÍDICA POR ID
+  // =====================================================
+
+  consultarPessoaJuridicaPorId(
+    id: string
+  ): Observable<
+    ApiResponse<PessoaJuridicaResponse>
+  > {
+
+    return this.http.get<
+      ApiResponse<PessoaJuridicaResponse>
+    >(
+      `${this.url}/api/v1/pessoa-juridica/consultar-pessoa-juridica/${id}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR RESUMO / AUTOCOMPLETE
+  // =====================================================
+
+  consultarPessoasResumo(
+    termo?: string,
+    limite: number = 50
+  ): Observable<PessoaResumo[]> {
+
+    const params: any = {
+      limite: limite.toString()
+    };
+
+    if (termo) {
+      params.termo = termo;
     }
-  );
-}
-    consultarPessoaFisicaPaginado(pageNumber: number, pageSize: number, searchTerm?: string) {
-  const params: any = { pageNumber: pageNumber.toString(), pageSize: pageSize.toString() };
-  if (searchTerm) params.searchTerm = searchTerm;
-  return this.http.get<any>(`${this.url}/api/v1/pessoa-fisica/consultar-pessoa-fisica-paginacao`, { params });
-}
-  consultarPessoaJuridicaPaginado(pageNumber: number, pageSize: number, searchTerm?: string) {
-  const params: any = { pageNumber: pageNumber.toString(), pageSize: pageSize.toString() };
-  if (searchTerm) params.searchTerm = searchTerm;
-  return this.http.get<any>(`${this.url}/api/v1/pessoa-juridica/consultar-pessoa-juridica-paginacao`, { params });
-}
-  /*
-  consultarPessoasFisica(): Observable<ConsultarPessoaResponse[]> {
-    return this.http.get<ConsultarPessoaResponse[]>
-      (`${this.url}/api/pessoa/consultar-pessoas-todas-fisica`);
-  }
-  consultarPessoasJuridica(): Observable<ConsultarPessoaResponse[]> {
-    return this.http.get<ConsultarPessoaResponse[]>
-      (`${this.url}/api/pessoa/consultar-pessoas-todas-juridica`);
-  }
-  consultarPessoaFisicaPorId(id: string): Observable<ConsultarPessoaResponse> {
-    return this.http.get<ConsultarPessoaResponse>(
-      `${this.url}/api/pessoa/consultar-pessoas-fisica-por-id/${id}`
-    );
-  }
-  consultarPessoaJuridicaPorId(id: string): Observable<ConsultarPessoaResponse> {
-    return this.http.get<ConsultarPessoaResponse>(
-      `${this.url}/api/pessoa/consultar-pessoas-juridica-por-id/${id}`
+
+    return this.http.get<PessoaResumo[]>(
+      `${this.url}/api/v1/pessoas/resumo`,
+      {
+        params,
+        headers: this.getHeaders()
+      }
     );
   }
 
-  //método para atualizar pessoa na API
-  editarPessoaFisica(dto: EditarPessoaFisicaRequest): Observable<EditarPessoaFisicaResponse> {
-    return this.http.put<EditarPessoaFisicaResponse>(
-      `${this.url}/api/pessoa/atualizar-pessoa-fisica/${dto.idPessoa}`,
-      dto
+
+  // =====================================================
+  // CADASTRAR PESSOA JURÍDICA
+  // =====================================================
+
+  cadastrarPessoaJuridica(
+    request: PessoaJuridicaRequest
+  ): Observable<
+    ApiResponse<PessoaJuridicaResponse>
+  > {
+
+    return this.http.post<
+      ApiResponse<PessoaJuridicaResponse>
+    >(
+      `${this.url}/api/v1/pessoa-juridica/cadastrar-pessoa-juridica`,
+      request,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
-  //método para atualizar pessoa na API
-  editarPessoaJuridica(dto: EditarPessoaJuridicaRequest): Observable<EditarPessoaJuridicaResponse> {
-    return this.http.put<EditarPessoaJuridicaResponse>(
-      `${this.url}/api/pessoa/atualizar-pessoa-juridica/${dto.idPessoa}`,
-      dto
+
+
+  // =====================================================
+  // CONSULTAR PESSOA FÍSICA PAGINADO
+  // =====================================================
+
+  consultarPessoaFisicaPaginado(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm?: string
+  ): Observable<any> {
+
+    const params: any = {
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString()
+    };
+
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/pessoa-fisica/consultar-pessoa-fisica-paginacao`,
+      {
+        params,
+        headers: this.getHeaders()
+      }
     );
   }
 
-  //método para consultar o historico da da pesso fisica
-  consultarHistoricoPessoaFisica(id: string): Observable<ConsultarPessoaResponse> {
-    return this.http.get<ConsultarPessoaResponse>(
-      `${this.url}/api/pessoa/consultar-historico-pessoa-fisica/${id}`
+
+  // =====================================================
+  // CONSULTAR PESSOA JURÍDICA PAGINADO
+  // =====================================================
+
+  consultarPessoaJuridicaPaginado(
+    pageNumber: number,
+    pageSize: number,
+    searchTerm?: string
+  ): Observable<any> {
+
+    const params: any = {
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString()
+    };
+
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    return this.http.get<any>(
+      `${this.url}/api/v1/pessoa-juridica/consultar-pessoa-juridica-paginacao`,
+      {
+        params,
+        headers: this.getHeaders()
+      }
     );
   }
-  consultarHistoricoPessoaJuridica(id: string): Observable<ConsultarPessoaResponse> {
-    return this.http.get<ConsultarPessoaResponse>(
-      `${this.url}/api/pessoa/consultar-historico-pessoa-juridica/${id}`
+
+
+  // =====================================================
+  // EDITAR PESSOA JURÍDICA
+  // =====================================================
+
+  editarPessoaJuridica(
+    id: string,
+    request: PessoaJuridicaUpdateRequest
+  ): Observable<
+    ApiResponse<PessoaJuridicaResponse>
+  > {
+
+    return this.http.put<
+      ApiResponse<PessoaJuridicaResponse>
+    >(
+      `${this.url}/api/v1/pessoa-juridica/atualizar-pessoa-juridica/${id}`,
+      request,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
-consultarPessoasFisicaComPaginacao(
-  pageNumber: number,
-  pageSize: number,
-  search: string
-): Observable<DataTablesResponse<ConsultarPessoaResponse>> {
-  const params = new HttpParams()
-    .set('pageNumber', pageNumber.toString())
-    .set('pageSize', pageSize.toString())
-    .set('searchValue', search);
-
-  return this.http.get<DataTablesResponse<ConsultarPessoaResponse>>(
-    `${this.url}/api/pessoa/consultar-pessoas-todas-fisica-com-paginacao`,
-    { params }
-  );
-}
-
-
-
-
-
-consultarPessoasJuridicaComPaginacao(
-  pageNumber: number,
-  pageSize: number,
-  search: string
-): Observable<DataTablesResponse<ConsultarPessoaResponse>> {
-  const params = new HttpParams()
-    .set('pageNumber', pageNumber.toString())
-    .set('pageSize', pageSize.toString())
-    .set('searchValue', search);
-
-  return this.http.get<DataTablesResponse<ConsultarPessoaResponse>>(
-    `${this.url}/api/pessoa/consultar-pessoas-todas-juridica-com-paginacao`,
-    { params }
-  );
-}*/
-
-
 }

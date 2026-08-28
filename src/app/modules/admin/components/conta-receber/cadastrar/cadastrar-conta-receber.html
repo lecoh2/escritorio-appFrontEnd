@@ -176,27 +176,47 @@
                             Contrato
                         </label>
 
-                        <select
-                            class="form-select"
-                            formControlName="contratoId">
+                    <select
+    class="form-select"
+    formControlName="contratoId"
+  (change)="selecionarContrato($any($event.target).value)">
 
-                            <option value="">
-                                Selecione...
-                            </option>
+    <option [value]="null">
+        Nenhum contrato
+    </option>
 
-                            <option
-                                *ngFor="let contrato of contratos"
-                                [value]="contrato.id">
+    <option
+        *ngFor="let contrato of contratos"
+        [value]="contrato.id">
 
-                                {{ contrato.numero }}
+        {{ contrato.numero }} - {{ contrato.nomePessoa }}
 
-                            </option>
+    </option>
 
-                        </select>
+</select>
 
                     </div>
 
-         
+         <div 
+class="mt-2"
+*ngIf="contratoSelecionado">
+
+    <span class="badge bg-primary">
+
+        <i class="fas fa-file-contract me-1"></i>
+
+        {{ contratoSelecionado.numero }}
+
+    </span>
+
+
+    <span class="badge bg-secondary ms-2">
+
+        {{ contratoSelecionado.nomePessoa }}
+
+    </span>
+
+</div>
 
                 <!-- CATEGORIA E CENTRO CUSTO -->
 

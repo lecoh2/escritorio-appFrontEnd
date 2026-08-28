@@ -1,317 +1,1324 @@
 <nav id="sidebar" class="sidebar">
-	<div class="sidebar-content js-simplebar">
-		<a class='sidebar-brand' href='admin/painel-principal'>
-			<img src="assets/appdeslandes/img/deslandes_icon.png" alt="Logo Deslandes" class="">
 
-			<span class="align-middle me-3"></span>
-		</a>
+    <div class="sidebar-content js-simplebar">
 
-		<ul class="sidebar-nav">
-			<li class="sidebar-header">
-				Menu
-			</li>
+        <!-- ===================================================== -->
+        <!-- LOGO -->
+        <!-- ===================================================== -->
 
+        <a
+            class="sidebar-brand"
+            href="admin/painel-principal">
 
+            <img
+                src="assets/appdeslandes/img/deslandes_icon.png"
+                alt="Logo Deslandes">
 
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#atividades" data-bs-toggle="collapse" class="sidebar-link collapsed">
+            <span class="align-middle me-3"></span>
 
-					<i class="fas fa-columns align-middle"></i> <span class="align-middle">Atividades</span>
-
-
-				</a>
-				<ul id="atividades" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'gestao-atividades']">
-							Quadro de Atividades
-						</a>
-					</li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'agenda']">
-							Agenda</a></li>
-				</ul>
-			</li>
-			<li class="sidebar-item" *ngIf="access.hasNivel(
-      'Administrador',
-      'Administração',
-      'Super Administrador',
-      'Coordenador',
-      'Supervisor'
-    )">
-
-				<a data-bs-target="#centroCusto" data-bs-toggle="collapse" class="sidebar-link collapsed">
-
-					<i class="fas fa-sitemap align-middle"></i>
-					<span class="align-middle">Centro de Custos</span>
-
-				</a>
-
-				<ul id="centroCusto" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" [routerLink]="['/admin', 'cadastrar-centro-custo']">
-							Cadastrar
-						</a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" [routerLink]="['/admin', 'consultar-centro-custo']">
-							Consultar
-						</a>
-					</li>
-
-				</ul>
-
-			</li>
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#pessoas" data-bs-toggle="collapse" class="sidebar-link collapsed">
-
-					<i class="fas fa-users align-middle"></i> <span class="align-middle">Contatos</span>
+        </a>
 
 
-				</a>
-				<ul id="pessoas" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'cadastrar-pessoas']">
-							Cadastrar
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-pessoas']">
-							Consultar</a></li>
-				</ul>
-			</li>
+        <ul class="sidebar-nav">
+
+            <li class="sidebar-header">
+                Menu
+            </li>
 
 
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#processo" data-bs-toggle="collapse" class="sidebar-link collapsed">
+            <!-- ===================================================== -->
+            <!-- ATENDIMENTOS -->
+            <!-- ===================================================== -->
 
-					<i class="fas fa-balance-scale align-middle"></i> <span class="align-middle">Processos</span>
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
 
+                <a
+                    data-bs-target="#atendimento"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
 
-				</a>
-				<ul id="processo" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'cadastrar-processo']">
-							Cadastrar
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-processo']">
-							Consultar</a></li>
-					
-				</ul>
-			</li>
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#atendimento" data-bs-toggle="collapse" class="sidebar-link collapsed">
+                    <i class="fas fa-headset align-middle"></i>
 
-					<i class="fas fa-headset align-middle"></i> <span class="align-middle">Atendimentos</span>
+                    <span class="align-middle">
+                        Atendimentos
+                    </span>
 
+                </a>
 
-				</a>
-				<ul id="atendimento" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'cadastrar-atendimento']">
-							Cadastrar
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-atendimento']">
-							Consultar</a></li>
-				</ul>
-			</li>
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#tarefa" data-bs-toggle="collapse" class="sidebar-link collapsed">
+                <ul
+                    id="atendimento"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
 
-					<i class="fas fa-tasks align-middle"></i> <span class="align-middle">Tarefas</span>
+                    <li class="sidebar-item">
 
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-atendimento'
+                            ]">
 
-				</a>
-				<ul id="tarefa" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'cadastrar-tarefa']">
-							Cadastrar
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-tarefa']">
-							Consultar</a></li>
-				</ul>
-			</li>
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#evento" data-bs-toggle="collapse" class="sidebar-link collapsed">
+                            Cadastrar
 
-					<i class="fas fa-calendar-alt align-middle"></i> <span class="align-middle">Eventos</span>
+                        </a>
 
+                    </li>
 
-				</a>
-				<ul id="evento" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'cadastrar-evento']">
-							Cadastrar
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-evento']">
-							Consultar</a></li>
+                    <li class="sidebar-item">
 
-				</ul>
-			</li>
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-atendimento'
+                            ]">
 
-			<li class="sidebar-item" *ngIf="access.hasNivel('Administrador','Administração','Super Administrador', 'Coordenador',
-	'Estagiários', 'Supervisor','Conciliador')">
-				<a data-bs-target="#caso" data-bs-toggle="collapse" class="sidebar-link collapsed">
+                            Consultar
 
-					<i class="fas fa-folder-open align-middle"></i><span class="align-middle">Casos</span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
 
 
-				</a>
-				<ul id="caso" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#caz">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'cadastrar-caso']">
-							Cadastrar
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-caso']">
-							Consultar</a></li>
-				</ul>
-			</li>
+            <!-- ===================================================== -->
+            <!-- ATIVIDADES -->
+            <!-- ===================================================== -->
 
-			<!-- Múltiplos níveis -->
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
 
-			<li class="sidebar-item" *ngIf="access.hasNivel('Super Administrador','Administrador')">
-				<a data-bs-target="#usuario" data-bs-toggle="collapse" class="sidebar-link collapsed">
-					<i class="fas fa-users align-middle"></i><span class="align-middle">Usuários</span>
+                <a
+                    data-bs-target="#atividades"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
 
-				</a>
-				<ul id="usuario" class="sidebar-dropdown list-unstyled collapse " data-bs-parent="#sidebar">
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'criar-usuario']">
-							Cadastrar Usuário
-						</a></li>
-					<li class="sidebar-item"><a class='sidebar-link' [routerLink]="['/admin', 'consultar-usuarios']">
-							Consultar Usuário</a></li>
+                    <i class="fas fa-columns align-middle"></i>
+
+                    <span class="align-middle">
+                        Atividades
+                    </span>
+
+                </a>
+
+                <ul
+                    id="atividades"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'agenda'
+                            ]">
+
+                            Agenda
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'gestao-atividades'
+                            ]">
+
+                            Quadro de Atividades
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
 
 
-				</ul>
+            <!-- ===================================================== -->
+            <!-- CASOS -->
+            <!-- ===================================================== -->
 
-			</li>
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
 
-			<li class="sidebar-item">
-				<a data-bs-target="#financeiro" data-bs-toggle="collapse" class="sidebar-link collapsed">
-					<i class="align-middle fas fa-wallet"></i>
-					<span class="align-middle">Financeiro</span>
-				</a>
+                <a
+                    data-bs-target="#caso"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
 
-				<ul id="financeiro" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-					<!-- Dashboard Financeiro -->
-					<li class="sidebar-item">
-						<a class="sidebar-link" [routerLink]="['/admin', 'dashboard-financeiro']">
-							<i class="align-middle fas fa-chart-line"></i>
-							<span class="align-middle">Dashboard Financeiro</span>
-						</a>
-					<li>
-						<a class="sidebar-link" [routerLink]="['/admin', 'configuracao-financeira']">
+                    <i class="fas fa-folder-open align-middle"></i>
 
-							<i class="fas fa-cogs"></i>
-							Meta
-						</a>
-					</li>
+                    <span class="align-middle">
+                        Casos
+                    </span>
+
+                </a>
+
+                <ul
+                    id="caso"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-caso'
+                            ]">
+
+                            Cadastrar
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-caso'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
 
 
-					<!-- Contratos -->
-					<li class="sidebar-item">
-						<a data-bs-target="#contratos" data-bs-toggle="collapse" class="sidebar-link collapsed">
-							<i class="align-middle fas fa-file-contract"></i>
-							<span class="align-middle">Contratos</span>
-						</a>
 
-						<ul id="contratos" class="sidebar-dropdown list-unstyled collapse">
-							<li class="sidebar-item">
-								<a class="sidebar-link" [routerLink]="['/admin', 'cadastrar-contrato']">
-									<i class="fas fa-plus-circle me-2"></i>
-									Cadastrar Contrato
-								</a>
-							</li>
+            <!-- ===================================================== -->
+            <!-- CONTATOS -->
+            <!-- ===================================================== -->
 
-							<li class="sidebar-item">
-								<a class="sidebar-link" [routerLink]="['/admin', 'consultar-contratos']">
-									<i class="fas fa-search me-2"></i>
-									Consultar Contratos
-								</a>
-							</li>
-						</ul>
-					</li>
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
 
-					<!-- Contas a Receber -->
-					<li class="sidebar-item">
-						<a data-bs-target="#contasReceber" data-bs-toggle="collapse" class="sidebar-link collapsed">
-							<i class="align-middle fas fa-hand-holding-dollar"></i>
-							<span class="align-middle">Contas a Receber</span>
-						</a>
+                <a
+                    data-bs-target="#pessoas"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
 
-						<ul id="contasReceber" class="sidebar-dropdown list-unstyled collapse">
-							<li class="sidebar-item">
-								<a class="sidebar-link" [routerLink]="['/admin', 'cadastrar-conta-receber']">
-									<i class="fas fa-plus-circle me-2"></i>
-									Cadastrar
-								</a>
-							</li>
+                    <i class="fas fa-users align-middle"></i>
 
-							<li class="sidebar-item">
-								<a class="sidebar-link" [routerLink]="['/admin', 'consultar-conta-receber']">
-									<i class="fas fa-search me-2"></i>
-									Consultar
-								</a>
-							</li>
-						</ul>
-					</li>
-					<!-- Contas a pagar -->
-					<!-- Contas a Pagar -->
-					<li class="sidebar-item">
-						<a data-bs-target="#contasPagar" data-bs-toggle="collapse" class="sidebar-link collapsed">
-							<i class="align-middle fas fa-file-invoice-dollar"></i>
-							<span class="align-middle">Contas a Pagar</span>
-						</a>
+                    <span class="align-middle">
+                        Contatos
+                    </span>
 
-						<ul id="contasPagar" class="sidebar-dropdown list-unstyled collapse">
+                </a>
 
-							<li class="sidebar-item">
-								<a class="sidebar-link" [routerLink]="['/admin', 'cadastrar-conta-pagar']">
-									<i class="fas fa-plus-circle me-2"></i>
-									Cadastrar
-								</a>
-							</li>
+                <ul
+                    id="pessoas"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
 
-							<li class="sidebar-item">
-								<a class="sidebar-link" [routerLink]="['/admin', 'consultar-conta-pagar']">
-									<i class="fas fa-search me-2"></i>
-									Consultar
-								</a>
-							</li>
+                    <li class="sidebar-item">
 
-						</ul>
-					</li>
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-pessoas'
+                            ]">
 
-				</ul>
-			</li>
-<li class="sidebar-item"
-  *ngIf="access.hasNivel('Administrador','Administração','Super Administrador','Coordenador','Estagiários','Supervisor','Conciliador')">
+                            Cadastrar
 
-  <a data-bs-target="#webjur" data-bs-toggle="collapse" class="sidebar-link collapsed">
-    <i class="fas fa-newspaper align-middle"></i>
-    <span class="align-middle">Publicações WebJur</span>
-  </a>
+                        </a>
 
-  <ul id="webjur" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    </li>
 
-    <li class="sidebar-item">
-      <a class="sidebar-link" [routerLink]="['/admin', 'consultar-webjur']">
-        Consultar Publicações
-      </a>
-    </li>
+                    <li class="sidebar-item">
 
-  </ul>
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-pessoas'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- ESCRITÓRIOS -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Super Administrador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#escritorios"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-building align-middle"></i>
+
+                    <span class="align-middle">
+                        Escritórios
+                    </span>
+
+                </a>
+
+                <ul
+                    id="escritorios"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-escritorio'
+                            ]">
+
+                            Cadastrar
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-escritorios'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- EVENTOS -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#evento"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-calendar-alt align-middle"></i>
+
+                    <span class="align-middle">
+                        Eventos
+                    </span>
+
+                </a>
+
+                <ul
+                    id="evento"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-evento'
+                            ]">
+
+                            Cadastrar
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-evento'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- FINANCEIRO -->
+            <!-- ===================================================== -->
+
+            <li class="sidebar-item">
+
+                <a
+                    data-bs-target="#financeiro"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="align-middle fas fa-wallet"></i>
+
+                    <span class="align-middle">
+                        Financeiro
+                    </span>
+
+                </a>
+
+                <ul
+                    id="financeiro"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+          <!-- ===================================================== -->
+            <!-- CATEGORIA FINANCERA -->
+            <!-- ===================================================== -->
+
+
+<li
+    class="sidebar-item"
+    *ngIf="
+        access.hasNivel(
+            'Administrador',
+            'Administração',
+            'Super Administrador',
+            'Coordenador',
+            'Supervisor'
+        )
+    ">
+
+<a
+    data-bs-target="#categoriafinanceira"
+    data-bs-toggle="collapse"
+    class="sidebar-link collapsed">
+
+    <i class="align-middle fas fa-tags"></i>
+
+    <span class="align-middle">
+        Categoria Financeira
+    </span>
+
+</a>
+
+    <ul
+        id="categoriafinanceira"
+        class="sidebar-dropdown list-unstyled collapse">
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'cadastrar-categoria-financeira'
+                ]">
+
+                <i class="fas fa-plus-circle me-2"></i>
+
+                Cadastrar
+
+            </a>
+
+        </li>
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'consultar-categoria-financeira'
+                ]">
+
+                <i class="fas fa-search me-2"></i>
+
+                Consultar
+
+            </a>
+
+        </li>
+
+    </ul>
 
 </li>
-			<li class="sidebar-item"><a class="sidebar-link collapsed" [routerLink]="['/admin', 'perfil']">
-					<i class="fas fa-user align-middle"></i><span class="align-middle">Perfil</span>
-				</a></li>
-			<li class="sidebar-item">
-				<a class="sidebar-link collapsed" href="#" (click)="logout()">
-					<i class="fa-solid fa-right-from-bracket me-2"></i>
-					<span class="align-middle">Sair do sistema</span>
-				</a>
-			</li>
+            <!-- ===================================================== -->
+            <!-- CENTRO DE CUSTOS -->
+            <!-- ===================================================== -->
 
 
+<li
+    class="sidebar-item"
+    *ngIf="
+        access.hasNivel(
+            'Administrador',
+            'Administração',
+            'Super Administrador',
+            'Coordenador',
+            'Supervisor'
+        )
+    ">
 
-		</ul>
-	</div>
+    <a
+        data-bs-target="#centroCusto"
+        data-bs-toggle="collapse"
+        class="sidebar-link collapsed">
+
+        <i class="align-middle fas fa-sitemap"></i>
+
+        <span class="align-middle">
+            Centro de Custos
+        </span>
+
+    </a>
+
+    <ul
+        id="centroCusto"
+        class="sidebar-dropdown list-unstyled collapse">
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'cadastrar-centro-custo'
+                ]">
+
+                <i class="fas fa-plus-circle me-2"></i>
+
+                Cadastrar
+
+            </a>
+
+        </li>
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'consultar-centro-custo'
+                ]">
+
+                <i class="fas fa-search me-2"></i>
+
+                Consultar
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
+
+                    <!-- CONTAS A PAGAR -->
+
+                    <li class="sidebar-item">
+
+                        <a
+                            data-bs-target="#contasPagar"
+                            data-bs-toggle="collapse"
+                            class="sidebar-link collapsed">
+
+                            <i class="align-middle fas fa-file-invoice-dollar"></i>
+
+                            <span class="align-middle">
+                                Contas a Pagar
+                            </span>
+
+                        </a>
+
+                        <ul
+                            id="contasPagar"
+                            class="sidebar-dropdown list-unstyled collapse">
+
+                            <li class="sidebar-item">
+
+                                <a
+                                    class="sidebar-link"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'cadastrar-conta-pagar'
+                                    ]">
+
+                                    <i class="fas fa-plus-circle me-2"></i>
+
+                                    Cadastrar
+
+                                </a>
+
+                            </li>
+
+                            <li class="sidebar-item">
+
+                                <a
+                                    class="sidebar-link"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'consultar-conta-pagar'
+                                    ]">
+
+                                    <i class="fas fa-search me-2"></i>
+
+                                    Consultar
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+
+                    <!-- CONTAS A RECEBER -->
+
+                    <li class="sidebar-item">
+
+                        <a
+                            data-bs-target="#contasReceber"
+                            data-bs-toggle="collapse"
+                            class="sidebar-link collapsed">
+
+                            <i class="align-middle fas fa-hand-holding-dollar"></i>
+
+                            <span class="align-middle">
+                                Contas a Receber
+                            </span>
+
+                        </a>
+
+                        <ul
+                            id="contasReceber"
+                            class="sidebar-dropdown list-unstyled collapse">
+
+                            <li class="sidebar-item">
+
+                                <a
+                                    class="sidebar-link"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'cadastrar-conta-receber'
+                                    ]">
+
+                                    <i class="fas fa-plus-circle me-2"></i>
+
+                                    Cadastrar
+
+                                </a>
+
+                            </li>
+
+                            <li class="sidebar-item">
+
+                                <a
+                                    class="sidebar-link"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'consultar-conta-receber'
+                                    ]">
+
+                                    <i class="fas fa-search me-2"></i>
+
+                                    Consultar
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+
+                    <!-- CONTRATOS -->
+
+                    <li class="sidebar-item">
+
+                        <a
+                            data-bs-target="#contratos"
+                            data-bs-toggle="collapse"
+                            class="sidebar-link collapsed">
+
+                            <i class="align-middle fas fa-file-contract"></i>
+
+                            <span class="align-middle">
+                                Contratos
+                            </span>
+
+                        </a>
+
+                        <ul
+                            id="contratos"
+                            class="sidebar-dropdown list-unstyled collapse">
+
+                            <li class="sidebar-item">
+
+                                <a
+                                    class="sidebar-link"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'cadastrar-contrato'
+                                    ]">
+
+                                    <i class="fas fa-plus-circle me-2"></i>
+
+                                    Cadastrar Contrato
+
+                                </a>
+
+                            </li>
+
+                            <li class="sidebar-item">
+
+                                <a
+                                    class="sidebar-link"
+                                    [routerLink]="[
+                                        '/admin',
+                                        'consultar-contratos'
+                                    ]">
+
+                                    <i class="fas fa-search me-2"></i>
+
+                                    Consultar Contratos
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+
+                    <!-- DASHBOARD FINANCEIRO -->
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'dashboard-financeiro'
+                            ]">
+
+                            <i class="align-middle fas fa-chart-line"></i>
+
+                            <span class="align-middle">
+                                Dashboard Financeiro
+                            </span>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- META -->
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'configuracao-financeira'
+                            ]">
+
+                            <i class="fas fa-cogs me-2"></i>
+
+                            Meta
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- LICENÇAS -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Super Administrador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#licencas"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-key align-middle"></i>
+
+                    <span class="align-middle">
+                        Licenças
+                    </span>
+
+                </a>
+
+                <ul
+                    id="licencas"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-licenca'
+                            ]">
+
+                            Cadastrar
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-licencas'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- LICENCIAMENTO -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Super Administrador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#licenciamento"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-building align-middle"></i>
+
+                    <span class="align-middle">
+                        Licenciamento
+                    </span>
+
+                </a>
+
+                <ul
+                    id="licenciamento"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-escritorio'
+                            ]">
+
+                            <i class="fas fa-plus-circle me-2"></i>
+
+                            Cadastrar Escritório
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-licenca'
+                            ]">
+
+                            <i class="fas fa-key me-2"></i>
+
+                            Cadastrar Licença
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-escritorios'
+                            ]">
+
+                            <i class="fas fa-building me-2"></i>
+
+                            Consultar Escritórios
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-licencas'
+                            ]">
+
+                            <i class="fas fa-search me-2"></i>
+
+                            Consultar Licenças
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- PROCESSOS -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#processo"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-balance-scale align-middle"></i>
+
+                    <span class="align-middle">
+                        Processos
+                    </span>
+
+                </a>
+
+                <ul
+                    id="processo"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-processo'
+                            ]">
+
+                            Cadastrar
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-processo'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- PUBLICAÇÕES WEBJUR -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#webjur"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-newspaper align-middle"></i>
+
+                    <span class="align-middle">
+                        Publicações WebJur
+                    </span>
+
+                </a>
+
+                <ul
+                    id="webjur"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-webjur'
+                            ]">
+
+                            Consultar Publicações
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- TAREFAS -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Administrador',
+                        'Administração',
+                        'Super Administrador',
+                        'Coordenador',
+                        'Estagiários',
+                        'Supervisor',
+                        'Conciliador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#tarefa"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-tasks align-middle"></i>
+
+                    <span class="align-middle">
+                        Tarefas
+                    </span>
+
+                </a>
+
+                <ul
+                    id="tarefa"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'cadastrar-tarefa'
+                            ]">
+
+                            Cadastrar
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-tarefa'
+                            ]">
+
+                            Consultar
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- USUÁRIOS -->
+            <!-- ===================================================== -->
+
+            <li
+                class="sidebar-item"
+                *ngIf="
+                    access.hasNivel(
+                        'Super Administrador',
+                        'Administrador'
+                    )
+                ">
+
+                <a
+                    data-bs-target="#usuario"
+                    data-bs-toggle="collapse"
+                    class="sidebar-link collapsed">
+
+                    <i class="fas fa-users align-middle"></i>
+
+                    <span class="align-middle">
+                        Usuários
+                    </span>
+
+                </a>
+
+                <ul
+                    id="usuario"
+                    class="sidebar-dropdown list-unstyled collapse"
+                    data-bs-parent="#sidebar">
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'criar-usuario'
+                            ]">
+
+                            Cadastrar Usuário
+
+                        </a>
+
+                    </li>
+
+                    <li class="sidebar-item">
+
+                        <a
+                            class="sidebar-link"
+                            [routerLink]="[
+                                '/admin',
+                                'consultar-usuarios'
+                            ]">
+
+                            Consultar Usuário
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- PERFIL -->
+            <!-- ===================================================== -->
+
+            <li class="sidebar-item">
+
+                <a
+                    class="sidebar-link collapsed"
+                    [routerLink]="[
+                        '/admin',
+                        'perfil'
+                    ]">
+
+                    <i class="fas fa-user align-middle"></i>
+
+                    <span class="align-middle">
+                        Perfil
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <!-- ===================================================== -->
+            <!-- SAIR -->
+            <!-- ===================================================== -->
+
+            <li class="sidebar-item">
+
+                <a
+                    class="sidebar-link collapsed"
+                    href="#"
+                    (click)="logout(); $event.preventDefault()">
+
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>
+
+                    <span class="align-middle">
+                        Sair do sistema
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
 </nav>

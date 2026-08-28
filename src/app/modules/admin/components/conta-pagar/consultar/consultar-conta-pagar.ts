@@ -149,24 +149,29 @@ descricaoSelecionada = '';
       default:
         return 'fas fa-wallet';
     }
-  }getFormaRecebimento(forma: number): string {
+  }getFormaRecebimento(
+  forma: FormaRecebimento
+): string {
 
   switch (forma) {
 
-    case 1:
+    case FormaRecebimento.Dinheiro:
       return 'Dinheiro';
 
-    case 2:
+    case FormaRecebimento.Pix:
       return 'PIX';
 
-    case 3:
-      return 'Cartão';
+    case FormaRecebimento.CartaoCredito:
+      return 'Cartão de Crédito';
 
-    case 4:
-      return 'Transferência';
+    case FormaRecebimento.CartaoDebito:
+      return 'Cartão de Débito';
 
-    case 5:
+    case FormaRecebimento.Boleto:
       return 'Boleto';
+
+    case FormaRecebimento.Transferencia:
+      return 'Transferência';
 
     default:
       return 'Não informado';

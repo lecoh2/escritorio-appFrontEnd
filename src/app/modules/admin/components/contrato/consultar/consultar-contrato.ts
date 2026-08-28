@@ -47,46 +47,78 @@ export class ConsultarContrato implements OnInit {
     this.carregarContratos();
   }
 
-  carregarContratos() {
+ carregarContratos(): void {
 
-    this.carregando = true;
-    this.mensagemErro = [];
+  this.carregando = true;
+  this.mensagemErro = [];
+  this.mensagemSucesso = [];
 
-    this.contratoService
-      .consultarContratosPaginado(
-        this.paginaAtual,
-        this.tamanhoPagina,
-        this.filtro
-      )
-      .subscribe({
-        next: (response: any) => {
+  this.contratoService
+    .consultarContratosPaginado(
+      this.paginaAtual,
+      this.tamanhoPagina,
+      this.filtro?.trim() || undefined
+    )
+    .subscribe({
 
-          const items = response.items || [];
+      next: (response: any) => {
 
-          this.consulta = items;
-          this.dataSource.data = items;
+        const items =
+          response.items ?? [];
 
-          this.totalRegistros = response.totalCount || 0;
-          this.totalPaginas = Math.ceil(
-            this.totalRegistros / this.tamanhoPagina
+        this.consulta =
+          items;
+
+        this.dataSource.data =
+          items;
+
+        this.totalRegistros =
+          response.totalCount ?? 0;
+
+        this.totalPaginas =
+          response.totalPages ??
+          Math.ceil(
+            this.totalRegistros /
+            this.tamanhoPagina
           );
 
-          this.atualizarPaginasVisiveis();
-
-          this.carregando = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-
-          this.mensagemErro = [
-            'Erro ao consultar contratos.'
-          ];
-
-          this.carregando = false;
+        if (this.totalPaginas < 1) {
+          this.totalPaginas = 1;
         }
-      });
-  }
 
+        this.atualizarPaginasVisiveis();
+
+        this.carregando =
+          false;
+
+        this.cdr.detectChanges();
+      },
+
+      error: (err: any) => {
+
+        this.mensagemErro = [
+
+          err?.error?.mensagem ??
+          err?.error?.message ??
+          'Erro ao consultar contratos.'
+
+        ];
+
+        this.consulta = [];
+        this.dataSource.data = [];
+
+        this.totalRegistros = 0;
+        this.totalPaginas = 1;
+        this.paginasVisiveis = [];
+
+        this.carregando =
+          false;
+
+        this.cdr.detectChanges();
+      }
+
+    });
+}
   editar(id: string) {
     this.router.navigate([
       '/admin/contrato/editar',

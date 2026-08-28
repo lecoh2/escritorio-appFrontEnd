@@ -1,21 +1,32 @@
-// pessoa-fisica-response.ts
+import { ContaBancariaResponse } from '../conta-bancaria/conta-bancaria-response';
+import { EnderecoResponse } from '../endereco/endereco-response';
+import { InformacoesComplementaresRequest } from
+  '../informacoes-complementares/informacoes-complementares-request';
 
-import { GrupoPessoaCliente } from "../grupo-pessoa/grupo-pessoa-cliente";
-import { PessoaBase } from "./pessoa-base-request";
+export interface PessoaFisicaResponse {
+  id: string;
 
+  nome?: string | null;
+  apelido?: string | null;
+  telefone?: string | null;
+  email?: string | null;
+  site?: string | null;
 
-export interface PessoaFisicaResponse extends PessoaBase {
-  // Campos específicos de Pessoa Física
+  idPerfil?: number | null;
+  idEtiqueta?: number | null;
 
-    nome?:string;
-    rg?: string;
-    cpf?: string;
-    tituloEleitor?: string;
-    carteiraTrabalho?: string;
-    pisPasep?: string;
-    cnh?: string;
-    passaporte?: string;
-    certidaoReservista?: string;
+  rg?: string | null;
+  cpf?: string | null;
+  tituloEleitor?: string | null;
+  carteiraTrabalho?: string | null;
+  pisPasep?: string | null;
+  cnh?: string | null;
+  passaporte?: string | null;
+  certidaoReservista?: string | null;
 
-  
+  endereco?: EnderecoResponse | null;
+
+  informacoesComplementares?:
+    InformacoesComplementaresRequest | null;
+      contaBancaria?: ContaBancariaResponse | null;
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, OnInit } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { KanbanColuna } from '../../../../../core/models/kanban/kanban-coluna';
@@ -26,6 +26,10 @@ export class GestaoAtividades implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private historicoService = inject(HistoricoService);
   private router = inject(Router);
+
+
+private zone =
+  inject(NgZone);
   comentarios: CriarComentarioResponse[] = [];
   novoComentario: string = '';
   mensagemSucesso: string[] = [];
@@ -35,7 +39,7 @@ export class GestaoAtividades implements OnInit {
   cardIdSelecionado: string | null = null;
   mensagemSucessoAtual: string | null = null;
   mensagemErroAtual: string | null = null;
-
+  carregando = false;
   historico: any[] = [];
   private modalInstance: any;
   filtro = {
@@ -148,12 +152,166 @@ export class GestaoAtividades implements OnInit {
 
   this.colunas = dados;
 }
-  mudarStatus(id: string, status: number) {
-    this.kanbanService.atualizarStatus(id, status)
-      .subscribe(() => {
-        this.carregarKanban(); // 🔥 atualiza tela
-      });
-  }
+ mudarStatus(
+  id: string,
+  status: number
+): void {
+
+  this.zone.run(() => {
+
+    this.carregando = true;
+
+    this.mensagemErro = [];
+
+    this.mensagemSucesso = [];
+
+    this.cdr.detectChanges();
+
+  });
+
+
+  this.kanbanService
+    .atualizarStatus(
+      id,
+      status
+    )
+    .subscribe({
+
+      // =========================
+      // SUCESSO
+      // =========================
+
+      next: (res: any) => {
+
+        this.zone.run(() => {
+
+          this.carregando = false;
+
+          this.mensagemErro = [];
+
+          this.mensagemSucesso = [
+            res?.message ??
+            'Status atualizado com sucesso.'
+          ];
+
+          // =========================
+          // FECHA O MODAL
+          // =========================
+
+          if (this.modalInstance) {
+
+            this.modalInstance.hide();
+
+          }
+          else {
+
+            const modalElement =
+              document.getElementById(
+                'modalDetalhes'
+              );
+
+            if (modalElement) {
+
+              const modal =
+                bootstrap.Modal
+                  .getOrCreateInstance(
+                    modalElement
+                  );
+
+              modal.hide();
+            }
+          }
+
+          // =========================
+          // LIMPA CARD SELECIONADO
+          // =========================
+
+          this.cardSelecionado =
+            null;
+
+          this.cardIdSelecionado =
+            null;
+
+          // =========================
+          // ATUALIZA KANBAN
+          // =========================
+
+          this.carregarKanban();
+
+          // =========================
+          // FORÇA ATUALIZAÇÃO
+          // =========================
+
+          this.cdr.markForCheck();
+
+          setTimeout(() => {
+
+            this.zone.run(() => {
+
+              this.cdr.detectChanges();
+
+            });
+
+          }, 0);
+
+
+          // =========================
+          // REMOVE MENSAGEM
+          // APÓS 3 SEGUNDOS
+          // =========================
+
+          setTimeout(() => {
+
+            this.zone.run(() => {
+
+              this.mensagemSucesso = [];
+
+              this.cdr.detectChanges();
+
+            });
+
+          }, 3000);
+
+        });
+
+      },
+
+      // =========================
+      // ERRO
+      // =========================
+
+      error: (err: any) => {
+
+        this.zone.run(() => {
+
+          this.carregando = false;
+
+          this.mensagemSucesso = [];
+
+          this.mensagemErro = [
+            err?.error?.message ??
+            err?.error?.mensagem ??
+            'Erro ao atualizar status.'
+          ];
+
+          this.cdr.markForCheck();
+
+          setTimeout(() => {
+
+            this.zone.run(() => {
+
+              this.cdr.detectChanges();
+
+            });
+
+          }, 0);
+
+        });
+
+      }
+
+    });
+}
   ngOnInit(): void {
 
     this.filtro = {
@@ -280,51 +438,182 @@ export class GestaoAtividades implements OnInit {
 
     return valor.toString();
   }
-  selecionarCard(card: any): void {
+selecionarCard(
+  card: any
+): void {
 
-    this.cardSelecionado = card;
-    this.cardIdSelecionado = card.id;
+  // =========================
+  // LIMPA MENSAGENS
+  // =========================
 
-    this.mensagemSucessoAtual = null;
-    this.mensagemErroAtual = null;
+  this.mensagemSucessoAtual = null;
+  this.mensagemErroAtual = null;
 
-    this.comentarios = [];
-    this.novoComentario = '';
+  this.comentarios = [];
+  this.novoComentario = '';
 
-    this.isLoadingDetalhe = true;
+  // =========================
+  // CARD
+  // =========================
 
-    const el = document.getElementById('modalDetalhes');
-    this.modalInstance = bootstrap.Modal.getOrCreateInstance(el);
+  this.cardSelecionado = {
+    ...card
+  };
+
+  this.cardIdSelecionado =
+    card.id;
+
+  // =========================
+  // LOADING DO MODAL
+  // =========================
+
+  this.isLoadingDetalhe = true;
+
+  this.cdr.detectChanges();
+
+  // =========================
+  // ABRIR MODAL
+  // =========================
+
+  const modalElement =
+    document.getElementById(
+      'modalDetalhes'
+    );
+
+  if (!modalElement) {
+
+    console.error(
+      'Modal modalDetalhes não encontrado.'
+    );
+
+    this.isLoadingDetalhe = false;
+
+    return;
+  }
+
+  this.modalInstance =
+    bootstrap.Modal
+      .getOrCreateInstance(
+        modalElement
+      );
+
+  // aguarda Angular renderizar
+  // o estado de carregamento
+  setTimeout(() => {
+
     this.modalInstance.show();
 
-    // 🔥 AGORA SIM
-    this.carregarHistorico(card);
+  }, 0);
 
-    this.kanbanService.obterDetalhes(card.id, card.tipo)
-      .subscribe({
-        next: (res) => {
+  // =========================
+  // NORMALIZA TIPO
+  // =========================
 
+  const tipo =
+    (card.tipo ?? '')
+      .toString()
+      .trim()
+      .toLowerCase();
+
+  // =========================
+  // HISTÓRICO
+  // =========================
+
+  this.carregarHistorico(
+    card
+  );
+
+  // =========================
+  // DETALHES
+  // =========================
+
+  this.kanbanService
+    .obterDetalhes(
+      card.id,
+      tipo
+    )
+    .subscribe({
+
+      // =========================
+      // SUCESSO
+      // =========================
+
+      next: (res) => {
+
+        this.zone.run(() => {
 
           this.cardSelecionado = {
             ...res,
 
-            // 🔥 mantém o vínculo que já veio do Kanban
-            vinculoDescricao: res.vinculoDescricao ?? this.cardSelecionado?.vinculoDescricao,
-            tipoVinculo: res.tipoVinculo ?? this.cardSelecionado?.tipoVinculo,
+            // mantém o tipo
+            tipo:
+              tipo,
 
-            responsaveis: res.responsaveis ?? [],
-            etiquetas: res.etiquetas ?? []
+            // mantém informações
+            // recebidas pelo Kanban
+            vinculoDescricao:
+              res.vinculoDescricao ??
+              card.vinculoDescricao,
+
+            tipoVinculo:
+              res.tipoVinculo ??
+              card.tipoVinculo,
+
+            responsaveis:
+              res.responsaveis ??
+              [],
+
+            etiquetas:
+              res.etiquetas ??
+              []
           };
 
-          this.isLoadingDetalhe = false;
+          this.isLoadingDetalhe =
+            false;
 
           this.carregarComentarios();
 
+          this.cdr.markForCheck();
+
+          setTimeout(() => {
+
+            this.cdr.detectChanges();
+
+          }, 0);
+
+        });
+
+      },
+
+      // =========================
+      // ERRO
+      // =========================
+
+      error: (err) => {
+
+        this.zone.run(() => {
+
+          console.error(
+            'Erro ao carregar detalhes:',
+            err
+          );
+
+          this.isLoadingDetalhe =
+            false;
+
+          this.mensagemErroAtual =
+            err?.error?.message ??
+            err?.error?.mensagem ??
+            'Erro ao carregar os detalhes.';
+
           this.cdr.detectChanges();
-        },
-        error: () => this.isLoadingDetalhe = false
-      });
-  }
+
+        });
+
+      }
+
+    });
+}
   carregarHistorico(card: any) {
 
     console.log('CARD RECEBIDO:', card);
@@ -358,17 +647,21 @@ export class GestaoAtividades implements OnInit {
 
     if (!this.novoComentario?.trim()) return;
 
-    const request = {
-      tarefaId: this.cardSelecionado.tipo === 'Tarefa'
-        ? this.cardSelecionado.id
-        : null,
+const request = {
 
-      eventoId: this.cardSelecionado.tipo === 'Evento'
-        ? this.cardSelecionado.id
-        : null,
+  tarefaId:
+    this.cardSelecionado.tipo === 'tarefa'
+      ? this.cardSelecionado.id
+      : null,
 
-      texto: this.novoComentario
-    };
+  eventoId:
+    this.cardSelecionado.tipo === 'evento'
+      ? this.cardSelecionado.id
+      : null,
+
+  texto:
+    this.novoComentario
+};
 
     this.comentarioService.criarComentario(request).subscribe({
       next: (res) => {
@@ -396,28 +689,47 @@ export class GestaoAtividades implements OnInit {
       }
     });
   }
-  carregarComentarios() {
+ carregarComentarios(): void {
 
-    if (!this.cardSelecionado) return;
-
-    const params: any = {};
-
-    if (this.cardSelecionado.tipo === 'Tarefa') {
-      params.tarefaId = this.cardSelecionado.id;
-    }
-
-    if (this.cardSelecionado.tipo === 'Evento') {
-      params.eventoId = this.cardSelecionado.id;
-    }
-
-    this.comentarioService.obterComentario(params)
-      .subscribe({
-        next: (res) => {
-          this.comentarios = res ?? [];
-          this.cdr.detectChanges();
-        }
-      });
+  if (!this.cardSelecionado) {
+    return;
   }
+
+  const params: any = {};
+
+  const tipo =
+    (this.cardSelecionado.tipo ?? '')
+      .toString()
+      .trim()
+      .toLowerCase();
+
+  if (tipo === 'tarefa') {
+
+    params.tarefaId =
+      this.cardSelecionado.id;
+  }
+
+  if (tipo === 'evento') {
+
+    params.eventoId =
+      this.cardSelecionado.id;
+  }
+
+  this.comentarioService
+    .obterComentario(params)
+    .subscribe({
+
+      next: (res) => {
+
+        this.comentarios =
+          res ?? [];
+
+        this.cdr.detectChanges();
+
+      }
+
+    });
+}
   editar(id: string, tipo: string) {
 
     const tipoNormalizado = tipo?.toLowerCase();
@@ -454,42 +766,80 @@ export class GestaoAtividades implements OnInit {
       default: return '';
     }
   }
-  drop(event: CdkDragDrop<any[]>, colunaDestino: any): void {
+drop(
+  event: CdkDragDrop<any[]>,
+  colunaDestino: any
+): void {
 
-    const card = event.item.data;
+  const card =
+    event.item.data;
 
-    //  mesma coluna → só reordena
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-      return;
-    }
+  // =========================
+  // MESMA COLUNA
+  // =========================
 
-    // 🔹 mudou de coluna → move visualmente
-    transferArrayItem(
-      event.previousContainer.data,
+  if (
+    event.previousContainer ===
+    event.container
+  ) {
+
+    moveItemInArray(
       event.container.data,
       event.previousIndex,
       event.currentIndex
     );
 
-    // 🔥 novo status vindo da coluna destino
-    const novoStatus = colunaDestino.status;
-
-    // 🔥 chama seu backend já existente
-    this.kanbanService.atualizarStatus(card.id, novoStatus)
-      .subscribe({
-        next: () => {
-          // atualiza local sem reload
-          card.status = novoStatus;
-        },
-        error: () => {
-          // rollback simples (seguro)
-          this.carregarKanban();
-        }
-      });
+    return;
   }
+
+  // =========================
+  // MOVE VISUALMENTE
+  // =========================
+
+  transferArrayItem(
+    event.previousContainer.data,
+    event.container.data,
+    event.previousIndex,
+    event.currentIndex
+  );
+
+  const novoStatus =
+    colunaDestino.status;
+
+  // =========================
+  // BACKEND
+  // =========================
+
+  this.kanbanService
+    .atualizarStatus(
+      card.id,
+      novoStatus
+    )
+    .subscribe({
+
+      next: () => {
+
+        // Atualiza status local
+        card.status =
+          novoStatus;
+
+        // IMPORTANTE:
+        // atualiza também a fonte usada pelos filtros
+        this.colunasOriginais =
+          structuredClone(
+            this.colunas
+          );
+
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+
+        // Recarrega do servidor
+        // caso a alteração falhe
+        this.carregarKanban();
+      }
+
+    });
+}
 }

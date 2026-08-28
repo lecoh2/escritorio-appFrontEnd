@@ -6,7 +6,8 @@ import {
   ElementRef,
   ViewChild,
   inject,
-  OnInit
+  OnInit,
+  NgZone
 } from '@angular/core';
 
 import {
@@ -16,7 +17,8 @@ import {
 
 import {
   FormBuilder,
-  FormControl
+  FormControl,
+  Validators
 } from '@angular/forms';
 
 import {
@@ -98,7 +100,7 @@ export class EditarAtendimento implements OnInit {
   private fb = inject(FormBuilder);
 
   private cdr = inject(ChangeDetectorRef);
-
+private zone = inject(NgZone);
   private historicoService = inject(HistoricoService);
 private carregandoFormulario = false;
   // =========================
@@ -117,7 +119,7 @@ private carregandoFormulario = false;
   carregandoHistorico = false;
 
   id!: string;
-
+tentouEnviar = false;
   carregandoInicial = true;
 vinculoAlterado = false;
   // =========================
@@ -146,28 +148,54 @@ vinculoAlterado = false;
   // =========================
   // FORM
   // =========================
-  form = this.fb.group({
+form = this.fb.group({
 
-    registro: [''],
+  registro: [
+    '',
+    Validators.required
+  ],
 
-    assunto: this.fb.control<string | null>(null),
+  assunto:
+    this.fb.control<string | null>(
+      null,
+      Validators.required
+    ),
 
-    tipoVinculo: this.fb.control<
+  tipoVinculo:
+    this.fb.control<
       'processo'
       | 'caso'
       | 'atendimento'
       | null
     >(null),
 
-    processoId: this.fb.control<string | null>(null),
+  processoId:
+    this.fb.control<string | null>(
+      null
+    ),
 
-    casoId: this.fb.control<string | null>(null),
+  casoId:
+    this.fb.control<string | null>(
+      null
+    ),
 
-    atendimentoPaiId: this.fb.control<string | null>(null),
+  atendimentoPaiId:
+    this.fb.control<string | null>(
+      null
+    ),
 
-    responsavelId: this.fb.control<string | null>(null)
-  });
+  responsavelId:
+    this.fb.control<string | null>(
+      null
+    ),
 
+  observacao:
+    this.fb.control<string | null>(
+      null,
+      Validators.required
+    )
+
+});
   // =========================
   // INIT
   // =========================
@@ -192,38 +220,7 @@ vinculoAlterado = false;
 
     this.inicializarAutocomplete();
 
-    // 🔥 RESET SOMENTE APÓS CARREGAMENTO
-/*this.form.get('tipoVinculo')?.valueChanges.subscribe(tipo => {
-
-  if (this.carregandoInicial || this.carregandoFormulario) {
-    return;
-  }
-
-  const processoId = this.form.get('processoId')?.value;
-  const casoId = this.form.get('casoId')?.value;
-  const atendimentoPaiId = this.form.get('atendimentoPaiId')?.value;
-
-  const tipoAtual =
-    processoId ? 'processo'
-    : casoId ? 'caso'
-    : atendimentoPaiId ? 'atendimento'
-    : null;
-
-  // 🔥 não limpa se o tipo continuar o mesmo
-  if (tipo === tipoAtual) {
-    return;
-  }
-
-  this.resultadosVinculo = [];
-
-  this.vinculoSelecionado = null;
-
-this.filtroVinculo.setValue('', {
-  emitEvent: false
-});
-
-  this.limparVinculos();
-});*/
+  
   }
 
   // =========================
@@ -235,7 +232,35 @@ this.filtroVinculo.setValue('', {
       '/admin/consultar-atendimento'
     ]);
   }
+private resetarVinculoAposSalvar(): void {
 
+  this.form.patchValue(
+    {
+      tipoVinculo: null,
+      processoId: null,
+      casoId: null,
+      atendimentoPaiId: null
+    },
+    {
+      emitEvent: false
+    }
+  );
+
+  this.vinculoSelecionado = null;
+
+  this.resultadosVinculo = [];
+
+  this.filtroVinculo.setValue(
+    '',
+    {
+      emitEvent: false
+    }
+  );
+
+  this.vinculoAlterado = false;
+
+  this.cdr.detectChanges();
+}
   // =========================
   // LIMPAR VÍNCULOS
   // =========================
@@ -320,6 +345,7 @@ this.filtroVinculo.setValue('', {
           atendimentoPaiId: res.atendimentoPaiId,
 
           responsavelId: res.responsavelId,
+          observacao: res.observacao,
 
           tipoVinculo: tipo
 
@@ -566,6 +592,8 @@ selecionarVinculo(item: VinculoAutoComplete) {
 
     this.mensagemSucesso = [];
 
+  this.tentouEnviar = true;
+
     if (this.form.invalid) {
 
       this.form.markAllAsTouched();
@@ -592,6 +620,8 @@ selecionarVinculo(item: VinculoAutoComplete) {
 
   registro:
     formValue.registro ?? undefined,
+      observacao:
+    formValue.observacao ?? undefined,
 
   responsavelId:
     formValue.responsavelId ?? undefined,
@@ -634,21 +664,28 @@ if (this.vinculoAlterado) {
       )
       .subscribe({
 
-        next: (res) => {
+     next: (res) => {
 
-          this.mensagemSucesso = [
-            res.message
-          ];
+  this.zone.run(() => {
 
-          setTimeout(() => {
+    this.mensagemSucesso = [
+      res.message
+    ];
 
-            this.router.navigate([
-              '/admin/consultar-atendimento'
-            ]);
+    this.resetarVinculoAposSalvar();
 
-          }, 3000);
-        },
+    this.cdr.detectChanges();
 
+    setTimeout(() => {
+
+      this.router.navigate([
+        '/admin/consultar-atendimento'
+      ]);
+
+    }, 3000);
+
+  });
+},
         error: (err: HttpErrorResponse) => {
 
           this.tratarErro(err);
@@ -698,38 +735,85 @@ if (this.vinculoAlterado) {
   // TRATAR ERRO
   // =========================
   private tratarErro(
-    err: HttpErrorResponse
-  ) {
+  err: HttpErrorResponse
+): void {
+
+  this.zone.run(() => {
 
     this.mensagemErro = [];
 
     const e = err.error;
 
-    if (e?.errors) {
+    // =========================
+    // FLUENT VALIDATION
+    // =========================
 
-      for (const key in e.errors) {
+    if (Array.isArray(e?.errors)) {
 
-        this.mensagemErro.push(
-          ...e.errors[key]
-        );
-      }
+      this.mensagemErro =
+        e.errors
+          .map((x: any) =>
+            x.erro ??
+            x.errorMessage ??
+            x.message
+          )
+          .filter((x: any) => !!x);
+
+      this.carregando = false;
+
+      this.cdr.detectChanges();
+
+      return;
     }
-    else if (e?.mensagem) {
 
-      this.mensagemErro.push(
+    // =========================
+    // BUSINESS EXCEPTION
+    // =========================
+
+    if (e?.message) {
+
+      this.mensagemErro = [
+        e.message
+      ];
+
+      this.carregando = false;
+
+      this.cdr.detectChanges();
+
+      return;
+    }
+
+    // =========================
+    // FALLBACK ANTIGO
+    // =========================
+
+    if (e?.mensagem) {
+
+      this.mensagemErro = [
         e.mensagem
-      );
-    }
-    else {
+      ];
 
-      this.mensagemErro.push(
-        'Erro inesperado.'
-      );
+      this.carregando = false;
+
+      this.cdr.detectChanges();
+
+      return;
     }
+
+    // =========================
+    // ERRO GENÉRICO
+    // =========================
+
+    this.mensagemErro = [
+      'Erro inesperado.'
+    ];
 
     this.carregando = false;
-  }
 
+    this.cdr.detectChanges();
+
+  });
+}
   // =========================
   // HISTÓRICO
   // =========================

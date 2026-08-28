@@ -1,12 +1,11 @@
-import { FormaRecebimento } from "../enums/conta/forma-recebimentoEnum";
-
 export interface ContaPagarBaixaRequest {
-
   valorPago: number;
 
   dataBaixa: Date;
 
-   formaRecebimento: FormaRecebimento;
+  formaRecebimento: number;
+
+  contaBancariaEmpresaId?: string;
 
   observacao?: string;
 }

@@ -1,14 +1,18 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { catchError, debounceTime, filter, map, of, switchMap } from 'rxjs';
 import { environment } from '../../../../../../environments/environment.development';
 import { AuthHelper } from '../../../../../core/helpers/auth.helper';
-import { PessoaService } from '../../../../../core/services/pessoa.service';
+
 import { UsuarioService } from '../../../../../core/services/usuario.service';
 
 import { AutenticarUsuarioResponse } from '../../../../../core/models/usuario/autenticar-usuario.response';
-import { ConsultarPessoaResponse } from '../../../../../core/models/pessoa/consultar-pessoa-response';
 
 import { CriarUsuarioRequest } from '../../../../../core/models/usuario/criar-usuario.request';
 import { ConsultarSetoresResponse } from '../../../../../core/models/setores/consultar-setores-response';
@@ -16,6 +20,8 @@ import { NivelService } from '../../../../../core/services/nivel.service';
 import { SetorService } from '../../../../../core/services/setor.service';
 import { ConsultarNiveisResponse } from '../../../../../core/models/nivel/consultar-niveis-response';
 import { ConsultarUsuarioResponse } from '../../../../../core/models/usuario/consultar-usuarios.response';
+import { EscritorioService } from '../../../../../core/services/escritorio.service';
+import { EscritorioResponse } from '../../../../../core/models/escritorio/escritorio-response';
 
 
 @Component({
@@ -29,10 +35,11 @@ export class CriarUsuario implements OnInit {
   private usuarioService = inject(UsuarioService);
   private setorService = inject(SetorService);
   private nivelService = inject(NivelService);
+  private escritorioService = inject(EscritorioService);
   private builder = inject(FormBuilder);
   private router = inject(Router);
   private authHelper = inject(AuthHelper);
-
+private cdr = inject(ChangeDetectorRef);
   // --- Controles de autocomplete
 
 
@@ -46,6 +53,13 @@ export class CriarUsuario implements OnInit {
   setorFiltradas: ConsultarSetoresResponse[] = [];
   setorSelecionadas: ConsultarSetoresResponse[] = [];
 
+escritorioControl = new FormControl('');
+
+mostrarSugestoesEscritorio = false;
+
+escritoriosFiltrados: EscritorioResponse[] = [];
+
+escritorioSelecionado?: EscritorioResponse;
   // --- Usuário e mensagens
   usuarioLogado?: AutenticarUsuarioResponse | null;
   mensagemErro: string[] = [];
@@ -63,17 +77,27 @@ export class CriarUsuario implements OnInit {
 
     GrupoSetor: this.setorControl,
     GrupoNivel: this.niveisControl,
-  
+    Escritorio: this.escritorioControl,
+
   }, { validators: this.validarSenhasIguais() });
 
   // --- Validação para habilitar o botão de envio
- get podeEnviar(): boolean {
-  return (
-    this.form.valid &&
-    this.setorSelecionadas.length > 0 &&
-    this.niveisSelecionadas.length > 0
-  );
-}
+  get podeEnviar(): boolean {
+    const ehSuperAdministrador =
+      this.niveisSelecionadas.some(
+        x => x.nomeNivel.toLowerCase() === 'super administrador'
+      );
+
+    return (
+      this.form.valid &&
+      this.setorSelecionadas.length > 0 &&
+      this.niveisSelecionadas.length > 0 &&
+      (
+        ehSuperAdministrador ||
+        this.escritorioSelecionado != null
+      )
+    );
+  }
 
   ngOnInit(): void {
     this.carregando = true;
@@ -83,10 +107,16 @@ export class CriarUsuario implements OnInit {
     });
     this.form.get('confirmarSenha')?.valueChanges.subscribe(() => {
       this.form.updateValueAndValidity();
-    });
- 
+    }
 
-  
+    );
+
+    this.escritorioControl.valueChanges
+      .pipe(debounceTime(300),
+        filter((nome): nome is string => !!nome && nome.length >= 1),
+        switchMap(nome => this.escritorioService.buscarPorNome(nome)),
+        catchError(() => of([]))).subscribe(x => this.escritoriosFiltrados = x);
+
     // --- Autocomplete setor
     this.setorControl.valueChanges
       .pipe(
@@ -98,30 +128,30 @@ export class CriarUsuario implements OnInit {
       .subscribe((setores) => (this.setorFiltradas = setores));
 
     // --- Autocomplete nível
-  this.niveisControl.valueChanges
-  .pipe(
-    debounceTime(300),
-    filter((nomeNivel): nomeNivel is string => !!nomeNivel && nomeNivel.length >= 1),
-    switchMap((nomeNivel) =>
-      this.nivelService.buscarPorNomeNivel(nomeNivel).pipe(
-        map((niveis: ConsultarNiveisResponse[]) => {
-          const usuarioEhSuperAdmin = this.usuarioLogado?.nivel?.some(
-            (n) => n.nomeNivel.trim().toLowerCase() === 'super administrador'
-          );
+    this.niveisControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        filter((nomeNivel): nomeNivel is string => !!nomeNivel && nomeNivel.length >= 1),
+        switchMap((nomeNivel) =>
+          this.nivelService.buscarPorNomeNivel(nomeNivel).pipe(
+            map((niveis: ConsultarNiveisResponse[]) => {
+              const usuarioEhSuperAdmin = this.usuarioLogado?.nivel?.some(
+                (n) => n.nomeNivel.trim().toLowerCase() === 'super administrador'
+              );
 
-          if (!usuarioEhSuperAdmin) {
-            return niveis.filter(
-              (n) => n.nomeNivel.trim().toLowerCase() !== 'super administrador'
-            );
-          }
+              if (!usuarioEhSuperAdmin) {
+                return niveis.filter(
+                  (n) => n.nomeNivel.trim().toLowerCase() !== 'super administrador'
+                );
+              }
 
-          return niveis;
-        }),
-        catchError(() => of([] as ConsultarNiveisResponse[])) // <-- tipagem explícita
+              return niveis;
+            }),
+            catchError(() => of([] as ConsultarNiveisResponse[])) // <-- tipagem explícita
+          )
+        )
       )
-    )
-  )
-  .subscribe((niveisFiltrados) => (this.niveisFiltradas = niveisFiltrados));
+      .subscribe((niveisFiltrados) => (this.niveisFiltradas = niveisFiltrados));
 
     this.carregando = false;
   }
@@ -141,7 +171,47 @@ export class CriarUsuario implements OnInit {
     setTimeout(() => (this.mostrarSugestoesSetor = false), 200);
   }
 
+selecionarEscritorio(
+  escritorio: EscritorioResponse
+): void {
+  this.escritorioSelecionado = escritorio;
 
+  this.escritorioControl.setValue(
+    escritorio.nome,
+    {
+      emitEvent: false
+    }
+  );
+
+  this.escritoriosFiltrados = [];
+  this.mostrarSugestoesEscritorio = false;
+}
+
+removerEscritorioSelecionado(): void {
+  this.escritorioSelecionado = undefined;
+
+  this.escritorioControl.setValue(
+    '',
+    {
+      emitEvent: false
+    }
+  );
+
+  this.escritoriosFiltrados = [];
+  this.mostrarSugestoesEscritorio = false;
+}
+
+limparEscritorio() {
+    this.escritorioSelecionado = undefined;
+
+    this.escritorioControl.setValue('');
+}
+
+ocultarSugestoesComDelayEscritorio() {
+    setTimeout(() => {
+        this.mostrarSugestoesEscritorio = false;
+    }, 200);
+}
 
   // --- Seleção / remoção de setor
   selecionarSetor(setor: ConsultarSetoresResponse) {
@@ -188,80 +258,117 @@ export class CriarUsuario implements OnInit {
     const request: CriarUsuarioRequest = {
       nomeUsuario: this.form.value.nomeUsuario ?? undefined,
       login: this.form.value.login ?? undefined,
-      email:this.form.value.email ?? undefined,
+      email: this.form.value.email ?? undefined,
       senha: this.form.value.senha ?? undefined,
+        escritorioId:
+    this.escritorioSelecionado?.id,
       grupoSetor: this.setorSelecionadas.map((s) => ({ idSetor: s.idSetor! })),
       grupoNivel: this.niveisSelecionadas.map((n) => ({ idNivel: n.idNivel! })),
     };
 
     console.log('Objeto request enviado:', request);
 
-    this.usuarioService.cadastrar(request).subscribe({
-      next: (response) => {
-        this.carregando = false;
-        this.mensagemSucesso = [response.mensagem];
-        console.log('Usuário cadastrado:', response.dados);
+  this.usuarioService.cadastrar(request).subscribe({
+  next: (response) => {
+    this.carregando = false;
 
-        // 🔹 Limpar formulário e seleções
-        this.form.reset();
-  
-        this.setorSelecionadas = [];
-        this.niveisSelecionadas = [];
+    this.mensagemSucesso = [
+      response?.mensagem ||
+      'Usuário cadastrado com sucesso!'
+    ];
 
-        // 🔹 Resetar controles de autocomplete
-   
-        this.setorControl.setValue('');
-        this.niveisControl.setValue('');
-        setTimeout(() => {
-          this.carregando = false;
-          this.mensagemSucesso = [response?.mensagem || 'Usuário cadastradO com sucesso!'];
-          this.router.navigate(['/admin/consultar-usuarios']);
-        }, 3000);
-      },
-      error: (e) => {
-        this.tratarErro(e);
-        this.carregando = false;
-      },
-    });
+    console.log(
+      'Usuário cadastrado:',
+      response?.dados
+    );
+
+    this.form.reset();
+
+    this.setorSelecionadas = [];
+    this.niveisSelecionadas = [];
+
+    this.escritorioSelecionado = undefined;
+    this.escritoriosFiltrados = [];
+
+    this.setorControl.setValue('');
+    this.niveisControl.setValue('');
+    this.escritorioControl.setValue('');
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.router.navigate([
+        '/admin/consultar-usuarios'
+      ]);
+    }, 3000);
+  },
+
+  error: (e) => {
+    this.tratarErro(e);
+
+    this.carregando = false;
+
+    this.cdr.detectChanges();
+  }
+});
   }
 
 
   // --- Tratamento de erros do backend
-  private tratarErro(e: any) {
-    const errorResponse = e?.error;
-    this.mensagemErro = [];
+ private tratarErro(e: any): void {
+  const errorResponse = e?.error;
 
-    // 1️⃣ ModelState / FluentValidation
-    if (errorResponse?.errors) {
-      for (const key in errorResponse.errors) {
-        if (Array.isArray(errorResponse.errors[key])) {
-          this.mensagemErro.push(...errorResponse.errors[key]);
-        }
+  this.mensagemErro = [];
+
+  if (errorResponse?.errors) {
+    for (const key in errorResponse.errors) {
+      if (Array.isArray(errorResponse.errors[key])) {
+        this.mensagemErro.push(
+          ...errorResponse.errors[key]
+        );
       }
     }
-    // 2️⃣ ApplicationException ou ValidationException
-    else if (errorResponse?.mensagem) {
-      this.mensagemErro.push(errorResponse.mensagem);
-
-      if (errorResponse.detalhes) this.mensagemErro.push(errorResponse.detalhes);
-      else if (errorResponse.Detalhes) this.mensagemErro.push(errorResponse.Detalhes);
-    }
-    // 3️⃣ Exception.Message
-    else if (errorResponse?.Message) {
-      this.mensagemErro.push(errorResponse.Message);
-      if (errorResponse.inner) this.mensagemErro.push(errorResponse.inner);
-    }
-    // 4️⃣ Caso nenhum dos anteriores
-    else {
-      this.mensagemErro.push('Ocorreu um erro inesperado ao processar sua solicitação.');
-    }
-
-    // Garantir que o array não tenha duplicatas
-    this.mensagemErro = Array.from(new Set(this.mensagemErro));
-
-    // Log para debugging
-    console.error('Erro recebido do backend:', e);
   }
+
+  else if (errorResponse?.mensagem) {
+    this.mensagemErro.push(
+      errorResponse.mensagem
+    );
+  }
+
+  else if (errorResponse?.message) {
+    this.mensagemErro.push(
+      errorResponse.message
+    );
+  }
+
+  else if (errorResponse?.Message) {
+    this.mensagemErro.push(
+      errorResponse.Message
+    );
+  }
+
+  else if (typeof errorResponse === 'string') {
+    this.mensagemErro.push(
+      errorResponse
+    );
+  }
+
+  else {
+    this.mensagemErro.push(
+      'Ocorreu um erro inesperado ao processar sua solicitação.'
+    );
+  }
+
+  this.mensagemErro = Array.from(
+    new Set(this.mensagemErro)
+  );
+
+  console.error(
+    'Erro recebido do backend:',
+    e
+  );this.cdr.detectChanges();
+}
 
   // Validator de senhas iguais
   validarSenhasIguais(): ValidatorFn {

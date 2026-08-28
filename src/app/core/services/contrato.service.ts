@@ -1,13 +1,13 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { catchError, Observable, throwError } from "rxjs";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-import { environment } from "../../../environments/environment.development";
+import { environment } from '../../../environments/environment.development';
 
-import { ApiResponse } from "../models/respostas/api-response";
+import { ApiResponse } from '../models/respostas/api-response';
 
-import { ContratoRequest } from "../models/contrato/contrato-request";
-import { ContratoResponse } from "../models/contrato/contrato-response";
+import { ContratoRequest } from '../models/contrato/contrato-request';
+import { ContratoResponse } from '../models/contrato/contrato-response';
 
 @Injectable({
   providedIn: 'root'
@@ -17,29 +17,54 @@ export class ContratoService {
   private url = environment.apiDeslandes;
   private http = inject(HttpClient);
 
-cadastrarContrato(request: ContratoRequest): Observable<ApiResponse<ContratoResponse>> {
 
-  const token = localStorage.getItem('token');
+  // =====================================================
+  // HEADERS
+  // =====================================================
 
-  return this.http.post<ApiResponse<ContratoResponse>>(
-    `${this.url}/api/v1/contrato/cadastrar-contrato`,
-    request,
-    {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    }
-  )
-  .pipe(
-    catchError(err => {
-      return throwError(() => err);
-    })
-  );
-}
+  private getHeaders(): HttpHeaders {
+
+    const token =
+      localStorage.getItem('token');
+
+    return new HttpHeaders(
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    );
+  }
+
+
+  // =====================================================
+  // CADASTRAR
+  // =====================================================
+
+  cadastrarContrato(
+    request: ContratoRequest
+  ): Observable<ApiResponse<ContratoResponse>> {
+
+    return this.http.post<ApiResponse<ContratoResponse>>(
+      `${this.url}/api/v1/contrato/cadastrar-contrato`,
+      request,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+
+  // =====================================================
+  // CONSULTAR PAGINADO
+  // =====================================================
 
   consultarContratosPaginado(
     pageNumber: number,
     pageSize: number,
     searchTerm?: string
-  ) {
+  ): Observable<any> {
+
     const params: any = {
       pageNumber: pageNumber.toString(),
       pageSize: pageSize.toString()
@@ -51,51 +76,103 @@ cadastrarContrato(request: ContratoRequest): Observable<ApiResponse<ContratoResp
 
     return this.http.get<any>(
       `${this.url}/api/v1/contrato/consultar-contato-paginacao`,
-      { params }
+      {
+        params,
+        headers: this.getHeaders()
+      }
     );
   }
 
-  consultarContratos() {
+
+  // =====================================================
+  // CONSULTAR TODOS
+  // =====================================================
+
+  consultarContratos(): Observable<ContratoResponse[]> {
+
     return this.http.get<ContratoResponse[]>(
-      `${this.url}/api/v1/contrato/consultar-contratos`
+      `${this.url}/api/v1/contrato/consultar-contratos`,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
 
-  obterContratoPorId(id: string) {
+
+  // =====================================================
+  // OBTER POR ID
+  // =====================================================
+
+  obterContratoPorId(
+    id: string
+  ): Observable<ContratoResponse> {
+
     return this.http.get<ContratoResponse>(
-      `${this.url}/api/v1/contrato/obter-contrato-por-id/${id}`
+      `${this.url}/api/v1/contrato/obter-contrato-por-id/${id}`,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
+
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
 
   editarContrato(
     id: string,
-    request: any
+    request: ContratoRequest
   ): Observable<any> {
-
-    const token = localStorage.getItem('token');
 
     return this.http.put<any>(
       `${this.url}/api/v1/contrato/atualizar-contrato/${id}`,
       request,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
 
-  excluirContrato(id: string) {
 
-    const token = localStorage.getItem('token');
+  // =====================================================
+  // EXCLUIR
+  // =====================================================
+
+  excluirContrato(
+    id: string
+  ): Observable<any> {
 
     return this.http.delete<any>(
       `${this.url}/api/v1/contrato/excluir-contrato/${id}`,
       {
-        headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : {}
+        headers: this.getHeaders()
       }
     );
   }
+
+  consultarContratosDisponiveisContaPagar():
+  Observable<ContratoResponse[]> {
+
+  return this.http.get<
+    ContratoResponse[]
+  >(
+    `${this.url}/api/v1/contrato/consultar-contratos-disponiveis-conta-pagar`,
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
+consultarContratosDisponiveisContaReceber():
+  Observable<ContratoResponse[]> {
+
+  return this.http.get<
+    ContratoResponse[]
+  >(
+    `${this.url}/api/v1/contrato/consultar-contratos-disponiveis-conta-receber`,
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
 }

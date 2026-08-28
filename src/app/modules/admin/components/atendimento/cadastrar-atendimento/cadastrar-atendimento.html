@@ -1,99 +1,264 @@
 <div class="container-fluid p-0">
-  <h1 class="h3 mb-3">Cadastrar Atendimento</h1>
+
+  <h1 class="h3 mb-3">
+    Cadastrar Atendimento
+  </h1>
 
   <div class="card">
+
     <div class="card-header">
-      <h5 class="card-title">Cadastro de Atendimento</h5>
-      <h6 class="card-subtitle text-muted">Preencha os dados do atendimento</h6>
+
+      <h5 class="card-title">
+        Cadastro de Atendimento
+      </h5>
+
+      <h6 class="card-subtitle text-muted">
+        Preencha os dados do atendimento
+      </h6>
+
     </div>
 
     <div class="card-body">
 
+      <!-- ========================= -->
       <!-- SPINNER -->
-      <app-spinner *ngIf="carregando" [show]="true" message="Salvando..."></app-spinner>
+      <!-- ========================= -->
 
+      <app-spinner
+        *ngIf="carregando"
+        [show]="true"
+        message="Salvando...">
+      </app-spinner>
+
+
+      <!-- ========================= -->
       <!-- ALERTAS -->
-      <app-alerts *ngIf="!carregando && mensagemSucesso.length" titulo="Sucesso!" [mensagens]="mensagemSucesso"
-        tipo="success">
+      <!-- ========================= -->
+
+      <app-alerts
+        *ngIf="!carregando && mensagemSucesso.length"
+        titulo="Sucesso!"
+        [mensagens]="mensagemSucesso"
+        tipo="success"
+        icone="fas fa-check-circle">
       </app-alerts>
 
-      <app-alerts *ngIf="!carregando && mensagemErro.length" titulo="Erro!" [mensagens]="mensagemErro" tipo="danger">
+      <app-alerts
+        *ngIf="!carregando && mensagemErro.length"
+        titulo="Erro!"
+        [mensagens]="mensagemErro"
+        tipo="danger"
+        icone="fas fa-times-circle">
       </app-alerts>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-        <!-- ================= DADOS DO ATENDIMENTO ================= -->
-        <h5 class="mb-3">Dados do Atendimento</h5>
-        <!-- ================= CLIENTES ================= -->
+      <!-- ========================= -->
+      <!-- FORMULÁRIO -->
+      <!-- ========================= -->
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()">
 
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <app-autocomplete-pessoa-atendimento label="Clientes" placeholder="Digite o nome do cliente"
-              [resultados]="pessoasFiltradas" [(selecionadas)]="pessoasSelecionadas" (buscar)="buscarPessoas($event)">
+        <!-- ========================= -->
+        <!-- DADOS DO ATENDIMENTO -->
+        <!-- ========================= -->
+
+        <h5 class="mb-3">
+          Dados do Atendimento
+        </h5>
+
+
+        <!-- ========================= -->
+        <!-- ETIQUETAS -->
+        <!-- ========================= -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Etiquetas
+          </label>
+
+          <app-etiquetas
+            [etiquetas]="tiposetiquetas"
+            [(selecionadas)]="etiquetasSelecionadas">
+          </app-etiquetas>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- CLIENTES / ASSUNTO -->
+        <!-- ========================= -->
+
+        <div class="row mb-3 autocomplete-row">
+
+          <!-- CLIENTES -->
+          <div class="col-md-6 autocomplete-col">
+
+            <app-autocomplete-pessoa-atendimento
+              label="Clientes *"
+              placeholder="Digite o nome do cliente"
+              [resultados]="pessoasFiltradas"
+              [(selecionadas)]="pessoasSelecionadas"
+              (buscar)="buscarPessoas($event)">
             </app-autocomplete-pessoa-atendimento>
+
+            <div
+              *ngIf="
+                tentouEnviar &&
+                pessoasSelecionadas.length === 0
+              "
+              class="text-danger mt-1">
+
+              <small>
+                É obrigatório selecionar pelo menos um cliente.
+              </small>
+
+            </div>
+
           </div>
 
 
-          <!-- ================= ETIQUETAS ================= -->
-
-
+          <!-- ASSUNTO -->
           <div class="col-md-6">
-            <label class="form-label">Assunto *</label>
-            <input class="form-control" formControlName="assunto">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Etiquetas</label>
 
-            <app-etiquetas [etiquetas]="tiposetiquetas" [(selecionadas)]="etiquetasSelecionadas">
-            </app-etiquetas>
+            <label class="form-label">
+              Assunto *
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="assunto">
+
+            <div
+              *ngIf="
+                form.get('assunto')?.touched &&
+                form.get('assunto')?.hasError('required')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                Assunto é de preenchimento obrigatório.
+              </small>
+
+            </div>
+
           </div>
 
         </div>
 
-        <div class="row mb-3">
-          <!-- ITEM DINÂMICO -->
 
+        <!-- ========================= -->
+        <!-- VÍNCULO -->
+        <!-- ========================= -->
+
+        <div class="row mb-3 vinculo-row">
+
+          <!-- TIPO DE VÍNCULO -->
           <div class="col-md-4">
-            <label class="form-label">Tipo de Vínculo</label>
-            <select class="form-control" formControlName="tipoVinculo">
-              <option [ngValue]="null">Selecione</option>
-              <option value="processo">Processo</option>
-              <option value="caso">Caso</option>
-              <option value="atendimento">Atendimento</option>
+
+            <label class="form-label">
+              Tipo de Vínculo
+            </label>
+
+            <select
+              class="form-select"
+              formControlName="tipoVinculo">
+
+              <option [ngValue]="null">
+                Selecione
+              </option>
+
+              <option value="processo">
+                Processo
+              </option>
+
+              <option value="caso">
+                Caso
+              </option>
+
+              <option value="atendimento">
+                Atendimento
+              </option>
+
             </select>
+
           </div>
 
-          <div class="col-md-8">
-            <label class="form-label">Buscar vínculo</label>
-            <app-vinculo [resultados]="resultadosVinculo" (buscar)="buscarVinculo($event)"
+
+          <!-- BUSCAR VÍNCULO -->
+          <div class="col-md-8 vinculo-col">
+
+            <label class="form-label">
+              Buscar vínculo
+            </label>
+
+            <app-vinculo
+              [resultados]="resultadosVinculo"
+              [tipoVinculo]="form.get('tipoVinculo')?.value ?? null"
+              (buscar)="buscarVinculo($event)"
               (selecionado)="selecionarVinculo($event)">
             </app-vinculo>
 
           </div>
 
-
-
-
-
         </div>
+
+
+        <!-- ========================= -->
+        <!-- REGISTRO -->
+        <!-- ========================= -->
+
         <div class="mb-3">
-          <label class="form-label">1º Registro do atendimento*</label>
-          <textarea class="form-control" rows="4" formControlName="registro"></textarea>
+
+          <label class="form-label">
+            1º Registro do atendimento *
+          </label>
+
+          <textarea
+            class="form-control"
+            rows="4"
+            formControlName="registro">
+          </textarea>
+
+          <div
+            *ngIf="
+              form.get('registro')?.touched &&
+              form.get('registro')?.hasError('required')
+            "
+            class="text-danger mt-1">
+
+            <small>
+              Registro do atendimento é de preenchimento obrigatório.
+            </small>
+
+          </div>
+
         </div>
 
 
-
-
-
-
+        <!-- ========================= -->
         <!-- BOTÃO -->
-        <button type="submit" class="btn btn-primary mt-3" [disabled]="carregando">
-          <i class="fas fa-save"></i> Salvar Atendimento
+        <!-- ========================= -->
+
+        <button
+          type="submit"
+          class="btn btn-primary mt-3"
+          [disabled]="carregando">
+
+          <i class="fas fa-save me-1"></i>
+
+          Salvar Atendimento
+
         </button>
 
       </form>
 
     </div>
+
   </div>
+
 </div>

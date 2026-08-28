@@ -51,7 +51,7 @@
 
 
                             </div>
-                                   <div class="mb-4 col-md-4 position-relative">
+                            <div class="mb-4 col-md-4 position-relative">
                                 <label for="login" class="form-label">E-mail</label>
                                 <input type="text" id="email" class="form-control" formControlName="email"
                                     placeholder="Digite o email" />
@@ -65,7 +65,71 @@
 
 
                             </div>
+                            <!-- Escritório -->
+                            <div class="mb-4 col-md-12 position-relative">
 
+                                <label for="escritorioInput" class="form-label">
+
+                                    Escritório*
+                                </label>
+
+                                <input id="escritorioInput" type="text" class="form-control"
+                                    placeholder="Digite o nome do escritório" autocomplete="off"
+                                    [formControl]="escritorioControl" (focus)="mostrarSugestoesEscritorio = true"
+                                    (blur)="ocultarSugestoesComDelayEscritorio()" />
+
+                                <!-- Sugestões -->
+                                <ul *ngIf="
+            mostrarSugestoesEscritorio &&
+            escritoriosFiltrados.length > 0
+        " class="list-group position-absolute w-100 shadow-sm mt-1 zindex-dropdown">
+
+                                    <li *ngFor="let escritorio of escritoriosFiltrados"
+                                        class="list-group-item d-flex justify-content-between align-items-center hover-click"
+                                        (mousedown)="selecionarEscritorio(escritorio)">
+
+                                        {{ escritorio.nome }}
+
+                                        <i class="fas fa-fw fa-plus-circle text-muted fa-lg"></i>
+
+                                    </li>
+
+                                </ul>
+
+                                <!-- Escritório selecionado -->
+                                <div *ngIf="escritorioSelecionado" class="form-text text-success mt-2">
+
+                                    <h6 class="card-subtitle text-muted">
+                                        Escritório selecionado:
+                                    </h6>
+
+                                    <ul class="lista-sem-bolinha">
+
+                                        <li
+                                            class="d-flex justify-content-between align-items-center mb-2 px-1 py-2 border-bottom">
+
+                                            <span class="texto-maior">
+
+                                                <strong>
+                                                    {{ escritorioSelecionado.nome }}
+                                                </strong>
+
+                                            </span>
+
+                                            <button type="button" class="border-0 bg-transparent p-0"
+                                                (click)="removerEscritorioSelecionado()">
+
+                                                <i class="fas fa-fw fa-trash-alt text-muted fa-lg"></i>
+
+                                            </button>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                            </div>
                             <!-- setor -->
                             <div class="mb-6 col-md-6 position-relative">
                                 <label for="setorInput" class="form-label">Setore(s)</label>
@@ -141,7 +205,7 @@
 
 
                             <!-- senha -->
-                           <div class="mb-4 col-md-4 position-relative">
+                              <div class="mb-6 col-md-6 position-relative">
                                 <label for="senha" class="form-label">Senha</label>
                                 <input type="password" id="senha" class="form-control" formControlName="senha"
                                     placeholder="Digite a senha" />
@@ -151,11 +215,11 @@
                                     <span *ngIf="form.get('senha')?.hasError('senhaFraca')">{{
                                         form.get('senha')?.getError('senhaFraca') }}</span>
                                 </div>
-                           
-</div>
- <div class="mb-4 col-md-4 position-relative">
-                            <!-- Confirmar Senha -->
-                          
+
+                            </div>
+                            <div class="mb-6 col-md-6 position-relative">
+                                <!-- Confirmar Senha -->
+
                                 <label for="confirmarSenha" class="form-label">Confirmar Senha</label>
                                 <input type="password" id="confirmarSenha" class="form-control"
                                     formControlName="confirmarSenha" placeholder="Confirme a senha" />
