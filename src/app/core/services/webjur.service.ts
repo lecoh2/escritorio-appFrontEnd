@@ -91,50 +91,52 @@ export class WebJurService {
   // SINCRONIZAR TUDO
   // =====================================================
 
-  sincronizarTudo(): Observable<any> {
+ sincronizarTudo(): Observable<any> {
 
-    return this.http.post<any>(
-      `${this.url}/api/v1/webjur/sincronizar`,
-      {},
-      {
-        headers: this.getHeaders()
-      }
-    );
-  }
+  return this.http.post<any>(
+    `${this.url}/api/v1/webjur/sincronizar/tudo`,
+    {},
+    {
+      headers:
+        this.getHeaders()
+    }
+  );
+}
 
 
   // =====================================================
   // VERIFICAR PROCESSO
   // =====================================================
 
-  verificarProcesso(
-    numeroProcesso: string
-  ): Observable<any> {
+verificarProcesso(
+  numeroProcesso: string
+): Observable<any> {
 
-    return this.http.get<any>(
-      `${this.url}/api/v1/webjur/verificar/${numeroProcesso}`,
-      {
-        headers: this.getHeaders()
-      }
-    );
-  }
-
+  return this.http.get<any>(
+    `${this.url}/api/v1/webjur/processos/verificar/${numeroProcesso}`,
+    {
+      headers:
+        this.getHeaders()
+    }
+  );
+}
 
   // =====================================================
   // CONSULTAR ANDAMENTOS
   // =====================================================
 
-  consultarAndamentos(
-    processoId: string
-  ): Observable<any> {
+consultarAndamentos(
+  processoId: string
+): Observable<any> {
 
-    return this.http.get<any>(
-      `${this.url}/api/v1/webjur/andamentos/${processoId}`,
-      {
-        headers: this.getHeaders()
-      }
-    );
-  }
+  return this.http.get<any>(
+    `${this.url}/api/v1/webjur/processos/${processoId}/andamentos`,
+    {
+      headers:
+        this.getHeaders()
+    }
+  );
+}
 
 
   // =====================================================
@@ -233,17 +235,28 @@ export class WebJurService {
   // CONSULTAR COMENTÁRIOS
   // =====================================================
 
-  getComentarios(
-    id: string
-  ): Observable<any> {
+getComentarios(
+  id: string,
+  pageNumber: number,
+  pageSize: number
+): Observable<any> {
 
-    return this.http.get<any>(
-      `${this.url}/api/v1/webjur/publicacoes/${id}/comentarios`,
-      {
-        headers: this.getHeaders()
-      }
-    );
-  }
+  return this.http.get<any>(
+    `${this.url}/api/v1/webjur/publicacoes/${id}/comentarios`,
+    {
+      params: {
+        pageNumber:
+          pageNumber.toString(),
+
+        pageSize:
+          pageSize.toString()
+      },
+
+      headers:
+        this.getHeaders()
+    }
+  );
+}
 
 
   // =====================================================

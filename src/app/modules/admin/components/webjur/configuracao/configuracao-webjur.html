@@ -1,0 +1,1229 @@
+<div class="container-fluid p-0">
+
+    <!-- ===================================================== -->
+    <!-- CABEÇALHO -->
+    <!-- ===================================================== -->
+
+    <div
+        class="
+            d-flex
+            justify-content-between
+            align-items-center
+            mb-3
+            flex-wrap
+            gap-3
+        ">
+
+        <div>
+
+            <h1 class="h3 mb-1">
+
+                <i
+                    class="
+                        fas
+                        fa-newspaper
+                        align-middle
+                        me-2
+                    ">
+                </i>
+
+                {{ tituloTela }}
+
+            </h1>
+
+            <small class="text-muted">
+
+                Gerencie a integração WebJur
+                deste escritório.
+
+            </small>
+
+        </div>
+
+        <!-- STATUS -->
+
+        <div
+            *ngIf="
+                modoEdicao &&
+                configuracao
+            ">
+
+            <span
+                class="badge fs-6"
+                [ngClass]="
+                    configuracao.ativo
+                        ? 'bg-success'
+                        : 'bg-secondary'
+                ">
+
+                <i
+                    class="fas me-1"
+                    [ngClass]="
+                        configuracao.ativo
+                            ? 'fa-check-circle'
+                            : 'fa-ban'
+                    ">
+                </i>
+
+                {{
+                    configuracao.ativo
+                        ? 'WebJur Ativo'
+                        : 'WebJur Inativo'
+                }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- CARD PRINCIPAL -->
+    <!-- ===================================================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <!-- ================================================= -->
+            <!-- SPINNER -->
+            <!-- ================================================= -->
+
+            <app-spinner
+                *ngIf="
+                    carregando ||
+                    salvando
+                "
+                [show]="true"
+                [message]="
+                    salvando
+                        ? 'Salvando configuração...'
+                        : 'Carregando configuração WebJur...'
+                "
+                class="d-inline-block">
+            </app-spinner>
+
+
+            <!-- ================================================= -->
+            <!-- ALERTA SUCESSO -->
+            <!-- ================================================= -->
+
+            <app-alerts
+                *ngIf="
+                    !carregando &&
+                    !salvando &&
+                    mensagemSucesso.length > 0
+                "
+                class="w-100"
+                titulo="Sucesso!"
+                [mensagens]="mensagemSucesso"
+                tipo="success"
+                icone="fas fa-check-circle fa-lg">
+            </app-alerts>
+
+
+            <!-- ================================================= -->
+            <!-- ALERTA ERRO -->
+            <!-- ================================================= -->
+
+            <app-alerts
+                *ngIf="
+                    !carregando &&
+                    !salvando &&
+                    mensagemErro.length > 0
+                "
+                class="w-100"
+                titulo="Erro!"
+                [mensagens]="mensagemErro"
+                tipo="danger"
+                icone="fas fa-times-circle fa-lg">
+            </app-alerts>
+
+<!-- ===================================================== -->
+<!-- INFORMAÇÃO - CONFIGURAÇÃO WEBJUR OPCIONAL -->
+<!-- ===================================================== -->
+
+<div
+    *ngIf="
+        !carregando &&
+        !salvando &&
+        !modoEdicao
+    "
+    class="
+        alert
+        alert-primary
+        border-0
+        shadow-sm
+        d-flex
+        align-items-center
+        p-3
+        mb-4
+        rounded-3
+        alert-dismissible
+        fade
+        show
+    "
+    role="alert">
+
+    <!-- ÍCONE -->
+
+    <div class="me-3">
+
+        <i
+            class="
+                fas
+                fa-circle-info
+                fs-4
+                text-white
+                bg-primary
+                rounded-circle
+                p-2
+            ">
+        </i>
+
+    </div>
+
+    <!-- CONTEÚDO -->
+
+    <div class="flex-grow-1">
+
+        <h6 class="fw-bold mb-1">
+            Integração WebJur opcional
+        </h6>
+
+        <div class="mb-1">
+            Este escritório ainda não possui
+            uma configuração WebJur cadastrada.
+        </div>
+
+        <div class="mb-1">
+            Caso o escritório utilize o WebJur,
+            informe abaixo as credenciais fornecidas
+            pelo serviço.
+        </div>
+
+        <div>
+            Caso não utilize o WebJur,
+            nenhuma configuração é necessária.
+        </div>
+
+    </div>
+
+    <!-- FECHAR -->
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close">
+    </button>
+
+</div>
+
+
+            <!-- ================================================= -->
+            <!-- CONFIGURAÇÃO EXISTENTE -->
+            <!-- ================================================= -->
+
+            <div
+                *ngIf="
+                    !carregando &&
+                    !salvando &&
+                    modoEdicao &&
+                    configuracao
+                "
+                class="
+                    alert
+                    alert-info
+                    border-0
+                    shadow-sm
+                    mb-4
+                ">
+
+              <div
+    class="
+        alert
+        alert-info
+        border-0
+        shadow-sm
+        p-3
+        mb-4
+        rounded-3
+    "
+    role="alert">
+
+    <div
+        class="
+            d-flex
+            justify-content-between
+            align-items-center
+            flex-wrap
+            gap-3
+        ">
+
+        <!-- INFORMAÇÕES -->
+        <div class="d-flex align-items-center">
+
+            <!-- ÍCONE -->
+            <div class="me-3">
+
+                <i
+                    class="
+                        fas
+                        fa-link
+                        fs-4
+                        text-white
+                        bg-info
+                        rounded-circle
+                        p-2
+                    ">
+                </i>
+
+            </div>
+
+            <!-- TEXTO -->
+            <div class="flex-grow-1">
+
+                <h6 class="fw-bold mb-1">
+                    Integração WebJur configurada
+                </h6>
+
+                <div class="mb-1">
+                    O WebJur está configurado para este escritório.
+                </div>
+
+                <div
+                    *ngIf="senhaConfigurada"
+                    class="text-success fw-semibold">
+
+                    <i class="fas fa-lock me-1"></i>
+
+                    Senha configurada e protegida.
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- STATUS -->
+        <div>
+
+            <span
+                class="badge fs-6 px-3 py-2"
+                [ngClass]="
+                    configuracao.ativo
+                        ? 'bg-success'
+                        : 'bg-secondary'
+                ">
+
+                <i
+                    class="fas me-1"
+                    [ngClass]="
+                        configuracao.ativo
+                            ? 'fa-check-circle'
+                            : 'fa-ban'
+                    ">
+                </i>
+
+                {{
+                    configuracao.ativo
+                        ? 'Ativo'
+                        : 'Inativo'
+                }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- ÚLTIMO ERRO -->
+            <!-- ================================================= -->
+
+        <div
+    *ngIf="
+        !carregando &&
+        !salvando &&
+        configuracao?.ultimoErro
+    "
+    class="
+        alert
+        alert-danger
+        border-0
+        shadow-sm
+        p-3
+        mb-4
+        rounded-3
+    "
+    role="alert">
+
+    <div class="d-flex align-items-center">
+
+        <!-- ÍCONE -->
+        <div class="me-3">
+
+            <i
+                class="
+                    fas
+                    fa-triangle-exclamation
+                    fs-4
+                    text-white
+                    bg-danger
+                    rounded-circle
+                    p-2
+                ">
+            </i>
+
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="flex-grow-1">
+
+            <h6 class="fw-bold mb-1">
+                Último erro de sincronização
+            </h6>
+
+            <div>
+                {{ configuracao?.ultimoErro }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+            <!-- ================================================= -->
+            <!-- FORMULÁRIO -->
+            <!-- ================================================= -->
+
+            <form
+                *ngIf="
+                    !carregando &&
+                    !salvando
+                "
+                [formGroup]="form"
+                (ngSubmit)="onSubmit()">
+
+                <!-- ============================================= -->
+                <!-- CREDENCIAIS -->
+                <!-- ============================================= -->
+
+                <div class="mb-4">
+
+                    <h5 class="mb-1">
+
+                        <i
+                            class="
+                                fas
+                                fa-key
+                                text-primary
+                                me-2
+                            ">
+                        </i>
+
+                        Credenciais
+
+                    </h5>
+
+                    <small class="text-muted">
+
+                        Informe as credenciais fornecidas
+                        pelo WebJur.
+
+                    </small>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- USUÁRIO -->
+
+                    <div
+                        class="
+                            col-md-6
+                            mb-4
+                        ">
+
+                        <label
+                            for="usuario"
+                            class="form-label">
+
+                            Usuário WebJur*
+
+                        </label>
+
+                        <input
+                            id="usuario"
+                            type="text"
+                            class="form-control"
+                            formControlName="usuario"
+                            maxlength="200"
+                            autocomplete="off"
+                            placeholder="Digite o usuário do WebJur">
+
+                        <div
+                            *ngIf="
+                                form.get('usuario')?.touched &&
+                                form.get('usuario')?.invalid
+                            "
+                            class="
+                                text-danger
+                                mt-1
+                            ">
+
+                            <span
+                                *ngIf="
+                                    form.get('usuario')
+                                        ?.hasError('required')
+                                ">
+
+                                O usuário WebJur é obrigatório.
+
+                            </span>
+
+                            <span
+                                *ngIf="
+                                    form.get('usuario')
+                                        ?.hasError('maxlength')
+                                ">
+
+                                O usuário deve possuir
+                                no máximo 200 caracteres.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SENHA -->
+
+                    <div
+                        class="
+                            col-md-6
+                            mb-4
+                        ">
+
+                        <label
+                            for="senha"
+                            class="form-label">
+
+                            Senha WebJur
+
+                            <span
+                                *ngIf="
+                                    !modoEdicao
+                                ">
+
+                                *
+
+                            </span>
+
+                        </label>
+
+
+                        <div class="input-group">
+
+                            <input
+                                id="senha"
+                                [type]="
+                                    mostrarSenha
+                                        ? 'text'
+                                        : 'password'
+                                "
+                                class="form-control"
+                                formControlName="senha"
+                                autocomplete="new-password"
+                                [placeholder]="
+                                    modoEdicao
+                                        ? 'Digite somente para alterar a senha'
+                                        : 'Digite a senha do WebJur'
+                                ">
+
+
+                            <button
+                                type="button"
+                                class="
+                                    btn
+                                    btn-outline-secondary
+                                "
+                                (click)="
+                                    alternarVisualizacaoSenha()
+                                "
+                                tabindex="-1">
+
+                                <i
+                                    class="fas"
+                                    [ngClass]="
+                                        mostrarSenha
+                                            ? 'fa-eye-slash'
+                                            : 'fa-eye'
+                                    ">
+                                </i>
+
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            *ngIf="
+                                modoEdicao &&
+                                senhaConfigurada
+                            "
+                            class="
+                                form-text
+                                text-success
+                            ">
+
+                            <i
+                                class="
+                                    fas
+                                    fa-check-circle
+                                    me-1
+                                ">
+                            </i>
+
+                            Senha já configurada.
+
+                            Deixe o campo vazio
+                            para manter a senha atual.
+
+                        </div>
+
+
+                        <div
+                            *ngIf="
+                                form.get('senha')?.touched &&
+                                form.get('senha')
+                                    ?.hasError('required')
+                            "
+                            class="
+                                text-danger
+                                mt-1
+                            ">
+
+                            A senha WebJur é obrigatória.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ============================================= -->
+                <!-- DADOS DA INTEGRAÇÃO -->
+                <!-- ============================================= -->
+
+                <hr>
+
+                <div
+                    class="
+                        mb-4
+                        mt-4
+                    ">
+
+                    <h5 class="mb-1">
+
+                        <i
+                            class="
+                                fas
+                                fa-sliders
+                                text-primary
+                                me-2
+                            ">
+                        </i>
+
+                        Dados da Integração
+
+                    </h5>
+
+                    <small class="text-muted">
+
+                        Informações utilizadas
+                        nas consultas WebJur.
+
+                    </small>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- CÓDIGO DO GRUPO -->
+
+                    <div
+                        class="
+                            col-md-4
+                            mb-4
+                        ">
+
+                        <label
+                            for="codGrupo"
+                            class="form-label">
+
+                            Código do Grupo*
+
+                        </label>
+
+                        <input
+                            id="codGrupo"
+                            type="number"
+                            class="form-control"
+                            formControlName="codGrupo"
+                            min="0"
+                            placeholder="Código do grupo">
+
+                        <div
+                            *ngIf="
+                                form.get('codGrupo')?.touched &&
+                                form.get('codGrupo')?.invalid
+                            "
+                            class="
+                                text-danger
+                                mt-1
+                            ">
+
+                            <span
+                                *ngIf="
+                                    form.get('codGrupo')
+                                        ?.hasError('required')
+                                ">
+
+                                O código do grupo é obrigatório.
+
+                            </span>
+
+                            <span
+                                *ngIf="
+                                    form.get('codGrupo')
+                                        ?.hasError('min')
+                                ">
+
+                                Informe um código válido.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- OAB -->
+
+                    <div
+                        class="
+                            col-md-4
+                            mb-4
+                        ">
+
+                        <label
+                            for="oab"
+                            class="form-label">
+
+                            OAB
+
+                        </label>
+
+                        <input
+                            id="oab"
+                            type="text"
+                            class="form-control"
+                            formControlName="oab"
+                            maxlength="30"
+                            placeholder="Número da OAB">
+
+                        <div
+                            *ngIf="
+                                form.get('oab')?.touched &&
+                                form.get('oab')
+                                    ?.hasError('maxlength')
+                            "
+                            class="
+                                text-danger
+                                mt-1
+                            ">
+
+                            A OAB deve possuir
+                            no máximo 30 caracteres.
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UF -->
+
+                    <div
+                        class="
+                            col-md-4
+                            mb-4
+                        ">
+
+                        <label
+                            for="uf"
+                            class="form-label">
+
+                            UF
+
+                        </label>
+
+                        <input
+                            id="uf"
+                            type="text"
+                            class="
+                                form-control
+                                text-uppercase
+                            "
+                            formControlName="uf"
+                            maxlength="2"
+                            placeholder="RJ"
+                            (input)="formatarUf()">
+
+                    </div>
+
+                </div>
+
+
+                <!-- ============================================= -->
+                <!-- OPÇÕES -->
+                <!-- ============================================= -->
+
+                <hr>
+
+
+                <div class="row mt-4">
+
+                    <!-- SINCRONIZAÇÃO AUTOMÁTICA -->
+
+                    <div
+                        class="
+                            col-md-6
+                            mb-4
+                        ">
+
+                        <div
+                            class="
+                                card
+                                border
+                                h-100
+                            ">
+
+                            <div class="card-body">
+
+                                <div
+                                    class="
+                                        form-check
+                                        form-switch
+                                    ">
+
+                                    <input
+                                        id="sincronizacaoAutomatica"
+                                        type="checkbox"
+                                        class="
+                                            form-check-input
+                                        "
+                                        formControlName="
+                                            sincronizacaoAutomatica
+                                        ">
+
+                                    <label
+                                        for="sincronizacaoAutomatica"
+                                        class="
+                                            form-check-label
+                                            fw-semibold
+                                        ">
+
+                                        Sincronização automática
+
+                                    </label>
+
+                                </div>
+
+
+                                <small
+                                    class="
+                                        text-muted
+                                        d-block
+                                        mt-2
+                                    ">
+
+                                    Permite que o sistema
+                                    execute automaticamente
+                                    a sincronização WebJur
+                                    deste escritório.
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div
+                        *ngIf="
+                            modoEdicao &&
+                            configuracao
+                        "
+                        class="
+                            col-md-6
+                            mb-4
+                        ">
+
+                        <div
+                            class="
+                                card
+                                border
+                                h-100
+                            ">
+
+                            <div class="card-body">
+
+                                <div
+                                    class="
+                                        d-flex
+                                        justify-content-between
+                                        align-items-center
+                                    ">
+
+                                    <div>
+
+                                        <strong>
+
+                                            Status da integração
+
+                                        </strong>
+
+                                        <small
+                                            class="
+                                                d-block
+                                                text-muted
+                                                mt-1
+                                            ">
+
+                                            {{
+                                                configuracao.ativo
+                                                    ? 'A integração WebJur está ativa.'
+                                                    : 'A integração WebJur está desativada.'
+                                            }}
+
+                                        </small>
+
+                                    </div>
+
+
+                                    <span
+                                        class="badge"
+                                        [ngClass]="
+                                            configuracao.ativo
+                                                ? 'bg-success'
+                                                : 'bg-secondary'
+                                        ">
+
+                                        {{
+                                            configuracao.ativo
+                                                ? 'Ativo'
+                                                : 'Inativo'
+                                        }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ============================================= -->
+                <!-- SINCRONIZAÇÕES -->
+                <!-- ============================================= -->
+
+                <ng-container
+                    *ngIf="
+                        modoEdicao &&
+                        configuracao
+                    ">
+
+                    <hr>
+
+
+                    <div
+                        class="
+                            mt-4
+                            mb-4
+                        ">
+
+                        <h5 class="mb-1">
+
+                            <i
+                                class="
+                                    fas
+                                    fa-clock-rotate-left
+                                    text-primary
+                                    me-2
+                                ">
+                            </i>
+
+                            Sincronizações
+
+                        </h5>
+
+                        <small class="text-muted">
+
+                            Histórico resumido da integração.
+
+                        </small>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <!-- ÚLTIMA TENTATIVA -->
+
+                        <div
+                            class="
+                                col-md-6
+                                mb-4
+                            ">
+
+                            <div
+                                class="
+                                    card
+                                   
+                                    border-0
+                                    h-100
+                                ">
+
+                                <div class="card-body">
+
+                                    <small
+                                        class="
+                                            text-muted
+                                            d-block
+                                            mb-1
+                                        ">
+
+                                        Última tentativa
+
+                                    </small>
+
+
+                                    <strong>
+
+                                        <ng-container
+                                            *ngIf="
+                                                configuracao
+                                                    .ultimaSincronizacao;
+                                                else nuncaTentativa
+                                            ">
+
+                                            {{
+                                                configuracao
+                                                    .ultimaSincronizacao
+                                                    | date:'dd/MM/yyyy HH:mm'
+                                            }}
+
+                                        </ng-container>
+
+                                    </strong>
+
+
+                                    <ng-template
+                                        #nuncaTentativa>
+
+                                        Nunca realizada
+
+                                    </ng-template>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ÚLTIMO SUCESSO -->
+
+                        <div
+                            class="
+                                col-md-6
+                                mb-4
+                            ">
+
+                            <div
+                                class="
+                                    card
+                                   
+                                    border-0
+                                    h-100
+                                ">
+
+                                <div class="card-body">
+
+                                    <small
+                                        class="
+                                            text-muted
+                                            d-block
+                                            mb-1
+                                        ">
+
+                                        Última sincronização
+                                        com sucesso
+
+                                    </small>
+
+
+                                    <strong>
+
+                                        <ng-container
+                                            *ngIf="
+                                                configuracao
+                                                    .ultimaSincronizacaoSucesso;
+                                                else nuncaSucesso
+                                            ">
+
+                                            {{
+                                                configuracao
+                                                    .ultimaSincronizacaoSucesso
+                                                    | date:'dd/MM/yyyy HH:mm'
+                                            }}
+
+                                        </ng-container>
+
+                                    </strong>
+
+
+                                    <ng-template
+                                        #nuncaSucesso>
+
+                                        Nenhuma sincronização
+                                        concluída
+
+                                    </ng-template>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </ng-container>
+
+
+                <!-- ============================================= -->
+                <!-- BOTÕES -->
+                <!-- ============================================= -->
+
+                <div
+                    class="
+                        d-flex
+                        justify-content-between
+                        align-items-center
+                        flex-wrap
+                        gap-2
+                        mt-4
+                    ">
+
+                    <!-- ESQUERDA -->
+
+                    <div>
+
+                        <button
+                            *ngIf="
+                                modoEdicao &&
+                                configuracao
+                            "
+                            type="button"
+                            class="btn"
+                            [ngClass]="
+                                configuracao.ativo
+                                    ? 'btn-outline-danger'
+                                    : 'btn-outline-success'
+                            "
+                            [disabled]="salvando"
+                            (click)="alterarStatus()">
+
+                            <i
+                                class="
+                                    fas
+                                    me-2
+                                "
+                                [ngClass]="
+                                    configuracao.ativo
+                                        ? 'fa-ban'
+                                        : 'fa-check-circle'
+                                ">
+                            </i>
+
+                            {{
+                                configuracao.ativo
+                                    ? 'Desativar WebJur'
+                                    : 'Ativar WebJur'
+                            }}
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- DIREITA -->
+<div class="col-12 mt-4">
+
+    <button
+        type="button"
+        class="btn btn-secondary"
+        [disabled]="salvando"
+        (click)="voltar()">
+
+        <i class="align-middle me-2 fas fa-arrow-left"></i>
+
+        Voltar
+
+    </button>
+
+    <button
+        type="submit"
+        class="btn btn-primary ms-2"
+        [disabled]="!podeEnviar || salvando">
+
+        <i class="align-middle me-2 fas fa-save fa-lg"></i>
+
+         Atualizar
+
+    </button>
+
+</div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

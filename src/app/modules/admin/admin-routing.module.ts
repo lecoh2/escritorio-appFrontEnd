@@ -61,6 +61,7 @@ import { CadastrarEscritorio } from "./components/escritorio/cadastrar-escritori
 import { CadastrarCategoriaFinanceira } from "./components/categoria-financeira/cadastrar/cadastrar-categoria-financeira";
 import { ConsultarCategoriaFinanceira } from "./components/categoria-financeira/consultar/consultar-categoria-financeira";
 import { EditarCategoriaFinanceira } from "./components/categoria-financeira/editar/editar-categoria-financeira";
+import { ConfiguracaoWebjur } from "./components/webjur/configuracao/configuracao-webjur";
 
 
 export const routes: Routes = [
@@ -374,6 +375,11 @@ export const routes: Routes = [
             }, {
                 path: 'detalhe-publicacao/:id',
                 component: DetalhePublicacao,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
+            }, {
+                path: 'configuracao-webjur',
+                component: ConfiguracaoWebjur,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador'] } // quem pode acessar
             },// =========================

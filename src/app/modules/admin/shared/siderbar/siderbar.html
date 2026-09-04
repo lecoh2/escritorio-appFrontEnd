@@ -1079,61 +1079,83 @@
             </li>
 
 
-            <!-- ===================================================== -->
-            <!-- PUBLICAÇÕES WEBJUR -->
-            <!-- ===================================================== -->
+         <!-- ===================================================== -->
+<!-- PUBLICAÇÕES WEBJUR -->
+<!-- ===================================================== -->
 
-            <li
-                class="sidebar-item"
-                *ngIf="
-                    access.hasNivel(
-                        'Administrador',
-                        'Administração',
-                        'Super Administrador',
-                        'Coordenador',
-                        'Estagiários',
-                        'Supervisor',
-                        'Conciliador'
-                    )
-                ">
+<li
+    class="sidebar-item"
+    *ngIf="
+        access.hasNivel(
+            'Administrador',
+            'Administração',
+            'Super Administrador',
+            'Coordenador',
+            'Estagiários',
+            'Supervisor',
+            'Conciliador'
+        )
+    ">
 
-                <a
-                    data-bs-target="#webjur"
-                    data-bs-toggle="collapse"
-                    class="sidebar-link collapsed">
+    <a
+        data-bs-target="#webjur"
+        data-bs-toggle="collapse"
+        class="sidebar-link collapsed">
 
-                    <i class="fas fa-newspaper align-middle"></i>
+        <i class="fas fa-newspaper align-middle"></i>
 
-                    <span class="align-middle">
-                        Publicações WebJur
-                    </span>
+        <span class="align-middle">
+            Publicações WebJur
+        </span>
 
-                </a>
+    </a>
 
-                <ul
-                    id="webjur"
-                    class="sidebar-dropdown list-unstyled collapse"
-                    data-bs-parent="#sidebar">
+    <ul
+        id="webjur"
+        class="sidebar-dropdown list-unstyled collapse"
+        data-bs-parent="#sidebar">
 
-                    <li class="sidebar-item">
+        <!-- CONSULTAR PUBLICAÇÕES -->
 
-                        <a
-                            class="sidebar-link"
-                            [routerLink]="[
-                                '/admin',
-                                'consultar-webjur'
-                            ]">
+        <li class="sidebar-item">
 
-                            Consultar Publicações
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'consultar-webjur'
+                ]">
 
-                        </a>
+                <i class="fas fa-search align-middle me-2"></i>
 
-                    </li>
+                Consultar Publicações
 
-                </ul>
+            </a>
 
-            </li>
+        </li>
 
+        <!-- CONFIGURAÇÃO WEBJUR -->
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'configuracao-webjur'
+                ]">
+
+                <i class="fas fa-cog align-middle me-2"></i>
+
+                Configuração WebJur
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
 
             <!-- ===================================================== -->
             <!-- TAREFAS -->

@@ -74,6 +74,7 @@ import { EditarEscritorio } from "./components/escritorio/editar-escritorio/edit
 import { CadastrarCategoriaFinanceira } from "./components/categoria-financeira/cadastrar/cadastrar-categoria-financeira";
 import { ConsultarCategoriaFinanceira } from "./components/categoria-financeira/consultar/consultar-categoria-financeira";
 import { EditarCategoriaFinanceira } from "./components/categoria-financeira/editar/editar-categoria-financeira";
+import { ConfiguracaoWebjur } from "./components/webjur/configuracao/configuracao-webjur";
 
 @NgModule({
     declarations: [//componente do módulo
@@ -124,6 +125,7 @@ import { EditarCategoriaFinanceira } from "./components/categoria-financeira/edi
         DashboardFinanceiro,
         ConfiguracaoFinanceira,
         ConsultarWebjur,
+        ConfiguracaoWebjur,
         DetalhePublicacao,
         CadastrarLicenca,
         EditarLicenca,

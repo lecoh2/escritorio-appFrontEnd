@@ -1,0 +1,40 @@
+.form-label {
+    font-weight: 500;
+}
+
+.card {
+    border-radius: 0.5rem;
+}
+
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(13, 110, 253, 0.15);
+}
+
+.input-group .btn {
+    min-width: 46px;
+}
+
+.text-danger {
+    font-size: 0.875rem;
+}
+
+.form-text {
+    font-size: 0.85rem;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+.card.bg-light {
+    transition:
+        transform 0.15s ease-in-out;
+}
+
+.card.bg-light:hover {
+    transform:
+        translateY(-1px);
+}

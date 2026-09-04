@@ -1,13 +1,27 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
 import { Router } from '@angular/router';
-import { MatTableDataSource } from '@angular/material/table';
-import { WebJurPublicacao } from '../../../../../core/models/webjur/web-jur-publicacao';
-import { WebJurService } from '../../../../../core/services/webjur.service';
-import { WebJurPublicacaoList } from '../../../../../core/models/webjur/web-jur-publicacao-list';
 
+import {
+  MatTableDataSource
+} from '@angular/material/table';
 
+import {
+  finalize
+} from 'rxjs';
 
+import {
+  WebJurService
+} from '../../../../../core/services/webjur.service';
 
+import {
+  WebJurPublicacaoList
+} from '../../../../../core/models/webjur/web-jur-publicacao-list';
 
 @Component({
   selector: 'app-consultar-webjur',
@@ -26,142 +40,355 @@ export class ConsultarWebjur implements OnInit {
     'acoes'
   ];
 
-  dataSource = new MatTableDataSource<WebJurPublicacaoList>([]);
+  dataSource =
+    new MatTableDataSource<WebJurPublicacaoList>([]);
+
   consulta: WebJurPublicacaoList[] = [];
 
   totalRegistros = 0;
   paginaAtual = 1;
   tamanhoPagina = 10;
   totalPaginas = 1;
+
   paginasVisiveis: number[] = [];
 
   carregando = false;
+
   filtro = '';
 
   mensagemErro: string[] = [];
   mensagemSucesso: string[] = [];
 
-  private webjurService = inject(WebJurService);
-  private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
-textoModalTitulo = '';
-textoModalConteudo = '';
-mostrarModalTexto = false;
+  textoModalTitulo = '';
+  textoModalConteudo = '';
 
-limitarTexto(texto?: string, limite: number = 35): string {
-  if (!texto) return '-';
+  mostrarModalTexto = false;
 
-  return texto.length > limite
-    ? texto.substring(0, limite) + '...'
-    : texto;
-}
+  private readonly webjurService =
+    inject(WebJurService);
 
-abrirTextoCompleto(titulo: string, conteudo?: string) {
-  if (!conteudo) return;
+  private readonly router =
+    inject(Router);
 
-  this.textoModalTitulo = titulo;
-  this.textoModalConteudo = conteudo;
-  this.mostrarModalTexto = true;
-}
+  private readonly cdr =
+    inject(ChangeDetectorRef);
 
-fecharTextoCompleto() {
-  this.mostrarModalTexto = false;
-  this.textoModalTitulo = '';
-  this.textoModalConteudo = '';
-}
   ngOnInit(): void {
     this.carregarPublicacoes();
   }
 
-  aplicarFiltro() {
-    this.paginaAtual = 1;
+  // =====================================================
+  // TEXTO
+  // =====================================================
+
+  limitarTexto(
+    texto?: string,
+    limite: number = 35
+  ): string {
+
+    if (!texto) {
+      return '-';
+    }
+
+    return texto.length > limite
+      ? texto.substring(0, limite) + '...'
+      : texto;
+  }
+
+  abrirTextoCompleto(
+    titulo: string,
+    conteudo?: string
+  ): void {
+
+    if (!conteudo) {
+      return;
+    }
+
+    this.textoModalTitulo =
+      titulo;
+
+    this.textoModalConteudo =
+      conteudo;
+
+    this.mostrarModalTexto =
+      true;
+  }
+
+  fecharTextoCompleto(): void {
+
+    this.mostrarModalTexto =
+      false;
+
+    this.textoModalTitulo =
+      '';
+
+    this.textoModalConteudo =
+      '';
+  }
+
+  // =====================================================
+  // FILTRO
+  // =====================================================
+
+  aplicarFiltro(): void {
+
+    this.paginaAtual =
+      1;
+
     this.carregarPublicacoes();
   }
 
-  carregarPublicacoes() {
+  // =====================================================
+  // CONSULTAR
+  // =====================================================
 
-    this.carregando = true;
-    this.mensagemErro = [];
+  carregarPublicacoes(): void {
+
+    this.carregando =
+      true;
+
+    this.mensagemErro =
+      [];
 
     this.webjurService
-      .consultarPublicacoesPaginado(this.paginaAtual, this.tamanhoPagina, this.filtro)
+      .consultarPublicacoesPaginado(
+        this.paginaAtual,
+        this.tamanhoPagina,
+        this.filtro?.trim() || undefined
+      )
+      .pipe(
+        finalize(() => {
+
+          this.carregando =
+            false;
+
+          this.cdr.detectChanges();
+        })
+      )
       .subscribe({
-        next: (response: any) => {
 
-          const items = response.items || [];
+        next: response => {
 
-          this.consulta = items;
-          this.dataSource.data = items;
+          const items =
+            response?.items ?? [];
 
-          this.totalRegistros = response.totalCount || 0;
-          this.totalPaginas = Math.ceil(this.totalRegistros / this.tamanhoPagina);
+          this.consulta =
+            items;
+
+          this.dataSource.data =
+            items;
+
+          this.totalRegistros =
+            response?.totalCount ?? 0;
+
+          this.totalPaginas =
+            Math.max(
+              1,
+              Math.ceil(
+                this.totalRegistros /
+                this.tamanhoPagina
+              )
+            );
+
+          /*
+           * Caso uma exclusão ou mudança de filtro
+           * deixe a página atual acima do total.
+           */
+          if (
+            this.paginaAtual >
+            this.totalPaginas
+          ) {
+            this.paginaAtual =
+              this.totalPaginas;
+          }
 
           this.atualizarPaginasVisiveis();
-
-          this.carregando = false;
-          this.cdr.detectChanges();
         },
 
-        error: () => {
-          this.mensagemErro = ['Erro ao consultar publicações WebJur.'];
-          this.carregando = false;
-          this.cdr.detectChanges();
+        error: err => {
+
+          this.consulta =
+            [];
+
+          this.dataSource.data =
+            [];
+
+          this.totalRegistros =
+            0;
+
+          this.totalPaginas =
+            1;
+
+          this.paginasVisiveis =
+            [];
+
+          this.mensagemErro = [
+            err?.error?.message ??
+            err?.error?.mensagem ??
+            'Erro ao consultar publicações WebJur.'
+          ];
         }
       });
   }
 
-  irParaPagina(p: number) {
-    if (p < 1 || p > this.totalPaginas) return;
+  // =====================================================
+  // PAGINAÇÃO
+  // =====================================================
 
-    this.paginaAtual = p;
+  irParaPagina(
+    pagina: number
+  ): void {
+
+    if (
+      pagina < 1 ||
+      pagina > this.totalPaginas ||
+      pagina === this.paginaAtual
+    ) {
+      return;
+    }
+
+    this.paginaAtual =
+      pagina;
+
     this.carregarPublicacoes();
   }
 
-  atualizarPaginasVisiveis() {
+  atualizarPaginasVisiveis(): void {
 
-    const maxVisiveis = 5;
+    if (this.totalPaginas <= 0) {
 
-    let start = Math.max(1, this.paginaAtual - 2);
-    let end = Math.min(this.totalPaginas, start + maxVisiveis - 1);
+      this.paginasVisiveis =
+        [];
 
-    start = Math.max(1, end - maxVisiveis + 1);
+      return;
+    }
 
-    this.paginasVisiveis = Array.from(
-      { length: end - start + 1 },
-      (_, i) => start + i
-    );
+    const maxVisiveis =
+      5;
+
+    let inicio =
+      Math.max(
+        1,
+        this.paginaAtual - 2
+      );
+
+    let fim =
+      Math.min(
+        this.totalPaginas,
+        inicio + maxVisiveis - 1
+      );
+
+    inicio =
+      Math.max(
+        1,
+        fim - maxVisiveis + 1
+      );
+
+    this.paginasVisiveis =
+      Array.from(
+        {
+          length:
+            fim - inicio + 1
+        },
+        (_, index) =>
+          inicio + index
+      );
   }
 
-  importarPublicacoes() {
+  // =====================================================
+  // IMPORTAR PUBLICAÇÕES
+  // =====================================================
 
-    this.carregando = true;
+  importarPublicacoes(): void {
 
-    this.webjurService.importarPublicacoes()
+    if (this.carregando) {
+      return;
+    }
+
+    this.carregando =
+      true;
+
+    this.mensagemErro =
+      [];
+
+    this.mensagemSucesso =
+      [];
+
+    this.webjurService
+      .importarPublicacoes()
       .subscribe({
-        next: (res: any) => {
-          this.mensagemSucesso = [res?.message ?? 'Importação concluída'];
+
+        next: res => {
+
+          this.mensagemSucesso = [
+            res?.message ??
+            'Importação concluída com sucesso.'
+          ];
+
           this.carregarPublicacoes();
         },
-        error: () => {
-          this.mensagemErro = ['Erro ao importar publicações'];
-          this.carregando = false;
+
+        error: err => {
+
+          this.carregando =
+            false;
+
+          this.mensagemErro = [
+            err?.error?.message ??
+            err?.error?.mensagem ??
+            'Erro ao importar publicações WebJur.'
+          ];
+
+          this.cdr.detectChanges();
         }
       });
   }
 
-  sincronizarTudo() {
+  // =====================================================
+  // SINCRONIZAÇÃO COMPLETA
+  // =====================================================
 
-    this.carregando = true;
+  sincronizarTudo(): void {
 
-    this.webjurService.sincronizarTudo()
+    if (this.carregando) {
+      return;
+    }
+
+    this.carregando =
+      true;
+
+    this.mensagemErro =
+      [];
+
+    this.mensagemSucesso =
+      [];
+
+    this.webjurService
+      .sincronizarTudo()
       .subscribe({
-        next: (res: any) => {
-          this.mensagemSucesso = [res?.message ?? 'Sincronização concluída'];
+
+        next: res => {
+
+          this.mensagemSucesso = [
+            res?.message ??
+            'Sincronização concluída com sucesso.'
+          ];
+
           this.carregarPublicacoes();
         },
-        error: () => {
-          this.mensagemErro = ['Erro ao sincronizar WebJur'];
-          this.carregando = false;
+
+        error: err => {
+
+          this.carregando =
+            false;
+
+          this.mensagemErro = [
+            err?.error?.message ??
+            err?.error?.mensagem ??
+            'Erro ao sincronizar WebJur.'
+          ];
+
+          this.cdr.detectChanges();
         }
       });
   }
