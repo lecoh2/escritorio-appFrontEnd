@@ -28,17 +28,7 @@
 
     <div class="d-flex gap-2">
 
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        (click)="voltar()"
-      >
-
-        <i class="fas fa-arrow-left me-2"></i>
-
-        Voltar
-
-      </button>
+   
 
       <button
         *ngIf="detalhe"
@@ -75,40 +65,21 @@
   <!-- =====================================================
        ALERTAS
        ===================================================== -->
+         <app-alerts
+  *ngIf="!carregando && mensagemSucesso.length"
+  titulo="Sucesso!"
+  [mensagens]="mensagemSucesso"
+  tipo="success"
+  icone="fas fa-check-circle">
+</app-alerts>
 
-  <div
-    *ngIf="mensagemErro.length"
-    class="alert alert-danger alert-dismissible fade show"
-  >
-
-    <div
-      *ngFor="let mensagem of mensagemErro"
-    >
-
-      <i class="fas fa-circle-exclamation me-2"></i>
-
-      {{ mensagem }}
-
-    </div>
-
-  </div>
-
-  <div
-    *ngIf="mensagemSucesso.length"
-    class="alert alert-success alert-dismissible fade show"
-  >
-
-    <div
-      *ngFor="let mensagem of mensagemSucesso"
-    >
-
-      <i class="fas fa-circle-check me-2"></i>
-
-      {{ mensagem }}
-
-    </div>
-
-  </div>
+         <app-alerts
+  *ngIf="!carregando && mensagemErro.length"
+  titulo="Erro!"
+  [mensagens]="mensagemErro"
+  tipo="danger"
+  icone="fas fa-times-circle">
+</app-alerts>
 
   <!-- =====================================================
        INDICADORES
@@ -852,10 +823,11 @@
                         "
                       ></i>
 
-                      {{
-                        processo.numeroProcesso
-                      }}
-
+                  {{
+    formatarNumeroProcesso(
+        processo?.numeroProcesso
+    )
+}}
                     </a>
 
                   </div>

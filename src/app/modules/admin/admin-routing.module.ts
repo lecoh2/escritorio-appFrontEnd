@@ -63,6 +63,10 @@ import { ConsultarCategoriaFinanceira } from "./components/categoria-financeira/
 import { EditarCategoriaFinanceira } from "./components/categoria-financeira/editar/editar-categoria-financeira";
 import { ConfiguracaoWebjur } from "./components/webjur/configuracao/configuracao-webjur";
 
+import { EditarEtiqueta } from "./components/etiquetas/editar/editar-etiqueta";
+import { ConsultarEtiquetas } from "./components/etiquetas/consulta/consultar-etiqueta";
+import { CadastrarEtiqueta } from "./components/etiquetas/cadastrar-etiqueta/cadastrar-etiqueta";
+
 
 export const routes: Routes = [
     {
@@ -119,6 +123,27 @@ export const routes: Routes = [
             {
                 path: 'consultar-processo',
                 component: ConsultarProcesso,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
+
+            },
+             //Etiquta
+            {
+                path: 'cadastrar-etiqueta',
+                component: CadastrarEtiqueta,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
+
+            }, {
+                path: 'editar-etiqueta/:id',
+                component: EditarEtiqueta,
+                canActivate: [AuthGuard, NivelGuard],
+                data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
+
+            },
+            {
+                path: 'consultar-etiqueta',
+                component: ConsultarEtiquetas,
                 canActivate: [AuthGuard, NivelGuard],
                 data: { niveis: ['Super Administrador', 'Administrador', 'Administração', 'Coordenador', 'Conciliador', 'Estagiários'] }
 

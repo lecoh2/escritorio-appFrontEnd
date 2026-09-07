@@ -1,0 +1,212 @@
+<div class="container-fluid p-0">
+
+  <h1 class="h3 mb-3">
+    Cadastrar Etiqueta
+  </h1>
+
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <h5 class="card-title">
+        Cadastro de Etiqueta
+      </h5>
+
+      <h6 class="card-subtitle text-muted">
+        Informe o nome e a cor da etiqueta
+      </h6>
+
+    </div>
+
+
+    <div class="card-body">
+
+
+      <!-- ========================= -->
+      <!-- SPINNER -->
+      <!-- ========================= -->
+
+      <app-spinner
+        *ngIf="carregando"
+        [show]="true"
+        message="Salvando...">
+
+      </app-spinner>
+
+
+      <!-- ========================= -->
+      <!-- ALERTA SUCESSO -->
+      <!-- ========================= -->
+
+      <app-alerts
+        *ngIf="
+          !carregando &&
+          mensagemSucesso.length
+        "
+        titulo="Sucesso!"
+        [mensagens]="mensagemSucesso"
+        tipo="success"
+        icone="fas fa-check-circle">
+
+      </app-alerts>
+
+
+      <!-- ========================= -->
+      <!-- ALERTA ERRO -->
+      <!-- ========================= -->
+
+      <app-alerts
+        *ngIf="
+          !carregando &&
+          mensagemErro.length
+        "
+        titulo="Erro!"
+        [mensagens]="mensagemErro"
+        tipo="danger"
+        icone="fas fa-times-circle">
+
+      </app-alerts>
+
+
+      <!-- ========================= -->
+      <!-- FORM -->
+      <!-- ========================= -->
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()">
+
+
+        <div class="row">
+
+
+          <!-- ========================= -->
+          <!-- NOME -->
+          <!-- ========================= -->
+
+          <div class="col-md-8 mb-3">
+
+            <label class="form-label">
+              Nome *
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nome"
+              placeholder="Ex.: Urgente">
+
+
+            <div
+              *ngIf="
+                form.get('nome')?.touched &&
+                form.get('nome')?.hasError('required')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                Nome da etiqueta é obrigatório.
+              </small>
+
+            </div>
+
+
+            <div
+              *ngIf="
+                form.get('nome')?.touched &&
+                form.get('nome')?.hasError('maxlength')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                O nome deve possuir no máximo
+                200 caracteres.
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <!-- ========================= -->
+          <!-- COR -->
+          <!-- ========================= -->
+
+          <div class="col-md-4 mb-3">
+
+            <label class="form-label">
+              Cor *
+            </label>
+
+
+            <div
+              class="
+                d-flex
+                align-items-center
+                gap-2
+              ">
+
+              <input
+                type="color"
+                class="form-control form-control-color"
+                formControlName="cor">
+
+
+              <span
+                class="badge"
+                [style.backgroundColor]="
+                  form.get('cor')?.value
+                "
+                [style.color]="'#fff'">
+
+                {{
+                  form.get('nome')?.value
+                  || 'Etiqueta'
+                }}
+
+              </span>
+
+            </div>
+
+
+            <div
+              *ngIf="
+                form.get('cor')?.touched &&
+                form.get('cor')?.hasError('required')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                Cor da etiqueta é obrigatória.
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- BOTÃO -->
+        <!-- ========================= -->
+
+        <button
+          type="submit"
+          class="btn btn-primary mt-3"
+          [disabled]="carregando">
+
+          <i class="fas fa-save me-1"></i>
+
+          Salvar Etiqueta
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

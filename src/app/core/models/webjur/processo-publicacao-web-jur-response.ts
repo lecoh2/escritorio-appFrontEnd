@@ -8,28 +8,45 @@ export interface ProcessoPublicacaoWebJurResponse {
 
   dataPublicacao: Date;
 
-  dataDivulgacao?: Date;
+  dataDivulgacao?: Date | null;
 
-  varaDescricao?: string;
-
-  orgaoDescricao?: string;
-
-  textoPublicacao?: string;
-
-  descricaoDiario?: string;
+  dataCadastroWebJur?: Date | null;
 
   anoPublicacao: number;
 
   edicaoDiario: number;
 
+  descricaoDiario?: string | null;
+
   paginaInicial: number;
 
   paginaFinal: number;
 
-  nomeVinculo?: string;
+  ufPublicacao?: string | null;
+
+  cidadePublicacao?: string | null;
+
+  varaDescricao?: string | null;
+
+  orgaoDescricao?: string | null;
+
+  despachoPublicacao?: string | null;
+
+  processoPublicacao?: string | null;
+
+  publicacaoCorrigida: boolean;
+
+  codVinculo: number;
+
+  nomeVinculo?: string | null;
 
   oabNumero: number;
 
-  oabEstado?: string;
+  oabEstado?: string | null;
 
+  codIntegracao?: string | null;
+
+  publicacaoExportada: boolean;
+
+  codGrupo: number;
 }

@@ -1,0 +1,774 @@
+<div class="container-fluid p-0">
+
+    <!-- ================================================= -->
+    <!-- CABEÇALHO -->
+    <!-- ================================================= -->
+
+    <div
+        class="
+            d-flex
+            justify-content-between
+            align-items-center
+            mb-3
+        ">
+
+        <div>
+
+            <h1 class="h3 mb-1">
+
+                <i
+                    class="
+                        fas
+                        fa-tags
+                        text-primary
+                        me-2
+                    ">
+                </i>
+
+                Consultar Etiquetas
+
+            </h1>
+
+            <p class="text-muted mb-0">
+
+                Consulte e gerencie as etiquetas
+                cadastradas no escritório.
+
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="novaEtiqueta()">
+
+                <i class="fas fa-plus me-1"></i>
+
+                Nova Etiqueta
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <div class="card shadow-sm border-0">
+
+
+                <!-- ================================================= -->
+                <!-- CARD HEADER -->
+                <!-- ================================================= -->
+
+                <div
+                    class="
+                        card-header
+                        bg-transparent
+                        border-bottom
+                        py-3
+                    ">
+
+                    <div class="d-flex align-items-center">
+
+                        <div
+                            class="
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                                bg-primary-subtle
+                                text-primary
+                                rounded-circle
+                                me-2
+                            "
+                            style="
+                                width: 40px;
+                                height: 40px;
+                            ">
+
+                            <i class="fas fa-magnifying-glass"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h5 class="card-title mb-0">
+
+                                Pesquisa de Etiquetas
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Localize etiquetas
+                                pelo nome ou pela cor.
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+
+                    <!-- ================================================= -->
+                    <!-- FILTROS -->
+                    <!-- ================================================= -->
+
+                    <div class="row align-items-end mb-4">
+
+
+                        <div class="col-md-8">
+
+                            <label class="form-label fw-semibold">
+
+                                Pesquisar
+
+                            </label>
+
+
+                            <div class="input-group">
+
+                                <span
+                                    class="
+                                        input-group-text
+                                        bg-transparent
+                                    ">
+
+                                    <i
+                                        class="
+                                            fas
+                                            fa-search
+                                            text-muted
+                                        ">
+                                    </i>
+
+                                </span>
+
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Pesquisar por nome ou cor"
+                                    [(ngModel)]="filtro"
+                                    (keyup.enter)="aplicarFiltro()">
+
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    (click)="aplicarFiltro()">
+
+                                    <i class="fas fa-search me-1"></i>
+
+                                    Buscar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Registros por página
+
+                            </label>
+
+
+                            <select
+                                class="form-select"
+                                [(ngModel)]="tamanhoPagina"
+                                (change)="aplicarFiltro()">
+
+                                <option
+                                    *ngFor="
+                                        let size of
+                                        [5, 10, 20, 50]
+                                    "
+                                    [value]="size">
+
+                                    {{ size }} registros
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- LOADING -->
+                    <!-- ================================================= -->
+
+                    <app-spinner-consulta
+                        *ngIf="carregando"
+                        [carregando]="true"
+                        message="Consultando..."
+                        class="d-inline-block">
+
+                    </app-spinner-consulta>
+
+
+                    <!-- ================================================= -->
+                    <!-- ALERTAS -->
+                    <!-- ================================================= -->
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemSucesso.length > 0
+                        "
+                        class="w-100"
+                        titulo="Sucesso!"
+                        [mensagens]="mensagemSucesso"
+                        tipo="success">
+
+                    </app-alerts>
+
+
+                    <app-alerts
+                        *ngIf="
+                            !carregando &&
+                            mensagemErro.length > 0
+                        "
+                        class="w-100"
+                        titulo="Erro!"
+                        [mensagens]="mensagemErro"
+                        tipo="danger">
+
+                    </app-alerts>
+
+
+                    <!-- ================================================= -->
+                    <!-- TABELA -->
+                    <!-- ================================================= -->
+
+                    <div
+                        *ngIf="!carregando"
+                        class="table-responsive tabela-etiquetas">
+
+                        <table
+                            id="datatables-etiquetas"
+                            class="
+                                table
+                                table-hover
+                                align-middle
+                                mb-0
+                            ">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th class="py-3">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-tag
+                                                text-primary
+                                                me-2
+                                            ">
+                                        </i>
+
+                                        Etiqueta
+
+                                    </th>
+
+
+                                    <th class="py-3">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-palette
+                                                text-primary
+                                                me-2
+                                            ">
+                                        </i>
+
+                                        Cor
+
+                                    </th>
+
+
+                                    <th
+                                        class="py-3 text-end"
+                                        style="width: 130px;">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-gears
+                                                text-primary
+                                                me-2
+                                            ">
+                                        </i>
+
+                                        Ações
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr
+                                    *ngFor="
+                                        let item
+                                        of dataSource.data
+                                    "
+                                    class="etiqueta-row">
+
+
+                                    <!-- ================================================= -->
+                                    <!-- ETIQUETA -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div
+                                                class="
+                                                    d-flex
+                                                    align-items-center
+                                                    justify-content-center
+                                                    rounded-3
+                                                    me-3
+                                                "
+                                                [style.backgroundColor]="
+                                                    item.cor || '#0d6efd'
+                                                "
+                                                style="
+                                                    width: 38px;
+                                                    height: 38px;
+                                                    min-width: 38px;
+                                                ">
+
+                                                <i
+                                                    class="
+                                                        fas
+                                                        fa-tag
+                                                        text-white
+                                                    ">
+                                                </i>
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <span
+                                                    class="
+                                                        fw-semibold
+                                                        d-block
+                                                    ">
+
+                                                    {{ item.nome }}
+
+                                                </span>
+
+
+                                                <small class="text-muted">
+
+                                                    Etiqueta
+
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- COR -->
+                                    <!-- ================================================= -->
+
+                                    <td>
+
+                                        <div
+                                            class="
+                                                d-flex
+                                                align-items-center
+                                                gap-2
+                                            ">
+
+                                            <span
+                                                [style.backgroundColor]="
+                                                    item.cor || '#0d6efd'
+                                                "
+                                                style="
+                                                    width: 24px;
+                                                    height: 24px;
+                                                    border-radius: 6px;
+                                                    display: inline-block;
+                                                    border:
+                                                        1px solid
+                                                        rgba(0,0,0,.1);
+                                                ">
+                                            </span>
+
+
+                                            <span class="text-muted">
+
+                                                {{ item.cor }}
+
+                                            </span>
+
+
+                                            <span
+                                                class="
+                                                    badge
+                                                    px-3
+                                                    py-2
+                                                "
+                                                [style.backgroundColor]="
+                                                    item.cor || '#0d6efd'
+                                                "
+                                                [style.color]="'#fff'">
+
+                                                <i class="fas fa-tag me-1"></i>
+
+                                                {{ item.nome }}
+
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- AÇÕES -->
+                                    <!-- ================================================= -->
+
+                                    <td class="text-end">
+
+                                        <button
+                                            type="button"
+                                            class="
+                                                btn
+                                                btn-sm
+                                                btn-outline-primary
+                                                me-2
+                                            "
+                                            title="Editar etiqueta"
+                                            (click)="editar(item)">
+
+                                            <i class="fas fa-pencil-alt"></i>
+
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="
+                                                btn
+                                                btn-sm
+                                                btn-outline-danger
+                                            "
+                                            title="Excluir etiqueta"
+                                            (click)="excluir(item)">
+
+                                            <i class="fas fa-trash"></i>
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- ================================================= -->
+                                <!-- SEM REGISTROS -->
+                                <!-- ================================================= -->
+
+                                <tr
+                                    *ngIf="
+                                        !carregando &&
+                                        dataSource.data.length === 0
+                                    ">
+
+                                    <td
+                                        colspan="3"
+                                        class="text-center py-5">
+
+                                        <div class="text-muted">
+
+                                            <i
+                                                class="
+                                                    fas
+                                                    fa-tags
+                                                    fa-3x
+                                                    mb-3
+                                                    opacity-50
+                                                ">
+                                            </i>
+
+
+                                            <div class="fw-semibold">
+
+                                                Nenhuma etiqueta encontrada
+
+                                            </div>
+
+
+                                            <small>
+
+                                                Altere os filtros
+                                                ou cadastre uma nova etiqueta.
+
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- RODAPÉ / PAGINAÇÃO -->
+                    <!-- ================================================= -->
+
+                    <div
+                        class="
+                            d-flex
+                            flex-column
+                            flex-md-row
+                            justify-content-between
+                            align-items-center
+                            mt-4
+                            gap-3
+                        ">
+
+                        <div class="text-muted small">
+
+                            <i class="fas fa-circle-info me-1"></i>
+
+                            Página
+
+                            <strong>
+                                {{ paginaAtual }}
+                            </strong>
+
+                            de
+
+                            <strong>
+                                {{ totalPaginas }}
+                            </strong>
+
+                            <span class="mx-1">
+                                •
+                            </span>
+
+                            Total:
+
+                            <strong>
+                                {{ totalRegistros }}
+                            </strong>
+
+                            etiqueta(s)
+
+                        </div>
+
+
+                        <nav
+                            *ngIf="
+                                totalPaginas > 1
+                            ">
+
+                            <ul
+                                class="
+                                    pagination
+                                    pagination-sm
+                                    mb-0
+                                ">
+
+
+                                <!-- PRIMEIRA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="
+                                        paginaAtual === 1
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="
+                                            irParaPagina(1)
+                                        ">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-angles-left
+                                            ">
+                                        </i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ANTERIOR -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="
+                                        paginaAtual === 1
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="
+                                            irParaPagina(
+                                                paginaAtual - 1
+                                            )
+                                        ">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-angle-left
+                                            ">
+                                        </i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PÁGINAS -->
+
+                                <li
+                                    class="page-item"
+                                    *ngFor="
+                                        let p
+                                        of paginasVisiveis
+                                    "
+                                    [class.active]="
+                                        p === paginaAtual
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="
+                                            irParaPagina(p)
+                                        ">
+
+                                        {{ p }}
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- PRÓXIMA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="
+                                        paginaAtual ===
+                                        totalPaginas
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="
+                                            irParaPagina(
+                                                paginaAtual + 1
+                                            )
+                                        ">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-angle-right
+                                            ">
+                                        </i>
+
+                                    </button>
+
+                                </li>
+
+
+                                <!-- ÚLTIMA -->
+
+                                <li
+                                    class="page-item"
+                                    [class.disabled]="
+                                        paginaAtual ===
+                                        totalPaginas
+                                    ">
+
+                                    <button
+                                        type="button"
+                                        class="page-link"
+                                        (click)="
+                                            irParaPagina(
+                                                totalPaginas
+                                            )
+                                        ">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-angles-right
+                                            ">
+                                        </i>
+
+                                    </button>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

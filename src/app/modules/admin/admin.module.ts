@@ -14,7 +14,7 @@ import { AdminLayout } from "./layouts/layouts/admin-layout/admin-layout";
 import { CadastrarPessoas } from "./components/pessoa/cadastrar-pessoa/cadastrar-pessoas";
 import { EditarPessoaFisica } from "./components/pessoa/editar-pessoa-fisica/editar-pessoa-fisica";
 
-import { CadastrarEtiquetas } from "./components/etiquetas/cadastrar-etiquetas/cadastrar-etiquetas";
+
 import { ConsultarPessoas } from "./components/pessoa/consultar-pessoas/consultar-pessoas";
 import { CadastrarProcesso } from "./components/processo/cadastrar-processo/cadastrar-processo";
 import { AutocompletePessoa } from "./components/autocomplete-pessoas/autocomplete-pessoas";
@@ -76,6 +76,11 @@ import { ConsultarCategoriaFinanceira } from "./components/categoria-financeira/
 import { EditarCategoriaFinanceira } from "./components/categoria-financeira/editar/editar-categoria-financeira";
 import { ConfiguracaoWebjur } from "./components/webjur/configuracao/configuracao-webjur";
 
+import { ConsultarEtiquetas } from "./components/etiquetas/consulta/consultar-etiqueta";
+import { EditarEtiqueta } from "./components/etiquetas/editar/editar-etiqueta";
+import { CadastrarEtiqueta } from "./components/etiquetas/cadastrar-etiqueta/cadastrar-etiqueta";
+import { CadastrarEtiquetas } from "./components/etiquetas/cadastrar-etiquetas/cadastrar-etiquetas";
+
 @NgModule({
     declarations: [//componente do módulo
 
@@ -86,7 +91,10 @@ import { ConfiguracaoWebjur } from "./components/webjur/configuracao/configuraca
         CadastrarPessoas,
         EditarPessoaFisica,
         EditarPessoaJuridica,
+        CadastrarEtiqueta,
         CadastrarEtiquetas,
+        ConsultarEtiquetas,
+        EditarEtiqueta,
         ConsultarPessoas,
         CadastrarProcesso,
         ConsultarProcesso,

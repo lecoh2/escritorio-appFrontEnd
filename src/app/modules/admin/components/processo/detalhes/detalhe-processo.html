@@ -1,477 +1,2131 @@
 <div class="container-fluid p-0">
 
-  <!-- CABEÇALHO -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- ===================================================== -->
+    <!-- CABEÇALHO -->
+    <!-- ===================================================== -->
 
-    <div>
-      <h1 class="h3 mb-1">
-        <i class="fas fa-gavel text-primary me-2"></i>
-        Detalhe do Processo
-      </h1>
-
-      <p class="text-muted mb-0">
-        Visualização completa do processo
-      </p>
-    </div>
-
-    <button class="btn btn-outline-secondary" (click)="voltar()">
-      <i class="fas fa-arrow-left me-2"></i>
-      Voltar
-    </button>
-
-  </div>
-
-  <!-- LOADING -->
-  <div *ngIf="carregando" class="text-center py-5">
-    <div class="spinner-border text-primary"></div>
-    <div class="mt-3">Carregando processo...</div>
-  </div>
-
-  <div *ngIf="!carregando && processo">
-
-    <!-- RESUMO -->
-    <div class="card shadow-sm border-0 mb-4">
-      <div class="card-body d-flex justify-content-between align-items-start">
+    <div
+        class="
+            d-flex
+            justify-content-between
+            align-items-center
+            mb-4
+            flex-wrap
+            gap-3
+        ">
 
         <div>
-          <h5 class="mb-1">
-            {{ processo?.titulo || processo?.numeroProcesso || '-' }}
-          </h5>
 
-          <div class="text-muted">
-            {{ processo?.numeroProcesso || '-' }}
-          </div>
+            <h1 class="h3 mb-1">
+
+                <i
+                    class="
+                        fas
+                        fa-gavel
+                        text-primary
+                        me-2
+                    ">
+                </i>
+
+                Detalhe do Processo
+
+            </h1>
+
+            <p class="text-muted mb-0">
+
+                Visualização completa do processo
+
+            </p>
+
         </div>
 
-        <span class="badge bg-success">
-          Ativo
-        </span>
-
-      </div>
-    </div>
-
-    <!-- ABAS -->
-    <ul class="nav nav-tabs mb-4">
-
-      <li class="nav-item">
         <button
-          class="nav-link"
-          [class.active]="abaAtiva === 'dados'"
-          (click)="mudarAba('dados')">
-          <i class="fas fa-folder-open me-2"></i>
-          Dados
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="voltar()">
+
+            <i
+                class="
+                    fas
+                    fa-arrow-left
+                    me-2
+                ">
+            </i>
+
+            Voltar
+
         </button>
-      </li>
-
-      <li class="nav-item">
-        <button
-          class="nav-link"
-          [class.active]="abaAtiva === 'partes'"
-          (click)="mudarAba('partes')">
-          <i class="fas fa-users me-2"></i>
-          Partes
-        </button>
-      </li>
-
-      <li class="nav-item">
-        <button
-          class="nav-link"
-          [class.active]="abaAtiva === 'webjur'"
-          (click)="mudarAba('webjur')">
-          <i class="fas fa-newspaper me-2"></i>
-          WebJur
-        </button>
-      </li>
-
-      <li class="nav-item">
-        <button
-          class="nav-link"
-          [class.active]="abaAtiva === 'complementos'"
-          (click)="mudarAba('complementos')">
-          <i class="fas fa-info-circle me-2"></i>
-          Complementos
-        </button>
-      </li>
-
-    </ul>
-
-    <!-- ABA DADOS -->
-    <div *ngIf="abaAtiva === 'dados'">
-
-      <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-primary text-white">
-          <i class="fas fa-folder-open me-2"></i>
-          Dados do Processo
-        </div>
-
-        <div class="card-body">
-
-          <div class="row">
-
-            <div class="col-md-6 mb-3">
-              <small class="text-muted">Número do Processo</small>
-              <div class="fw-bold">
-                {{ processo?.numeroProcesso || '-' }}
-              </div>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <small class="text-muted">Pasta</small>
-              <div>
-                {{ processo?.pasta || '-' }}
-              </div>
-            </div>
-
-            <div class="col-md-12 mb-3">
-              <small class="text-muted">Título</small>
-              <div class="fw-bold">
-                {{ processo?.titulo || '-' }}
-              </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-              <small class="text-muted">Instância</small>
-              <div>{{ processo?.instancia || '-' }}</div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-              <small class="text-muted">Acesso</small>
-              <div>{{ processo?.acesso || '-' }}</div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-              <small class="text-muted">Ação</small>
-              <div>{{ nomeAcao }}</div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-              <small class="text-muted">Responsável</small>
-              <div>{{ nomeResponsavel }}</div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-info text-white">
-          <i class="fas fa-map-marker-alt me-2"></i>
-          Local
-        </div>
-
-        <div class="card-body">
-
-          <div class="row">
-
-            <div class="col-md-4 mb-3">
-              <small class="text-muted">Foro</small>
-              <div>{{ processo?.nomeForo || '-' }}</div>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <small class="text-muted">Vara</small>
-              <div>{{ processo?.nomeVara || '-' }}</div>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <small class="text-muted">Juízo</small>
-              <div>{{ processo?.juizo || '-' }}</div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-success text-white">
-          <i class="fas fa-dollar-sign me-2"></i>
-          Valores
-        </div>
-
-        <div class="card-body">
-
-          <div class="row">
-
-            <div class="col-md-4 mb-3">
-              <small class="text-muted">Valor da Causa</small>
-              <div>{{ processo?.valorCausa || '-' }}</div>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <small class="text-muted">Valor da Condenação</small>
-              <div>{{ processo?.valorCondenacao || '-' }}</div>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <small class="text-muted">Data de Distribuição</small>
-              <div>{{ processo?.distribuido | date:'dd/MM/yyyy' }}</div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
 
     </div>
 
-    <!-- ABA PARTES -->
-    <div *ngIf="abaAtiva === 'partes'">
 
-      <div class="row">
+    <!-- ===================================================== -->
+    <!-- LOADING -->
+    <!-- ===================================================== -->
 
-        <div class="col-lg-6 mb-4">
+    <div
+        *ngIf="carregando"
+        class="text-center py-5">
 
-          <div class="card shadow-sm border-0 h-100">
-
-            <div class="card-header bg-primary text-white">
-              <i class="fas fa-user-tie me-2"></i>
-              Clientes
-            </div>
-
-            <div class="card-body">
-
-              <div
-                *ngIf="!processo?.grupoClienteProcesso?.length"
-                class="text-muted text-center py-4">
-                Nenhum cliente vinculado.
-              </div>
-
-              <div
-                *ngFor="let c of processo?.grupoClienteProcesso"
-                class="border-start border-primary border-4 ps-3 mb-3">
-
-                <div class="fw-bold">
-                  {{ c.nome }}
-                </div>
-
-                <small class="text-muted">
-                  {{ c.nomeQualificacao || '-' }}
-                </small>
-
-              </div>
-
-            </div>
-
-          </div>
-
+        <div
+            class="
+                spinner-border
+                text-primary
+            ">
         </div>
 
-        <div class="col-lg-6 mb-4">
+        <div class="mt-3">
 
-          <div class="card shadow-sm border-0 h-100">
-
-            <div class="card-header bg-secondary text-white">
-              <i class="fas fa-users me-2"></i>
-              Envolvidos
-            </div>
-
-            <div class="card-body">
-
-              <div
-                *ngIf="!processo?.grupoEnvolvidosProcesso?.length"
-                class="text-muted text-center py-4">
-                Nenhum envolvido vinculado.
-              </div>
-
-              <div
-                *ngFor="let e of processo?.grupoEnvolvidosProcesso"
-                class="border-start border-secondary border-4 ps-3 mb-3">
-
-                <div class="fw-bold">
-                  {{ e.nome }}
-                </div>
-
-                <small class="text-muted">
-                  {{ e.nomeQualificacao || '-' }}
-                </small>
-
-              </div>
-
-            </div>
-
-          </div>
+            Carregando processo...
 
         </div>
-
-      </div>
 
     </div>
 
-    <!-- ABA WEBJUR -->
-    <div *ngIf="abaAtiva === 'webjur'">
 
-      <div class="card shadow-sm border-0">
+    <!-- ===================================================== -->
+    <!-- PROCESSO -->
+    <!-- ===================================================== -->
 
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+    <div
+        *ngIf="
+            !carregando &&
+            processo
+        ">
 
-          <span>
-            <i class="fas fa-newspaper me-2"></i>
-            Publicações WebJur
-          </span>
 
-          <span class="badge bg-light text-dark">
-            {{ publicacoesWebJur?.length || 0 }}
-          </span>
+        <!-- ================================================= -->
+        <!-- RESUMO -->
+        <!-- ================================================= -->
 
-        </div>
-
-        <div class="card-body">
-
-          <div *ngIf="carregandoPublicacoesWebJur" class="text-center py-4">
-            <div class="spinner-border text-primary"></div>
-            <div class="mt-2">Carregando publicações WebJur...</div>
-          </div>
-
-          <ng-container *ngIf="!carregandoPublicacoesWebJur">
+        <div
+            class="
+                card
+                shadow-sm
+                border-0
+                mb-4
+            ">
 
             <div
-              *ngIf="!publicacoesWebJur || publicacoesWebJur.length === 0"
-              class="text-center text-muted py-4">
+                class="
+                    card-body
+                    d-flex
+                    justify-content-between
+                    align-items-start
+                    flex-wrap
+                    gap-3
+                ">
 
-              <i class="fas fa-cloud fa-2x mb-3"></i>
+                <div>
 
-              <h6>Nenhuma publicação WebJur encontrada</h6>
+                    <h5 class="mb-1">
+
+                        {{
+                            processo?.titulo
+                            ||
+                            processo?.numeroProcesso
+                            ||
+                            '-'
+                        }}
+
+                    </h5>
+
+                    <div class="text-muted">
+
+                        {{
+                            processo?.numeroProcesso
+                            ||
+                            '-'
+                        }}
+
+                    </div>
+
+                </div>
+
+                <span
+                    class="
+                        badge
+                        bg-success
+                        px-3
+                        py-2
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-check-circle
+                            me-1
+                        ">
+                    </i>
+
+                    Ativo
+
+                </span>
 
             </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ABAS -->
+        <!-- ================================================= -->
+
+        <ul class="nav nav-tabs mb-4">
+
+            <!-- DADOS -->
+
+            <li class="nav-item">
+
+                <button
+                    type="button"
+                    class="nav-link"
+                    [class.active]="
+                        abaAtiva === 'dados'
+                    "
+                    (click)="
+                        mudarAba('dados')
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-folder-open
+                            me-2
+                        ">
+                    </i>
+
+                    Dados
+
+                </button>
+
+            </li>
+
+
+            <!-- PARTES -->
+
+            <li class="nav-item">
+
+                <button
+                    type="button"
+                    class="nav-link"
+                    [class.active]="
+                        abaAtiva === 'partes'
+                    "
+                    (click)="
+                        mudarAba('partes')
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-users
+                            me-2
+                        ">
+                    </i>
+
+                    Partes
+
+                </button>
+
+            </li>
+
+
+            <!-- WEBJUR -->
+
+            <li class="nav-item">
+
+                <button
+                    type="button"
+                    class="nav-link"
+                    [class.active]="
+                        abaAtiva === 'webjur'
+                    "
+                    (click)="
+                        mudarAba('webjur')
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-newspaper
+                            me-2
+                        ">
+                    </i>
+
+                    WebJur
+
+                    <span
+                        *ngIf="
+                            publicacoesWebJur.length > 0
+                        "
+                        class="
+                            badge
+                            bg-primary
+                            ms-2
+                        ">
+
+                        {{
+                            publicacoesWebJur.length
+                        }}
+
+                    </span>
+
+                </button>
+
+            </li>
+
+
+            <!-- COMPLEMENTOS -->
+
+            <li class="nav-item">
+
+                <button
+                    type="button"
+                    class="nav-link"
+                    [class.active]="
+                        abaAtiva === 'complementos'
+                    "
+                    (click)="
+                        mudarAba('complementos')
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-info-circle
+                            me-2
+                        ">
+                    </i>
+
+                    Complementos
+
+                </button>
+
+            </li>
+
+        </ul>
+
+
+        <!-- ================================================= -->
+        <!-- ABA DADOS -->
+        <!-- ================================================= -->
+
+        <div
+            *ngIf="
+                abaAtiva === 'dados'
+            ">
+
+            <!-- DADOS PROCESSO -->
 
             <div
-              *ngFor="let p of publicacoesWebJur"
-              class="card border-0 shadow-sm mb-4">
+                class="
+                    card
+                    shadow-sm
+                    border-0
+                    mb-4
+                ">
 
-              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div
+                    class="
+                        card-header
+                        bg-primary
+                        text-white
+                    ">
 
-                <span>
-                  <i class="fas fa-newspaper me-2"></i>
-                  Publicação {{ p.codPublicacao }}
-                </span>
+                    <i
+                        class="
+                            fas
+                            fa-folder-open
+                            me-2
+                        ">
+                    </i>
 
-                <span>
-                  {{ p.dataPublicacao | date:'dd/MM/yyyy HH:mm' }}
-                </span>
-
-              </div>
-
-              <div class="card-body">
-
-                <div class="row mb-3">
-
-                  <div class="col-md-6 mb-2">
-                    <small class="text-muted">Processo</small>
-                    <div class="fw-bold">{{ p.numeroProcesso }}</div>
-                  </div>
-
-                  <div class="col-md-6 mb-2">
-                    <small class="text-muted">Vínculo</small>
-                    <div>{{ p.nomeVinculo || '-' }}</div>
-                  </div>
-
-                  <div class="col-md-6 mb-2">
-                    <small class="text-muted">Vara</small>
-                    <div>{{ p.varaDescricao || '-' }}</div>
-                  </div>
-
-                  <div class="col-md-6 mb-2">
-                    <small class="text-muted">Órgão</small>
-                    <div>{{ p.orgaoDescricao || '-' }}</div>
-                  </div>
-
-                  <div class="col-md-4 mb-2">
-                    <small class="text-muted">Diário</small>
-                    <div>{{ p.descricaoDiario || '-' }}</div>
-                  </div>
-
-                  <div class="col-md-2 mb-2">
-                    <small class="text-muted">Ano</small>
-                    <div>{{ p.anoPublicacao || '-' }}</div>
-                  </div>
-
-                  <div class="col-md-2 mb-2">
-                    <small class="text-muted">Edição</small>
-                    <div>{{ p.edicaoDiario || '-' }}</div>
-                  </div>
-
-                  <div class="col-md-4 mb-2">
-                    <small class="text-muted">OAB</small>
-                    <div>{{ p.oabNumero || '-' }}/{{ p.oabEstado || '-' }}</div>
-                  </div>
+                    Dados do Processo
 
                 </div>
 
-                <hr>
+                <div class="card-body">
 
-                <div class="publicacao-texto">
-                  {{ p.textoPublicacao || '-' }}
+                    <div class="row">
+
+                        <div
+                            class="
+                                col-md-6
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Número do Processo
+
+                            </small>
+
+                            <div class="fw-bold">
+
+                                {{
+                                    processo
+                                        ?.numeroProcesso
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-6
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Pasta
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.pasta
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-12
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Título
+
+                            </small>
+
+                            <div class="fw-bold">
+
+                                {{
+                                    processo?.titulo
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-3
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Instância
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.instancia
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-3
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Acesso
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.acesso
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-3
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Ação
+
+                            </small>
+
+                            <div>
+
+                                {{ nomeAcao }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-3
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Responsável
+
+                            </small>
+
+                            <div>
+
+                                {{ nomeResponsavel }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-              </div>
+            </div>
+
+
+            <!-- LOCAL -->
+
+            <div
+                class="
+                    card
+                    shadow-sm
+                    border-0
+                    mb-4
+                ">
+
+                <div
+                    class="
+                        card-header
+                        bg-info
+                        text-white
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-map-marker-alt
+                            me-2
+                        ">
+                    </i>
+
+                    Local
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div
+                            class="
+                                col-md-4
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Foro
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.nomeForo
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-4
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Vara
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.nomeVara
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-4
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Juízo
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.juizo
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
-          </ng-container>
+
+            <!-- VALORES -->
+
+            <div
+                class="
+                    card
+                    shadow-sm
+                    border-0
+                ">
+
+                <div
+                    class="
+                        card-header
+                        bg-success
+                        text-white
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-dollar-sign
+                            me-2
+                        ">
+                    </i>
+
+                    Valores
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div
+                            class="
+                                col-md-4
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Valor da Causa
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.valorCausa
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-4
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Valor da Condenação
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo
+                                        ?.valorCondenacao
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-4
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Data de Distribuição
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.distribuido
+                                        | date:'dd/MM/yyyy'
+                                }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
-      </div>
+
+        <!-- ================================================= -->
+        <!-- ABA PARTES -->
+        <!-- ================================================= -->
+
+        <div
+            *ngIf="
+                abaAtiva === 'partes'
+            ">
+
+            <div class="row">
+
+                <!-- CLIENTES -->
+
+                <div
+                    class="
+                        col-lg-6
+                        mb-4
+                    ">
+
+                    <div
+                        class="
+                            card
+                            shadow-sm
+                            border-0
+                            h-100
+                        ">
+
+                        <div
+                            class="
+                                card-header
+                                bg-primary
+                                text-white
+                            ">
+
+                            <i
+                                class="
+                                    fas
+                                    fa-user-tie
+                                    me-2
+                                ">
+                            </i>
+
+                            Clientes
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div
+                                *ngIf="
+                                    !processo
+                                        ?.grupoClienteProcesso
+                                        ?.length
+                                "
+                                class="
+                                    text-muted
+                                    text-center
+                                    py-4
+                                ">
+
+                                Nenhum cliente vinculado.
+
+                            </div>
+
+                            <div
+                                *ngFor="
+                                    let c of processo
+                                        ?.grupoClienteProcesso
+                                "
+                                class="
+                                    border-start
+                                    border-primary
+                                    border-4
+                                    ps-3
+                                    mb-3
+                                ">
+
+                                <div class="fw-bold">
+
+                                    {{ c.nome }}
+
+                                </div>
+
+                                <small class="text-muted">
+
+                                    {{
+                                        c.nomeQualificacao
+                                        ||
+                                        '-'
+                                    }}
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ENVOLVIDOS -->
+
+                <div
+                    class="
+                        col-lg-6
+                        mb-4
+                    ">
+
+                    <div
+                        class="
+                            card
+                            shadow-sm
+                            border-0
+                            h-100
+                        ">
+
+                        <div
+                            class="
+                                card-header
+                                bg-secondary
+                                text-white
+                            ">
+
+                            <i
+                                class="
+                                    fas
+                                    fa-users
+                                    me-2
+                                ">
+                            </i>
+
+                            Envolvidos
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div
+                                *ngIf="
+                                    !processo
+                                        ?.grupoEnvolvidosProcesso
+                                        ?.length
+                                "
+                                class="
+                                    text-muted
+                                    text-center
+                                    py-4
+                                ">
+
+                                Nenhum envolvido vinculado.
+
+                            </div>
+
+                            <div
+                                *ngFor="
+                                    let e of processo
+                                        ?.grupoEnvolvidosProcesso
+                                "
+                                class="
+                                    border-start
+                                    border-secondary
+                                    border-4
+                                    ps-3
+                                    mb-3
+                                ">
+
+                                <div class="fw-bold">
+
+                                    {{ e.nome }}
+
+                                </div>
+
+                                <small class="text-muted">
+
+                                    {{
+                                        e.nomeQualificacao
+                                        ||
+                                        '-'
+                                    }}
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ABA WEBJUR -->
+        <!-- ================================================= -->
+
+        <div
+            *ngIf="
+                abaAtiva === 'webjur'
+            ">
+
+            <div
+                class="
+                    card
+                    shadow-sm
+                    border-0
+                ">
+
+                <!-- HEADER -->
+
+                <div
+                    class="
+                        card-header
+                        bg-dark
+                        text-white
+                        d-flex
+                        justify-content-between
+                        align-items-center
+                    ">
+
+                    <span>
+
+                        <i
+                            class="
+                                fas
+                                fa-newspaper
+                                me-2
+                            ">
+                        </i>
+
+                        Publicações WebJur
+
+                    </span>
+
+                    <span
+                        class="
+                            badge
+                            bg-light
+                            text-dark
+                        ">
+
+                        {{
+                            publicacoesWebJur.length
+                            ||
+                            0
+                        }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <!-- LOADING -->
+
+                    <div
+                        *ngIf="
+                            carregandoPublicacoesWebJur
+                        "
+                        class="
+                            text-center
+                            py-4
+                        ">
+
+                        <div
+                            class="
+                                spinner-border
+                                text-primary
+                            ">
+                        </div>
+
+                        <div class="mt-2">
+
+                            Carregando publicações WebJur...
+
+                        </div>
+
+                    </div>
+
+
+                    <ng-container
+                        *ngIf="
+                            !carregandoPublicacoesWebJur
+                        ">
+
+
+                        <!-- SEM PUBLICAÇÕES -->
+
+                        <div
+                            *ngIf="
+                                publicacoesWebJur
+                                    .length === 0
+                            "
+                            class="
+                                text-center
+                                text-muted
+                                py-4
+                            ">
+
+                            <i
+                                class="
+                                    fas
+                                    fa-cloud
+                                    fa-2x
+                                    mb-3
+                                ">
+                            </i>
+
+                            <h6>
+
+                                Nenhuma publicação
+                                WebJur encontrada
+
+                            </h6>
+
+                        </div>
+
+
+                        <!-- PUBLICAÇÃO -->
+
+                        <div
+                            *ngFor="
+                                let p of publicacoesWebJur;
+                                trackBy: trackByPublicacao
+                            "
+                            class="
+                                card
+                                border-0
+                                shadow-sm
+                                mb-4
+                            ">
+
+
+                            <!-- ============================= -->
+                            <!-- HEADER PUBLICAÇÃO -->
+                            <!-- ============================= -->
+
+                            <div
+                                class="
+                                    card-header
+                                    bg-primary
+                                    text-white
+                                    d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    flex-wrap
+                                    gap-2
+                                ">
+
+                                <div>
+
+                                    <i
+                                        class="
+                                            fas
+                                            fa-newspaper
+                                            me-2
+                                        ">
+                                    </i>
+
+                                    <strong>
+
+                                        Publicação
+                                        {{ p.codPublicacao }}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div
+                                    class="
+                                        d-flex
+                                        align-items-center
+                                        gap-2
+                                        flex-wrap
+                                    ">
+
+                                    <!-- CORRIGIDA -->
+
+                                    <span
+                                        *ngIf="
+                                            p.publicacaoCorrigida
+                                        "
+                                        class="
+                                            badge
+                                            bg-warning
+                                            text-dark
+                                        ">
+
+                                        <i
+                                            class="
+                                                fas
+                                                fa-pen-to-square
+                                                me-1
+                                            ">
+                                        </i>
+
+                                        Corrigida
+
+                                    </span>
+
+
+                                    <!-- EXPORTAÇÃO -->
+
+                                    <span
+                                        class="badge"
+                                        [ngClass]="
+                                            p.publicacaoExportada
+                                                ? 'bg-success'
+                                                : 'bg-secondary'
+                                        ">
+
+                                        <i
+                                            class="
+                                                fas
+                                                me-1
+                                            "
+                                            [ngClass]="
+                                                p.publicacaoExportada
+                                                    ? 'fa-check-circle'
+                                                    : 'fa-clock'
+                                            ">
+                                        </i>
+
+                                        {{
+                                            p.publicacaoExportada
+                                                ? 'Exportada'
+                                                : 'Não exportada'
+                                        }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="card-body">
+
+
+                                <!-- ============================= -->
+                                <!-- DATAS -->
+                                <!-- ============================= -->
+
+                                <div class="row mb-2">
+
+                                    <div
+                                        class="
+                                            col-md-4
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Data da Publicação
+
+                                        </small>
+
+                                        <div class="fw-semibold">
+
+                                            {{
+                                                p.dataPublicacao
+                                                    | date:'dd/MM/yyyy HH:mm'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-4
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Data de Divulgação
+
+                                        </small>
+
+                                        <div>
+
+                                            <ng-container
+                                                *ngIf="
+                                                    p.dataDivulgacao;
+                                                    else semDivulgacao
+                                                ">
+
+                                                {{
+                                                    p.dataDivulgacao
+                                                        | date:'dd/MM/yyyy HH:mm'
+                                                }}
+
+                                            </ng-container>
+
+                                            <ng-template
+                                                #semDivulgacao>
+
+                                                -
+
+                                            </ng-template>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-4
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Cadastro no WebJur
+
+                                        </small>
+
+                                        <div>
+
+                                            <ng-container
+                                                *ngIf="
+                                                    p.dataCadastroWebJur;
+                                                    else semCadastroWebJur
+                                                ">
+
+                                                {{
+                                                    p.dataCadastroWebJur
+                                                        | date:'dd/MM/yyyy HH:mm'
+                                                }}
+
+                                            </ng-container>
+
+                                            <ng-template
+                                                #semCadastroWebJur>
+
+                                                -
+
+                                            </ng-template>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <hr>
+
+
+                                <!-- ============================= -->
+                                <!-- PROCESSO / INTEGRAÇÃO -->
+                                <!-- ============================= -->
+
+                                <div class="row mb-2">
+
+                                    <div
+                                        class="
+                                            col-md-6
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Número do Processo
+
+                                        </small>
+
+                                        <div class="fw-bold">
+
+                                            {{
+                                                p.numeroProcesso
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-3
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Código do Grupo
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.codGrupo
+                                                ?? '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-3
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Código de Integração
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.codIntegracao
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ============================= -->
+                                <!-- ÓRGÃO / VARA / LOCAL -->
+                                <!-- ============================= -->
+
+                                <div class="row mb-2">
+
+                                    <div
+                                        class="
+                                            col-md-4
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Órgão
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.orgaoDescricao
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-4
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Vara
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.varaDescricao
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-2
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            UF
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.ufPublicacao
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-2
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Cidade
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.cidadePublicacao
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ============================= -->
+                                <!-- DIÁRIO -->
+                                <!-- ============================= -->
+
+                                <div class="row mb-2">
+
+                                    <div
+                                        class="
+                                            col-md-4
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Diário
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.descricaoDiario
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-2
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Ano
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.anoPublicacao
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-2
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Edição
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.edicaoDiario
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-2
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Página Inicial
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.paginaInicial
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-2
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Página Final
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.paginaFinal
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <hr>
+
+
+                                <!-- ============================= -->
+                                <!-- VÍNCULO / OAB -->
+                                <!-- ============================= -->
+
+                                <div class="row mb-2">
+
+                                    <div
+                                        class="
+                                            col-md-6
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Nome do Vínculo
+
+                                        </small>
+
+                                        <div class="fw-semibold">
+
+                                            {{
+                                                p.nomeVinculo
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-3
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            Código do Vínculo
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.codVinculo
+                                                ||
+                                                '-'
+                                            }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            col-md-3
+                                            mb-3
+                                        ">
+
+                                        <small
+                                            class="
+                                                text-muted
+                                                d-block
+                                            ">
+
+                                            OAB
+
+                                        </small>
+
+                                        <div>
+
+                                            {{
+                                                p.oabNumero
+                                                ||
+                                                '-'
+                                            }}
+
+                                            <span
+                                                *ngIf="
+                                                    p.oabEstado
+                                                ">
+
+                                                /
+                                                {{
+                                                    p.oabEstado
+                                                }}
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ============================= -->
+                                <!-- DESPACHO -->
+                                <!-- ============================= -->
+
+                                <div
+                                    *ngIf="
+                                        p.despachoPublicacao
+                                    "
+                                    class="mb-4">
+
+                                    <small
+                                        class="
+                                            text-muted
+                                            d-block
+                                            mb-2
+                                        ">
+
+                                        Despacho
+
+                                    </small>
+
+                                    <div
+                                        class="
+                                            alert
+                                            alert-primary
+                                            border-0
+                                            shadow-sm
+                                            p-3
+                                            rounded-3
+                                            mb-0
+                                        ">
+
+                                        <div
+                                            class="
+                                                d-flex
+                                                align-items-start
+                                            ">
+
+                                            <div
+                                                class="
+                                                    me-3
+                                                    pt-1
+                                                ">
+
+                                                <i
+                                                    class="
+                                                        fas
+                                                        fa-gavel
+                                                        text-primary
+                                                        fs-4
+                                                    ">
+                                                </i>
+
+                                            </div>
+
+                                            <div
+                                                class="
+                                                    flex-grow-1
+                                                "
+                                                style="
+                                                    white-space: pre-wrap;
+                                                    word-break: break-word;
+                                                ">
+
+                                                {{
+                                                    p.despachoPublicacao
+                                                }}
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ============================= -->
+                                <!-- CONTEÚDO DA PUBLICAÇÃO -->
+                                <!-- ============================= -->
+
+                                <div>
+
+                                    <small
+                                        class="
+                                            text-muted
+                                            d-block
+                                            mb-2
+                                        ">
+
+                                        Conteúdo da Publicação
+
+                                    </small>
+
+                                    <div
+                                        class="
+                                            border
+                                            rounded-3
+                                            p-3
+                                           
+                                        "
+                                        style="
+                                            white-space: pre-wrap;
+                                            word-break: break-word;
+                                        ">
+
+                                        {{
+                                            p.processoPublicacao
+                                            ||
+                                            '-'
+                                        }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </ng-container>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ABA COMPLEMENTOS -->
+        <!-- ================================================= -->
+
+        <div
+            *ngIf="
+                abaAtiva === 'complementos'
+            ">
+
+            <div
+                class="
+                    card
+                    shadow-sm
+                    border-0
+                    mb-4
+                ">
+
+                <div
+                    class="
+                        card-header
+                        bg-warning
+                    ">
+
+                    <i
+                        class="
+                            fas
+                            fa-info-circle
+                            me-2
+                        ">
+                    </i>
+
+                    Complementos
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div
+                            class="
+                                col-md-6
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Objeto
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.objeto
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                col-md-6
+                                mb-3
+                            ">
+
+                            <small class="text-muted">
+
+                                Observação
+
+                            </small>
+
+                            <div>
+
+                                {{
+                                    processo?.observacao
+                                    ||
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <small class="text-muted">
+
+                        Link do Tribunal
+
+                    </small>
+
+                    <div>
+
+                        <a
+                            *ngIf="
+                                processo?.linkTribunal
+                            "
+                            [href]="
+                                processo.linkTribunal
+                            "
+                            target="_blank"
+                            rel="noopener noreferrer">
+
+                            <i
+                                class="
+                                    fas
+                                    fa-arrow-up-right-from-square
+                                    me-1
+                                ">
+                            </i>
+
+                            Abrir no tribunal
+
+                        </a>
+
+                        <span
+                            *ngIf="
+                                !processo?.linkTribunal
+                            ">
+
+                            -
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <!-- ABA COMPLEMENTOS -->
-    <div *ngIf="abaAtiva === 'complementos'">
 
-      <div class="card shadow-sm border-0 mb-4">
+    <!-- ===================================================== -->
+    <!-- PROCESSO NÃO ENCONTRADO -->
+    <!-- ===================================================== -->
 
-        <div class="card-header bg-warning">
-          <i class="fas fa-info-circle me-2"></i>
-          Complementos
-        </div>
+    <div
+        *ngIf="
+            !carregando &&
+            !processo
+        "
+        class="
+            alert
+            alert-warning
+            border-0
+            shadow-sm
+            p-3
+            rounded-3
+        ">
 
-        <div class="card-body">
+        <div class="d-flex align-items-center">
 
-          <div class="row">
+            <div class="me-3">
 
-            <div class="col-md-6 mb-3">
-              <small class="text-muted">Objeto</small>
-              <div>{{ processo?.objeto || '-' }}</div>
+                <i
+                    class="
+                        fas
+                        fa-triangle-exclamation
+                        fs-4
+                    ">
+                </i>
+
             </div>
 
-            <div class="col-md-6 mb-3">
-              <small class="text-muted">Observação</small>
-              <div>{{ processo?.observacao || '-' }}</div>
+            <div>
+
+                <h6 class="fw-bold mb-1">
+
+                    Processo não encontrado
+
+                </h6>
+
+                <div>
+
+                    Não foi possível carregar
+                    os dados deste processo.
+
+                </div>
+
             </div>
 
-          </div>
-
-          <hr>
-
-          <small class="text-muted">Link do Tribunal</small>
-
-          <div>
-            <a
-              *ngIf="processo?.linkTribunal"
-              [href]="processo.linkTribunal"
-              target="_blank">
-              Abrir no tribunal
-            </a>
-
-            <span *ngIf="!processo?.linkTribunal">
-              -
-            </span>
-          </div>
-
         </div>
-
-      </div>
 
     </div>
-
-  </div>
 
 </div>

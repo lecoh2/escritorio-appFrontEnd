@@ -374,7 +374,77 @@
                 </ul>
 
             </li>
+    <!-- ===================================================== -->
+            <!-- Etiquetas -->
+            <!-- ===================================================== -->
 
+         <li
+    class="sidebar-item"
+    *ngIf="
+        access.hasNivel(
+            'Administrador',
+            'Administração',
+            'Super Administrador',
+            'Coordenador',
+            'Estagiários',
+            'Supervisor',
+            'Conciliador'
+        )
+    ">
+
+    <a
+        data-bs-target="#etiqueta"
+        data-bs-toggle="collapse"
+        class="sidebar-link collapsed">
+
+        <i class="fas fa-tags align-middle"></i>
+
+        <span class="align-middle">
+            Etiqueta
+        </span>
+
+    </a>
+
+
+    <ul
+        id="etiqueta"
+        class="sidebar-dropdown list-unstyled collapse"
+        data-bs-parent="#sidebar">
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'cadastrar-etiqueta'
+                ]">
+
+                Cadastrar
+
+            </a>
+
+        </li>
+
+
+        <li class="sidebar-item">
+
+            <a
+                class="sidebar-link"
+                [routerLink]="[
+                    '/admin',
+                    'consultar-etiqueta'
+                ]">
+
+                Consultar
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
 
             <!-- ===================================================== -->
             <!-- EVENTOS -->

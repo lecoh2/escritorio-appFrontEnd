@@ -1,0 +1,289 @@
+<div class="container-fluid p-0">
+
+  <h1 class="h3 mb-3">
+    Editar Etiqueta
+  </h1>
+
+
+  <div class="card">
+
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+    <div class="card-header">
+
+      <h5 class="card-title">
+        Edição de Etiqueta
+      </h5>
+
+      <h6 class="card-subtitle text-muted">
+        Atualize os dados da etiqueta
+      </h6>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- BODY -->
+    <!-- ========================= -->
+
+    <div class="card-body">
+
+
+      <!-- ========================= -->
+      <!-- SPINNER -->
+      <!-- ========================= -->
+
+      <app-spinner
+        *ngIf="carregando"
+        [show]="true"
+        message="Atualizando...">
+
+      </app-spinner>
+
+
+      <!-- ========================= -->
+      <!-- ALERTA SUCESSO -->
+      <!-- ========================= -->
+
+      <app-alerts
+        *ngIf="
+          !carregando &&
+          mensagemSucesso.length
+        "
+        titulo="Sucesso!"
+        [mensagens]="mensagemSucesso"
+        tipo="success"
+        icone="fas fa-check-circle">
+
+      </app-alerts>
+
+
+      <!-- ========================= -->
+      <!-- ALERTA ERRO -->
+      <!-- ========================= -->
+
+      <app-alerts
+        *ngIf="
+          !carregando &&
+          mensagemErro.length
+        "
+        titulo="Erro!"
+        [mensagens]="mensagemErro"
+        tipo="danger"
+        icone="fas fa-times-circle">
+
+      </app-alerts>
+
+
+      <!-- ========================= -->
+      <!-- FORM -->
+      <!-- ========================= -->
+
+      <form
+        *ngIf="!carregandoInicial"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()">
+
+
+        <!-- ========================= -->
+        <!-- TÍTULO -->
+        <!-- ========================= -->
+
+        <h5 class="mb-3">
+          Dados da Etiqueta
+        </h5>
+
+
+        <div class="row">
+
+
+          <!-- ========================= -->
+          <!-- NOME -->
+          <!-- ========================= -->
+
+          <div class="col-md-8 mb-3">
+
+            <label class="form-label">
+              Nome *
+            </label>
+
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nome"
+              placeholder="Nome da etiqueta">
+
+
+            <div
+              *ngIf="
+                form.get('nome')?.touched &&
+                form.get('nome')?.hasError('required')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                Nome da etiqueta é de preenchimento obrigatório.
+              </small>
+
+            </div>
+
+
+            <div
+              *ngIf="
+                form.get('nome')?.touched &&
+                form.get('nome')?.hasError('maxlength')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                O nome deve possuir no máximo 200 caracteres.
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <!-- ========================= -->
+          <!-- COR -->
+          <!-- ========================= -->
+
+          <div class="col-md-4 mb-3">
+
+            <label class="form-label">
+              Cor *
+            </label>
+
+
+            <div
+              class="
+                d-flex
+                align-items-center
+                gap-3
+              ">
+
+
+              <!-- SELETOR -->
+
+              <input
+                type="color"
+                class="form-control form-control-color"
+                formControlName="cor"
+                title="Selecione a cor">
+
+
+              <!-- CÓDIGO -->
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="cor"
+                maxlength="20"
+                style="max-width: 140px;">
+
+            </div>
+
+
+            <div
+              *ngIf="
+                form.get('cor')?.touched &&
+                form.get('cor')?.hasError('required')
+              "
+              class="text-danger mt-1">
+
+              <small>
+                Cor da etiqueta é de preenchimento obrigatório.
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- PREVIEW -->
+        <!-- ========================= -->
+
+        <div class="mb-4">
+
+          <label class="form-label">
+            Pré-visualização
+          </label>
+
+
+          <div>
+
+            <span
+              class="
+                badge
+                px-3
+                py-2
+              "
+              [style.backgroundColor]="
+                form.get('cor')?.value || '#0d6efd'
+              "
+              [style.color]="'#fff'">
+
+              <i class="fas fa-tag me-1"></i>
+
+              {{
+                form.get('nome')?.value
+                || 'Etiqueta'
+              }}
+
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- BOTÕES -->
+        <!-- ========================= -->
+
+        <button
+          type="button"
+          class="
+            btn
+            btn-secondary
+            mt-3
+            me-2
+          "
+          (click)="irParaLista()">
+
+          <i class="fas fa-arrow-left me-1"></i>
+
+          Voltar
+
+        </button>
+
+
+        <button
+          type="submit"
+          class="
+            btn
+            btn-primary
+            mt-3
+          "
+          [disabled]="carregando">
+
+          <i class="fas fa-save me-1"></i>
+
+          Atualizar Etiqueta
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

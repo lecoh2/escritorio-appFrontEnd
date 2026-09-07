@@ -461,7 +461,24 @@ export class DetalhePublicacao
         }
       });
   }
+formatarNumeroProcesso(numero?: string | null): string {
 
+  if (!numero) {
+    return '-';
+  }
+
+  const somenteNumeros =
+    numero.replace(/\D/g, '');
+
+  if (somenteNumeros.length !== 20) {
+    return numero;
+  }
+
+  return somenteNumeros.replace(
+    /^(\d{7})(\d{2})(\d{4})(\d)(\d{2})(\d{4})$/,
+    '$1-$2.$3.$4.$5.$6'
+  );
+}
   // =====================================================
   // VISUALIZAÇÕES
   // =====================================================
